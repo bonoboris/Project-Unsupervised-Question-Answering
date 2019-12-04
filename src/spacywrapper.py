@@ -40,7 +40,7 @@ class SpacyFrenchModelWrapper(object):
 
 def main():
     print(f'Tokens: {SpacyFrenchModelWrapper.tokenize("Bonjour, je suis une phrase avec un accent é et à et â!")}')
-    print(f'Stems: {SpacyFrenchModelWrapper.stem("Bonjour, je suis une phrase!")}')
+    print(f'Stems: {SpacyFrenchModelWrapper.stem("Bonjour, est-il possible pour Chirac!")}')
 
 
 if __name__ == '__main__':

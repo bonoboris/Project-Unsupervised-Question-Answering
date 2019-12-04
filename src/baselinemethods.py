@@ -5,9 +5,9 @@ import numpy as np
 from sacremoses import MosesTokenizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import pairwise
-from spacywrapper import SpacyFrenchModelWrapper
+from src.spacywrapper import SpacyFrenchModelWrapper
 from string import punctuation
-from textformatting import read_json
+from src.textformatting import read_json
 
 contracted_articles = {"l'", "d'", "s'", "j'", "t'", "m'", "n'"}
 stopwords = nltk_stopwords.words('french') + list(punctuation) + list(contracted_articles)
@@ -99,5 +99,5 @@ def main():
 
 
 if __name__ == "__main__":
-    test_preprocessing("Bonjour, chat!")
-    #main()
+    # test_preprocessing("Bonjour, chat!")
+    main()

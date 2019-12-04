@@ -3,16 +3,15 @@ from transformers import *
 import json
 import csv
 import tempfile
-import gensim
 
 
 def lan_models():
-    '''
-    Le premier éteape s'est fait ici afin d'essayer 3 différents modèles de langage. Word2vec est effectué sur les textes importés.
-    Le type de dossier de input et output n'est pas encore sur.
-    Un probleme est le téléchargement embêtant des package chaque fois quand on exécute le modèle XLNet.
-    :return: un dictionnaire qui contient les vecteurs de tokens sous différents LM
-    '''
+    """
+    The first step was done here to try 3 different language models. Word2vec is performed on imported texts.
+  The input and output file type is not yet decided (json or csv).
+  One problem is the downloading of same packages every time when running the XLNet model.
+    :return:a dictionary that contains token vectors under different LMs
+    """
     models = [(OpenAIGPTModel, OpenAIGPTTokenizer, 'openai-gpt'),
               (TransfoXLModel, TransfoXLTokenizer, 'transfo-xl-wt103'),
               (XLNetModel, XLNetTokenizer, 'xlnet-base-cased')]
@@ -44,11 +43,11 @@ def lan_models():
 
 
 def model():
-    '''
-    une fonction similaire à lan_models() mais en utilisant qu'un MdL.
-    :return: une liste qui contient tous les vecteurs générés en fonction des tokens.
-    '''
-    models = [(XLNetModel, XLNetTokenizer, 'xlnet-base-cased')]
+    """
+        a function similar to lan_models () but using only one LM
+    :return: a list that contains token vectors under the chose LM
+    """
+    models = [(OpenAIGPTModel, OpenAIGPTTokenizer, 'openai-gpt')]
     last_hidden_states = []
     for model_class, tokenizer_class, pretrained_weight in models:
         tokenizer = tokenizer_class.from_pretrained(pretrained_weight)
@@ -66,18 +65,5 @@ def model():
 
 
 if __name__ == '__main__':
-    # model()
-    model_path = '../models/frwiki.gensim'
-    w2v_model = gensim.models.Word2Vec.load(model_path)
+    model()
 
-    # torch_roi = torch.FloatTensor(w2v_model.wv['roi'])
-    # torch_ordinateur = torch.FloatTensor(w2v_model.wv['ordinateur'])
-    # print(torch.dot(torch_roi,torch_ordinateur))
-    # for i, word in enumerate(w2v_model.wv.vocab):
-    #     if i == 10:
-    #         break
-    #     print(word)
-    try:
-        print(w2v_model.wv.similarity('pomme', 'pommes'))
-    except KeyError:
-        print("no this word")
