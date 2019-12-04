@@ -5,6 +5,7 @@ import csv
 import tempfile
 import gensim
 
+
 def lan_models():
     '''
     Le premier éteape s'est fait ici afin d'essayer 3 différents modèles de langage. Word2vec est effectué sur les textes importés.
@@ -28,7 +29,7 @@ def lan_models():
         #         with torch.no_grad():
         #             last_hidden_states.append(model(input_ids)[0])
 
-        with open('./contexte.txt','r') as txt_file:
+        with open('./contexte.txt', 'r') as txt_file:
             line = txt_file.readlines()
             for paragraphe in line:
                 input_ids = torch.tensor([tokenizer.encode(paragraphe, add_special_tokens=True)])
@@ -37,9 +38,10 @@ def lan_models():
                     print(line, '>>>to vector>>>', model(input_ids)[0], '\n')
 
     return last_hidden_states
-        # with open('./contexte_encodage_'+pretrained_weight+'.json', "w") as json_f:
-        #     for vector in last_hidden_states:
-        #         json.dump(vector, json_f)
+    # with open('./contexte_encodage_'+pretrained_weight+'.json', "w") as json_f:
+    #     for vector in last_hidden_states:
+    #         json.dump(vector, json_f)
+
 
 def model():
     '''
@@ -52,8 +54,7 @@ def model():
         tokenizer = tokenizer_class.from_pretrained(pretrained_weight)
         model = model_class.from_pretrained(pretrained_weight)
 
-
-        with open('./contexte.txt','r') as txt_file:
+        with open('./contexte.txt', 'r') as txt_file:
             line = txt_file.readlines()
             for paragraphe in line:
                 input_ids = torch.tensor([tokenizer.encode(paragraphe, add_special_tokens=False)])
@@ -66,7 +67,7 @@ def model():
 
 if __name__ == '__main__':
     # model()
-    model_path = 'frwiki.gensim'
+    model_path = '../models/frwiki.gensim'
     w2v_model = gensim.models.Word2Vec.load(model_path)
 
     # torch_roi = torch.FloatTensor(w2v_model.wv['roi'])
@@ -77,6 +78,6 @@ if __name__ == '__main__':
     #         break
     #     print(word)
     try:
-        print(w2v_model.wv.similarity('pomme','pommes'))
+        print(w2v_model.wv.similarity('pomme', 'pommes'))
     except KeyError:
         print("no this word")
