@@ -108,3 +108,7 @@ venv.bak/
 
 # SublimeText stuff
 *.sublime*
+
+# Downloadable data
+models
+!models/__init__.py
