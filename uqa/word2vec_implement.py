@@ -8,14 +8,11 @@ from textformatting import *
 from spacywrapper import SpacyFrenchModelWrapper
 from baselinemethods import preprocessor
 import distances
-import data
-import models
+from data import DATA_PATH
+from models import MODELS_PATH
 
 contracted_articles = {"l'", "d'", "s'", "j'", "t'", "m'", "n'", "t"}
 stopwords = nltk_stopwords.words('french') + list(punctuation) + list(contracted_articles)
-
-DATA_PATH = path.dirname(data.__file__)
-MODELS_PATH = path.dirname(models.__file__)
 
 
 def isNumber(string):
@@ -79,5 +76,9 @@ if __name__ == '__main__':
     context2vec, question2vec = word2vec(json_file_path, model_path)
     print("Done !")
     # print(context2vec[0], context2vec[0][0])
-    print(np.array([[distances.minimal_assignment_cosine(question, context) for context in context2vec]
-                    for question in question2vec]))
+    cost_mat = np.array([[distances.minimal_assignment_cosine(question, context) for context in context2vec]
+                         for question in question2vec])
+    print("Cost matrix:")
+    print(cost_mat)
+    print("Predictions:")
+    print(np.argmin(cost_mat, axis=0))

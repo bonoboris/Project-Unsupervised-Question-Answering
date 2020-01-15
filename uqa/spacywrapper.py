@@ -1,7 +1,7 @@
 import spacy
 
 
-class LazySpacyNlpModel(object):
+class _LazySpacyNlpModel(object):
     """Lazy loading """
 
     def __init__(self, name):
@@ -27,7 +27,7 @@ class LazySpacyNlpModel(object):
 
 
 class SpacyFrenchModelWrapper(object):
-    model = LazySpacyNlpModel("fr_core_news_md")
+    model = _LazySpacyNlpModel("fr_core_news_md")
 
     @classmethod
     def tokenize(cls, sentence, stopwords=list()):
@@ -35,7 +35,11 @@ class SpacyFrenchModelWrapper(object):
 
     @classmethod
     def stem(cls, sentence, stopwords=list()):
-        return [token.lemma_ for token in cls.model(sentence, ) if token.text not in stopwords]
+        return [token.lemma_ for token in cls.model(sentence) if token.text not in stopwords]
+
+    @classmethod
+    def ner(cls, sentence):
+        return [token.tag_ for token in cls.model(sentence)]
 
 
 def main():

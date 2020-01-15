@@ -110,5 +110,5 @@ venv.bak/
 *.sublime*
 
 # Downloadable data
-models
-!models/__init__.py
+uqa/models/*
+!uqa/models/*.py

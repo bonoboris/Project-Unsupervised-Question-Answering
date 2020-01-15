@@ -9,12 +9,11 @@ from sklearn.metrics import pairwise
 from spacywrapper import SpacyFrenchModelWrapper
 from string import punctuation
 from textformatting import read_json
-import data
+from data import DATA_PATH
+
 
 contracted_articles = {"l'", "d'", "s'", "j'", "t'", "m'", "n'"}
 stopwords = nltk_stopwords.words('french') + list(punctuation) + list(contracted_articles)
-
-DATA_PATH = path.dirname(data.__file__)
 
 
 def preprocessor(string):
@@ -99,6 +98,7 @@ def main():
         lambda sentence: SpacyFrenchModelWrapper.stem(sentence, stopwords)
     )
     spacy_contexts_tfidf_mat, spacy_questions_tfidf_mat, spacy_tfidf_features_names = spacy_res
+    print("Prediction")
     print(match_questions_to_contexts(spacy_contexts_tfidf_mat, spacy_questions_tfidf_mat))
 
 
