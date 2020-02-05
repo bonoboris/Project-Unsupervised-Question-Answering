@@ -4,10 +4,10 @@ import re
 import numpy as np
 from string import punctuation
 from nltk.corpus import stopwords as nltk_stopwords
-from textformatting import *
-from spacywrapper import SpacyFrenchModelWrapper
-from baselinemethods import preprocessor
-import distances
+from uqa.textformatting import *
+from uqa.spacywrapper import SpacyFrenchModelWrapper
+from uqa.baselinemethods import preprocessor
+import uqa.distances
 from data import DATA_PATH
 from models import MODELS_PATH
 
@@ -76,7 +76,7 @@ if __name__ == '__main__':
     context2vec, question2vec = word2vec(json_file_path, model_path)
     print("Done !")
     # print(context2vec[0], context2vec[0][0])
-    cost_mat = np.array([[distances.minimal_assignment_cosine(question, context) for context in context2vec]
+    cost_mat = np.array([[uqa.distances.minimal_assignment_cosine(question, context) for context in context2vec]
                          for question in question2vec])
     print("Cost matrix:")
     print(cost_mat)
