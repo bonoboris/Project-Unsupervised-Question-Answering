@@ -105,3 +105,10 @@ venv.bak/
 
 # PyCharm stuff
 .idea/
+
+# SublimeText stuff
+*.sublime*
+
+# Downloadable data
+uqa/models/*
+!uqa/models/*.py
