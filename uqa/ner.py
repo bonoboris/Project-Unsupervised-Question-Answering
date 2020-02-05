@@ -103,7 +103,7 @@ def ner_gen(json_file_it):
                 print(f"Context {num_context} with id {json_context['id_context']}")
                 doc = next(docs_it)
                 print(doc.text)
-                json_context["ents"] = doc.to_json()["ents"]
+                json_context["entities"] = doc.to_json()["ents"]
         yield json_file
 
 
