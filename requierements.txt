@@ -1,0 +1,11 @@
+--find-links https://download.pytorch.org/whl/torch_stable.html 
+Cython
+gensim
+nltk
+numpy
+sacremoses
+sklearn
+spacy
+torch==1.3.1
+torchvision>=0.4.2
+transformers
