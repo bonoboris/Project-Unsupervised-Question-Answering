@@ -112,3 +112,4 @@ venv.bak/
 # Downloadable data
 uqa/models/*
 !uqa/models/*.py
+uqa/data/ner_json/*
