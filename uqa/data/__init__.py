@@ -30,6 +30,17 @@ def json_loader(dirpath):
                     yield filepath, doc
 
 
+def find_json_files(dirpath):
+    for subdirpath, _, files in os.walk(dirpath):
+        for filename in files:
+            if path.splitext(filename)[1] == ".json":
+                filepath = path.join(subdirpath, filename)
+                yield filepath
+
+def count_json_files(dirpath):
+    return len(list(find_json_files(dirpath)))
+
+
 def json_loader_shuffle(dirpath):
     """Explore folder `dirpath` yield any *.json file content and path in a random order.
 
@@ -57,7 +68,7 @@ def json_loader_shuffle(dirpath):
             yield filepath, doc
 
 
-def json_dumper(docs_it):
+def json_dumper(docs_it, override=False):
     """Dump json document iterator.
 
     Args
@@ -68,6 +79,11 @@ def json_dumper(docs_it):
         path of the saved file
     """
     for doc, fpath in docs_it:
+        subdirpath = path.dirname(fpath)
+        if not path.exists(subdirpath):
+            os.makedirs(subdirpath)
+        if not override and path.exists(fpath):
+            raise FileExistsError(f"File {fpath} already exist, set argument `override` to True to override existing files.")
         with open(fpath, 'w', encoding='utf8') as file:
             json.dump(doc, file, ensure_ascii=False)
             yield fpath
