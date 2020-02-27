@@ -4,7 +4,6 @@ import json
 import csv
 import tempfile
 
-
 def lan_models():
     """
     The first step was done here to try 3 different language models. Word2vec is performed on imported texts.

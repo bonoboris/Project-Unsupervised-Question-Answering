@@ -8,7 +8,7 @@ class _LazySpacyNlpModel(object):
         self.name = name
         self._model = None
 
-    def __get__(self, obj, type_=None):
+    def __get__(self, obj, type_=None):  # pylint: disable=method-hidden
         if self._model is None:
             print(f"Loading Spacy model: {self.name}")
             self._model = spacy.load(self.name)
@@ -27,7 +27,7 @@ class _LazySpacyNlpModel(object):
 
 
 class SpacyFrenchModelWrapper(object):
-    model = _LazySpacyNlpModel("fr_core_news_md")
+    model: spacy.language.Language = _LazySpacyNlpModel("fr_core_news_md")
 
     @classmethod
     def tokenize(cls, sentence, stopwords=list()):

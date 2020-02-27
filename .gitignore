@@ -108,7 +108,9 @@ venv.bak/
 
 # SublimeText stuff
 *.sublime*
+.vscode/*
 
 # Downloadable data
 uqa/models/*
 !uqa/models/*.py
+uqa/data/ner_json/*

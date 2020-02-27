@@ -7,10 +7,12 @@ import os
 def wiki_extractor_parser():
     rootdir = 'wiki_dumps_fr'
     for subdir, dirs, files in os.walk(rootdir):
+        print(subdir, dirs)
         for file in files:
             path_file = os.path.join(subdir, file)
             with bz2.open(path_file, 'rb') as file:
                 list_json_documents = file.readlines()
+                file_json = list()
                 for string_json in list_json_documents:
                     # Getting the Parsed Json
                     string_json_decoded = string_json.decode(encoding='utf-8')
@@ -33,7 +35,8 @@ def wiki_extractor_parser():
                         'title': wiki_article_json['title'],
                         'contexts': final_contexts
                     }
-                    yield final_json_list
+                    file_json.append(final_json_list)
+                yield path_file, file_json
 
 
 if __name__ == '__main__':

@@ -6,5 +6,5 @@ setup(name='projectUQA',
       author='Tronch Boris, Lu Jiahao, Churet Quentin',
       author_email='quentin.churet@student.ecp.fr, boris.tronch@student.ecp.fr, jiahao.lu@student.ecp.fr',
       url='https://github.com/bonoboris/Project-Unsupervised-Question-Answering',
-      packages=['uqa', 'uqa.data'],
+      packages=['uqa', 'uqa.data'], requires=['transformers']
       )
