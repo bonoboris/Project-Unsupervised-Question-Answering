@@ -114,3 +114,6 @@ venv.bak/
 uqa/models/*
 !uqa/models/*.py
 uqa/data/ner_json/*
+
+# Quality Article
+uqa/extract_quality_article/list_articles.pickle
