@@ -1,7 +1,24 @@
 import random as rd
-from typing import Sequence, Callable, TypeVar, Generator, Optional, Tuple, Iterable
+from typing import Sequence, Callable, TypeVar, Generator, Optional, Tuple, Iterable, Generic, List
 
-T = TypeVar('T')
+
+T = TypeVar("T")
+PredicateT = Callable[[T], bool]
+
+
+def find(seq: Sequence[T], pred=PredicateT) -> int:
+    for i, el in enumerate(seq):
+        if pred(el): return i
+    return -1
+
+
+def find_all(seq: Sequence[T], pred=PredicateT) -> List[int]:
+    ret = []
+    for i, el in enumerate(seq):
+        if pred(el): ret.append(i)
+    return ret
+
+
 def find_subseq(seq: Sequence[T], sub_seq: Sequence[T]) -> int:
     """Find the first occurence of sub_seq in seq, if found returns the index of the first element, else returns -1."""
     N = len(seq)
@@ -11,7 +28,6 @@ def find_subseq(seq: Sequence[T], sub_seq: Sequence[T]) -> int:
             return i
     return -1
 
-T = TypeVar('T')
 def first_segment_where(seq: Sequence[T], pred: Callable[[T], bool],
                         start:int=0, stop:Optional[int]=None) -> Tuple[Optional[int], Optional[int]]:
     """Returns the indexes of the first segment of `seq` where every element verify `pred`. If no elements verify `pred` returns -1, -1.
@@ -43,7 +59,6 @@ def first_segment_where(seq: Sequence[T], pred: Callable[[T], bool],
     return beg, end
 
 
-T = TypeVar('T')
 def rd_it(seq: Sequence[T]) -> Generator[T, None, None]:
     """Randomly iterate over the elements of `seq`."""
     n = len(seq)
@@ -53,7 +68,6 @@ def rd_it(seq: Sequence[T]) -> Generator[T, None, None]:
         yield seq[i]
 
 
-T = TypeVar('T')
 class Iterator(object):
     """Iterator class which cache current value, accessible in `current` attribute."""
     def __init__(self, iterator: Iterable[T]):

@@ -15,9 +15,9 @@ def json_loader(dirpath):
             the folder to explore
     Yields
     ------
-        json_content: dictionary
         path: str
             the path of json from which `json_content` is read.
+        json_content: dictionary
     """
     for subdirpath, _, files in os.walk(dirpath):
         for filename in files:
@@ -78,7 +78,7 @@ def json_dumper(docs_it, override=False):
     ------
         path of the saved file
     """
-    for doc, fpath in docs_it:
+    for fpath, doc in docs_it:
         subdirpath = path.dirname(fpath)
         if not path.exists(subdirpath):
             os.makedirs(subdirpath)
@@ -87,6 +87,13 @@ def json_dumper(docs_it, override=False):
         with open(fpath, 'w', encoding='utf8') as file:
             json.dump(doc, file, ensure_ascii=False)
             yield fpath
+
+
+def change_dir(docs_it, from_dir, to_dir):
+    """Replace from_dir to to_dir in docs_it first elements."""
+    for fpath, doc in docs_it:
+        new_fpath = fpath.replace(from_dir, to_dir)
+        yield new_fpath, doc
 
 
 def clean(docs_it):
