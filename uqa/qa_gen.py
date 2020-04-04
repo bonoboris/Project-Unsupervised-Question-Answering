@@ -60,7 +60,7 @@ def rule1(context: Context) -> Rule1_RT:
         idx = find_subseq([c.label for c in sent_const.children], ['NP-SUJ', 'VN', 'NP-ATS'])
         if idx > -1:
             np_subj = sent_const.children[idx]
-            ners = find_all(context.ner, lambda el: el in np_subj)
+            ners = find_all(context.ner, lambda entity: entity in np_subj)
             if len(ners) == 1:
                 ner_label = context.ner[ners[0]].copy(color="green")
                 children = [node.copy_no_child(color="magenta") for node in sent_const.children[idx: idx+3]]

@@ -2,6 +2,7 @@ import os
 from os import path
 import json
 import random as rd
+import pickle
 
 DATA_PATH = path.dirname(__file__)
 
@@ -28,6 +29,21 @@ def json_loader(dirpath):
                     doc = json.load(file)
                 if doc:
                     yield filepath, doc
+
+
+def pickle_loader(fpath):
+    """Load and yield a single file pickled dataset. """
+    with open(fpath, 'rb') as file:
+        content = pickle.load(file)
+    if content:
+        yield fpath, content
+
+
+def pickle_dumper(jsonlike_it):
+    for fpath, content in jsonlike_it:
+        with open(fpath, 'wb') as file:
+            pickle.dump(content, file)
+        yield fpath
 
 
 def find_json_files(dirpath):
