@@ -1,10 +1,12 @@
 import itertools
 import json
 from os import path, makedirs
+from encodings.utf_8 import decode, encode
 
 from spacywrapper import SpacyFrenchModelWrapper
+from tqdm import tqdm
 
-from data import DATA_PATH
+from data import DATA_PATH, count_contexts, pickle_loader, pickle_dumper
 from reading_wiki_dumps import wiki_extractor_parser
 
 test_data = [
@@ -101,10 +103,13 @@ def ner_gen(json_file_it):
     context_it = (context["text"] for _, json_file in json_file_it_copy for article in json_file for context in article["contexts"])
     docs_it = SpacyFrenchModelWrapper.model.pipe(context_it, disable=["parser", "tagger"])
     for file_path, json_file in json_file_it:
+        print(f"Processing file {file_path}")
+        tbar = tqdm(unit="contexts", total=count_contexts(json_file))
         for json_article in json_file:
             for json_context in json_article["contexts"]:
                 doc = next(docs_it)
                 json_context["entities"] = doc.to_json()["ents"]
+                tbar.update()
         yield file_path, json_file
 
 
@@ -125,5 +130,15 @@ def generate_ner_json():
             print("saved !")
 
 
+def ner_pickled(filepath):
+    for fpath, fcontent in ner_gen(pickle_loader(filepath)):
+        dirpath, filename = path.split(fpath)
+        name, ext = path.splitext(filename)
+        new_fpath = path.join(dirpath, f"{name}_ner{ext}")
+        yield new_fpath, fcontent
+
+
 if __name__ == '__main__':
-    generate_ner_json()
+    filepath = path.join(DATA_PATH, "good_articles_small.pickle")
+    for fpath in pickle_dumper(ner_pickled(filepath)):
+        print("Saved {fpath}")

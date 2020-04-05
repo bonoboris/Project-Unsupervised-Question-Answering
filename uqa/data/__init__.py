@@ -3,6 +3,7 @@ from os import path
 import json
 import random as rd
 import pickle
+from encodings import utf_8
 
 DATA_PATH = path.dirname(__file__)
 
@@ -34,7 +35,7 @@ def json_loader(dirpath):
 def pickle_loader(fpath):
     """Load and yield a single file pickled dataset. """
     with open(fpath, 'rb') as file:
-        content = pickle.load(file)
+        content = pickle.load(file, encoding='utf8')
     if content:
         yield fpath, content
 
@@ -42,7 +43,7 @@ def pickle_loader(fpath):
 def pickle_dumper(jsonlike_it):
     for fpath, content in jsonlike_it:
         with open(fpath, 'wb') as file:
-            pickle.dump(content, file)
+            pickle.dump(content, file, encoding='utf8')
         yield fpath
 
 
@@ -110,6 +111,16 @@ def change_dir(docs_it, from_dir, to_dir):
     for fpath, doc in docs_it:
         new_fpath = fpath.replace(from_dir, to_dir)
         yield new_fpath, doc
+
+
+def count_articles(jsonlike) -> int:
+    """Count number of article in a jsonlike array, where each element is an article."""
+    return len(jsonlike)
+
+
+def count_contexts(json_articles_ds) -> int:
+    """Count number of contexts in a jsonlike array, with standard structure."""
+    return sum((len(article["contexts"]) for article in json_articles_ds))
 
 
 def clean(docs_it):
