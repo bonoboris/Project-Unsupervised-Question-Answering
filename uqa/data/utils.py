@@ -43,7 +43,7 @@ def pickle_loader(fpath):
 def pickle_dumper(jsonlike_it):
     for fpath, content in jsonlike_it:
         with open(fpath, 'wb') as file:
-            pickle.dump(content, file, encoding='utf8')
+            pickle.dump(content, file)
         yield fpath
 
 
