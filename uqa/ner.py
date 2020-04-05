@@ -6,7 +6,7 @@ from encodings.utf_8 import decode, encode
 from spacywrapper import SpacyFrenchModelWrapper
 from tqdm import tqdm
 
-from data import DATA_PATH, count_contexts, pickle_loader, pickle_dumper
+from data import DATA_PATH, count_contexts, pickle_loader, pickle_dumper, add_suffix
 from reading_wiki_dumps import wiki_extractor_parser
 
 test_data = [
@@ -140,5 +140,5 @@ def ner_pickled(filepath):
 
 if __name__ == '__main__':
     filepath = path.join(DATA_PATH, "good_articles_small.pickle")
-    for fpath in pickle_dumper(ner_pickled(filepath)):
+    for fpath in pickle_dumper(add_suffix(ner_gen(pickle_loader(filepath)), "_ner")):
         print("Saved {fpath}")
