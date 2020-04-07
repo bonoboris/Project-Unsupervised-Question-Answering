@@ -4,12 +4,53 @@ import json
 import random as rd
 import pickle
 from encodings import utf_8
+from itertools import chain
 
 DATA_PATH = path.dirname(__file__)
 
+def json_discover(dirpath):
+    """Explore folder `dirpath` yield any *.json file path.
+
+    Args
+    ----
+        dirpath: Path-like
+            the folder to explore
+    Yields
+    ------
+        path: str
+            the path of json from which `json_content` is read.
+    """
+    for subdirpath, _, files in os.walk(dirpath):
+        for filename in files:
+            if path.splitext(filename)[1] == ".json":
+                yield path.join(subdirpath, filename)
+
+
+def json_opener(path_it):
+    """Open and yield json file from `path_it`.
+
+    Args
+    ----
+        path_it: Iterable[Path-like]
+            the files paths to open  
+    Yields
+    ------
+        path: str
+            the path of json from which `json_content` is read.
+        json_content: dictionary
+    """
+    for filepath in path_it:
+        doc = None
+        with open(filepath, 'r') as file:
+            doc = json.load(file)
+        if doc:
+            yield filepath, doc
+        else:
+            print(f"Unable to read {filepath}")
+
 
 def json_loader(dirpath):
-    """Explore folder `dirpath` yield any *.json file content and path.
+    """Explore folder `dirpath` yield any *.json file path and content.
 
     Args
     ----
@@ -21,15 +62,7 @@ def json_loader(dirpath):
             the path of json from which `json_content` is read.
         json_content: dictionary
     """
-    for subdirpath, _, files in os.walk(dirpath):
-        for filename in files:
-            if path.splitext(filename)[1] == ".json":
-                filepath = path.join(subdirpath, filename)
-                doc = None
-                with open(filepath, 'r') as file:
-                    doc = json.load(file)
-                if doc:
-                    yield filepath, doc
+    yield from json_opener(json_discover(dirpath))
 
 
 def pickle_loader(fpath):
@@ -104,6 +137,14 @@ def json_dumper(docs_it, override=False):
         with open(fpath, 'w', encoding='utf8') as file:
             json.dump(doc, file, ensure_ascii=False)
             yield fpath
+
+
+def change_last_dir(input_path:str, new_dirname:str):
+    dirs = input_path.split("/")
+    if dirs[-1] == "":
+        return "/".join(chain(dirs[:-2], (new_dirname, "")))
+    else:
+        return "/".join(chain(dirs[:-1], (new_dirname,)))
 
 
 def change_dir(docs_it, from_dir, to_dir):

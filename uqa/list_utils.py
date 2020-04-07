@@ -5,6 +5,10 @@ from typing import Sequence, Callable, TypeVar, Generator, Optional, Tuple, Iter
 T = TypeVar("T")
 PredicateT = Callable[[T], bool]
 
+def split_chunks(seq: Sequence[T], n:int) -> Iterable[List[T]]:
+    """Return an iterator with `n` chunks of `seq` elements with approximatly the same size."""
+    k, m = divmod(len(seq), n)
+    return (seq[i * k + min(i, m):(i + 1) * k + min(i + 1, m)] for i in range(n))
 
 def find(seq: Sequence[T], pred=PredicateT) -> int:
     for i, el in enumerate(seq):

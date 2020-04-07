@@ -138,7 +138,36 @@ def ner_pickled(filepath):
         yield new_fpath, fcontent
 
 
+from argparse import ArgumentParser
+job_array_parser = ArgumentParser(
+    description="""Launch named entity recognition as a job array, each job will handle a part of the work.
+                This only work for multifile database.""")
+job_array_parser.add_argument("job_index", type=int, help="The job index")
+job_array_parser.add_argument("num_jobs", type=int, help="The total number of jobs")
+job_array_parser.add_argument("dirpath", type=str, help="The directory containing the dataset")
+job_array_parser.add_argument("output_dirname", type=str, nargs="?", help="(Optional) The output directory name, if left empty the output dir name will be the input directoty name followed by '_ner'.")
+job_array_parser.add_argument("-O","--override", type=bool, default=False, help="[default: False] Override existing output file. If false, raise an error if tryign to override existing file.")
+
+
 if __name__ == '__main__':
+    from data import json_discover, json_opener, json_dumper, add_suffix, change_dir, change_last_dir
+    from list_utils import split_chunks
+
+    args = job_array_parser.parse_args()
+    files = list(sorted(json_discover(args.dirpath)))
+    files_chunk = list(split_chunks(files, args.num_jobs))[args.job_index]
+    dirname = args.dirpath.rstrip("/").split("/")[-1]
+    if args.output_dirname:
+        out_dirname = args.output_dirname
+    else:
+        out_dirname = dirname + '_ner'
+    out_dirpath = change_last_dir(args.dirpath, out_dirname)
+
+    for fpath in json_dumper(change_dir(ner_gen(json_opener(files_chunk)), args.dirpath, out_dirpath), override=args.override):
+        print(f"Saved {fpath}")
+    exit()
+
+
     filepath = path.join(DATA_PATH, "good_articles_small.pickle")
     for fpath in pickle_dumper(add_suffix(ner_gen(pickle_loader(filepath)), "_ner")):
-        print("Saved {fpath}")
+        print(f"Saved {fpath}")
