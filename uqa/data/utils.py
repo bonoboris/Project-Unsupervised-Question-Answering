@@ -149,9 +149,13 @@ def change_last_dir(input_path:str, new_dirname:str):
 
 def change_dir(docs_it, from_dir, to_dir):
     """Replace from_dir to to_dir in docs_it first elements."""
-    for fpath, doc in docs_it:
-        new_fpath = fpath.replace(from_dir, to_dir)
-        yield new_fpath, doc
+    for el in docs_it:
+        if isinstance(el, str):
+            yield el.replace(from_dir, to_dir)
+        else:
+            fpath, *others = el
+            new_fpath = fpath.replace(from_dir, to_dir)
+            yield (new_fpath,) + tuple(others)
 
 def add_suffix(docs_it, suffix):
     """Add `suffix` to the file names before the extension."""
@@ -184,3 +188,11 @@ def clean(docs_it):
                     print(f"article: {article['title']} [{article['id_doc']}]")
                     print(f"context: {cont['id_context']}")
                     print(f"\t {matchs}")
+
+if __name__ == "__main__":
+    it = (("foo/01", 0, 1), ("foo/02", 0, 1), ("foo/03", 5, "baz"))
+    it2 = ("foo/01", "foo/02", "foo/03")
+    it3 = (("foo/01",), ("foo/02",), ("foo/03",))
+    for el in change_dir(it2, "foo", "bar"):
+        print(el)
+

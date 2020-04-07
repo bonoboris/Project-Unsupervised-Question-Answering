@@ -42,18 +42,23 @@ def constituency_context(context_it: Iterable[Context]):
 def constituency_fcontent(fcontent):
     """Must add BeneparComponent to the pipe prior to the function call"""
     for article in fcontent:
-        for context in tqdm(article["contexts"], unit="context"):
+        print(f"Processing article {article['id_article']}")
+        for context in article["contexts"]:
             spacy_doc = Model.model(context["text"], disable=["ner", "tagger"])
             consts_json = [span_to_node(sent).to_json() for sent in spacy_doc.sents]
             context["constituency"] = consts_json
     return fcontent
 
+import sys
+
 def constituency_json(json_file_it: Iterable[Tuple[str, JsonT]]):
     Model.model.add_pipe(BeneparComponent("benepar_fr"))
-    for fpath, fcontent in tqdm(json_file_it, unit="file"):
+    for fpath, fcontent in json_file_it:
         print(f"Processing {fpath}")
-        yield fpath, constituency_fcontent(fcontent)
-
+        try:
+            yield fpath, constituency_fcontent(fcontent)
+        except Exception as e:
+            sys.stderr.write(f"Error while processing {fpath}:\n{repr(e)}\n{sys.exc_info()}\n{e}")
 
 def mp_consituency(dirpath, new_dir, max_workers=8):
     dirs = dir_path.split("/")
@@ -146,14 +151,23 @@ if __name__ == "__main__":
     from list_utils import split_chunks
 
     args = job_array_parser.parse_args()
-    files = list(sorted(json_discover(args.dirpath)))
-    files_chunk = list(split_chunks(files, args.num_jobs))[args.job_index]
+
     dirname = args.dirpath.rstrip("/").split("/")[-1]
+    files = list(sorted(json_discover(args.dirpath)))
     if args.output_dirname:
         out_dirname = args.output_dirname
     else:
         out_dirname = dirname + '_const'
     out_dirpath = change_last_dir(args.dirpath, out_dirname)
+
+    unprocessed = []
+    for in_fpath, out_fpath in zip(files, change_dir(files, args.dirpath, out_dirpath)):
+        if not path.exists(out_fpath):
+            unprocessed.append(in_fpath)
+
+    files_chunk = list(split_chunks(unprocessed, args.num_jobs))[args.job_index]
+
+    print("Processing:", files_chunk)
 
     for fpath in json_dumper(change_dir(constituency_json(json_opener(files_chunk)), args.dirpath, out_dirpath), override=args.override):
         print(f"Saved {fpath}")

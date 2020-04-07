@@ -169,25 +169,6 @@ def split(jsonfile_it, data_subdir:str, filename_template:str, num_article_per_s
 
 if __name__ == "__main__":
     from utils import json_loader
-    dirpath = "uqa/data/ga_json_small"
-    def small(dir_path):
-        for fpath, fcontent in json_loader(dirpath):
-            fcontent = fcontent[:2]
-            for art in fcontent:
-                art["contexts"] = art["contexts"][:2]
-            yield fpath, fcontent
-    for fpath in json_dumper(small(dirpath), override=True):
-        print(fpath)
-    exit()
-
-
-    # filepath = "uqa/data/good_articles.pickle"
-    # _, fcontent = next(pickle_loader(filepath))
-    # txt = fcontent[0]["contexts"][0]["text"].encode().decode("utf8")
-    # print(txt)
-    # print(clean_text(txt))
-
-    # exit()
 
     print("--- CLEAN ---")
     filepath = "uqa/data/good_articles.pickle"
@@ -200,6 +181,6 @@ if __name__ == "__main__":
         print("Saved", fpath)
 
     print("--- SPLIT ---")
-    filepath = "uqa/data/good_articles_clean.pickle"
+    filepath = "uqa/data/good_articles_clean_filter.pickle"
     for fpath in json_dumper(split(pickle_loader(filepath), "ga_json", "ga_{:03d}.json"), override=True):
         print("Saved", fpath)
