@@ -165,6 +165,10 @@ def split(jsonfile_it, data_subdir:str, filename_template:str, num_article_per_s
                 num += 1
                 new_fcontent = list()
             new_fcontent.append(article)
+    # Yield last if not empty
+    if new_fcontent:
+        new_fpath = path.join(dir_path, filename_template.format(num))
+        yield new_fpath, new_fcontent
 
 
 if __name__ == "__main__":

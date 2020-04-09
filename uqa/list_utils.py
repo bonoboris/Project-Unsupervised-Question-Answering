@@ -25,12 +25,28 @@ def find_all(seq: Sequence[T], pred=PredicateT) -> List[int]:
 
 def find_subseq(seq: Sequence[T], sub_seq: Sequence[T]) -> int:
     """Find the first occurence of sub_seq in seq, if found returns the index of the first element, else returns -1."""
+    seq = tuple(seq)
+    sub_seq = tuple(sub_seq)
     N = len(seq)
     n = len(sub_seq)
     for i in range(N - n + 1):
         if seq[i : i+n] == sub_seq:
             return i
     return -1
+
+
+def find_subseq_spaced(seq: Sequence[T], sub_seq: Sequence[T]) -> List[int]:
+    """If `seq` contains all `sub_seq` elements in the same order, returns the indices of the query elements of the first match in the sequence,
+    else returns an empty list."""
+    fseq = [[i, el] for i, el in enumerate(seq) if el in sub_seq]
+    if not fseq: return []
+    fseq_idx, fseq_els = list(zip(*fseq))  # transpose
+    i = find_subseq(fseq_els, sub_seq)
+    if i > -1:
+        return list(fseq_idx[i: i+len(sub_seq)])
+    else:
+        return []
+
 
 def first_segment_where(seq: Sequence[T], pred: Callable[[T], bool],
                         start:int=0, stop:Optional[int]=None) -> Tuple[Optional[int], Optional[int]]:
@@ -87,19 +103,6 @@ class Iterator(object):
 
 
 if __name__ == "__main__":
-    l = "A B C D E F".split()
+    l = "a b c d a b c d e f".split()
     print(l)
-    assert find_subseq(l, "C D".split()) == 2
-    assert find_subseq(l, "D C".split()) == -1
-    assert find_subseq(l, "A B C".split()) == 0
-    assert find_subseq(l, "F".split()) == 5
-
-    print(find_subseq(["NP-SUJ", "VN", "NP-ATS"], ["NP-SUJ", "VN", "NP-ATS"]))
-
-    import random as rd
-    l = rd.choices([3, 6, 1], k=4)
-    i, j = first_segment_where(l, lambda el: el % 3 == 0)
-    print("i, j:", i, j)
-    print("".join(map(str, l)))
-    if i is not None and j is not None:
-        print(" "*(i) + "[" + " "*(j-i-1) + ")")
+    print(find_subseq_spaced(l, "j z".split()))

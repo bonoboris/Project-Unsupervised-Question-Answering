@@ -150,6 +150,13 @@ if __name__ == "__main__":
     from data import json_discover, json_opener, json_dumper, add_suffix, change_dir, change_last_dir
     from list_utils import split_chunks
 
+
+    fpath = path.join(DATA_PATH, "fsquad_ner.json")
+    for fpath in json_dumper(add_suffix(constituency_json(json_opener((fpath,))), "_const")):
+        print(f"Saved {fpath}")
+    exit()
+
+
     args = job_array_parser.parse_args()
 
     dirname = args.dirpath.rstrip("/").split("/")[-1]

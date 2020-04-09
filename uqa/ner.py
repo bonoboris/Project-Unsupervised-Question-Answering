@@ -142,8 +142,8 @@ from argparse import ArgumentParser
 job_array_parser = ArgumentParser(
     description="""Launch named entity recognition as a job array, each job will handle a part of the work.
                 This only work for multifile database.""")
-job_array_parser.add_argument("job_index", type=int, help="The job index")
-job_array_parser.add_argument("num_jobs", type=int, help="The total number of jobs")
+job_array_parser.add_argument("-i", "--index_job", type=int, help="The job index")
+job_array_parser.add_argument("-n", "--num_jobs", type=int, help="The total number of jobs")
 job_array_parser.add_argument("dirpath", type=str, help="The directory containing the dataset")
 job_array_parser.add_argument("output_dirname", type=str, nargs="?", help="(Optional) The output directory name, if left empty the output dir name will be the input directoty name followed by '_ner'.")
 job_array_parser.add_argument("-O","--override", type=bool, default=False, help="[default: False] Override existing output file. If false, raise an error if tryign to override existing file.")
@@ -153,6 +153,11 @@ if __name__ == '__main__':
     from data import json_discover, json_opener, json_dumper, add_suffix, change_dir, change_last_dir
     from list_utils import split_chunks
 
+    fpath = path.join(DATA_PATH, "fsquad.json")
+    for fpath in json_dumper(add_suffix(ner_gen(json_opener((fpath,))), "_ner")):
+        print(f"Saved {fpath}")
+    exit()
+    
     args = job_array_parser.parse_args()
     files = list(sorted(json_discover(args.dirpath)))
     files_chunk = list(split_chunks(files, args.num_jobs))[args.job_index]
@@ -168,6 +173,6 @@ if __name__ == '__main__':
     exit()
 
 
-    filepath = path.join(DATA_PATH, "good_articles_small.pickle")
-    for fpath in pickle_dumper(add_suffix(ner_gen(pickle_loader(filepath)), "_ner")):
-        print(f"Saved {fpath}")
+    # filepath = path.join(DATA_PATH, "good_articles_small.pickle")
+    # for fpath in pickle_dumper(add_suffix(ner_gen(pickle_loader(filepath)), "_ner")):
+    #     print(f"Saved {fpath}")

@@ -1,16 +1,16 @@
 """Imporved context data structures."""
 
-from typing import Dict, Any, NamedTuple, List, Generator, Iterable, Union, Optional, Tuple
+from typing import Dict, Any, NamedTuple, List, Generator, Iterable, Union, Optional, Tuple, Text
 from collections import OrderedDict
 import math
 import json
 import copy as cp
+import random as rd
 
 from colorama import Fore
 
 from data import DATA_PATH, json_loader, json_dumper
 from os import path
-
 
 class SimpleRepr(object):
     """A mixin implementing a simple __repr__."""
@@ -204,7 +204,7 @@ class LabelNode(Label):
 
     def copy_no_child(self, **extras:Any) -> "LabelNode":
         """Copy this instance without any child, any keyword argument add / update entries in copy `extras` attribute."""
-        cop = cp.copy(self)
+        cop = cp.deepcopy(self)
         cop.children = list()
         for k,v in extras.items():
             cop.extras[k] = v
@@ -318,6 +318,18 @@ class Context(SimpleRepr):
     def set_color_hier(self, attr_name: str, colors: Optional[List[str]] = None) -> None:
         set_color_hier(getattr(self, attr_name), colors)
 
+    def header(self, color: Optional[Union[str, Tuple[str, str]]] = None) -> str:
+        """Returns a string with the file path in the first line and the article id, title and the context id in the second line."""
+        l1 = self.fpath + '\n'
+        l2 = f"{self.doc_id} - {self.doc_title} [{self.context_id}]\n"
+        if color is None:
+            return l1 + l2
+        elif isinstance(color, Text):
+            return colorize(l1 + l2, color)
+        else:
+            col1, col2 = color
+            return colorize(l1, col1) + colorize(l2, col2)
+
 
 def decorate_span(text_span: str, label: Label, template: str) -> str:
     """Decorate the whole text_span with label following the template. (label.start and label.end are ignored)"""
@@ -413,12 +425,12 @@ def decorate(text:str, labels:list, template:str ="[{label} {txt}]", autocolorin
     return _rec(0, len(labels), 0, len(text))
 
 
-def contextify(json_file_it: Iterable[Tuple[str, JsonT]]) -> Context:
+def contextify(json_file_it: Iterable[Tuple[str, JsonT]]) -> Generator[Context, None, None]:
     jcontext = dict()
     for fpath, json_content in json_file_it:
         jcontext["fpath"] = fpath
         for article in json_content:
-            jcontext["doc_id"] = article["id_doc"]
+            jcontext["doc_id"] = article["id_article"]
             jcontext["doc_title"] = article["title"]
             for para in article["contexts"]:
                 jcontext["context_id"]=para["id_context"]
@@ -428,7 +440,15 @@ def contextify(json_file_it: Iterable[Tuple[str, JsonT]]) -> Context:
                 yield Context.from_json(jcontext)
 
 
-def jsonify(context_it: Iterable[Context]) -> Generator[Tuple[str, JsonT], None, None]:
+def contextify_rd(json_file_it) -> Generator[Context, None, None]:
+    for el in json_file_it:
+        fcontexts = list(contextify((el,)))
+        rd.shuffle(fcontexts)
+        for context in fcontexts:
+            yield context
+
+
+def jsonify(context_it: Iterable[Context], exclude=()) -> Generator[Tuple[str, JsonT], None, None]:
     articles_dict = dict()
     cur_fpath = None
     for context in context_it:
