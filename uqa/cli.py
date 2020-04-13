@@ -118,10 +118,10 @@ def ner(dataloader: dataset.DataLoader, datadumper: dataset.DataDumper):
 
 
 @main.command()
-@cli_helpers.click_read_write_data
-def constituency(dataloader: dataset.DataLoader, datadumper: dataset.DataDumper):
+@click.option("--detailed", is_flag=True, help="Log article processing progression")
+def constituency(dataloader: dataset.DataLoader, datadumper: dataset.DataDumper, detailed: bool):
     """Constituency parsing."""
-    datadumper.save(constituency_.constituency_dl(dataloader))
+    datadumper.save(constituency_.constituency_dl(dataloader, detailed=detailed))
 
 
 @main.command()

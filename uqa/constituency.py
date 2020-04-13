@@ -44,10 +44,11 @@ def span_to_node(span: spacy.tokens.Span) -> context_utils.LabelNode:
 #         yield context
 
 
-def constituency(fcontent: dataset.TJson, model: spacy.language.Model) -> dataset.TJson:
+def constituency(fcontent: dataset.TJson, model: spacy.language.Model, detailed: bool = False) -> dataset.TJson:
     """Perform constituency parsing on a 'default' structure data collection."""
-    for article in fcontent:
-        print(f"Processing article {article['id_article']}")
+    for num_article, article in enumerate(fcontent):
+        if detailed:
+            logger.info(f"Processing article {num_article + 1} / {len(fcontent)}")
         for cont in article["contexts"]:
             spacy_doc = model(cont["text"])
             consts_json = [span_to_node(sent).to_json() for sent in spacy_doc.sents]
@@ -55,7 +56,9 @@ def constituency(fcontent: dataset.TJson, model: spacy.language.Model) -> datase
     return fcontent
 
 
-def constituency_dl(data_it: dataset.DataIterable, model_name: str = "fr_core_news_md") -> dataset.DataIterable:
+def constituency_dl(
+    data_it: dataset.DataIterable, model_name: str = "fr_core_news_md", detailed: bool = False
+) -> dataset.DataIterable:
     """Perform constituency parsing on a dataset."""
     logger.info("Loading spacy model for constituency parsing")
     model = spacy.load(model_name, disable=["tagger", "ner"])
@@ -65,6 +68,6 @@ def constituency_dl(data_it: dataset.DataIterable, model_name: str = "fr_core_ne
     logger.info("Benepar component added to the pipe")
     for fpath, fcontent in data_it:
         try:
-            yield fpath, constituency(fcontent, model)
+            yield fpath, constituency(fcontent, model, detailed=detailed)
         except Exception:  # pylint: disable=broad-except
             logger.exception(f"Error while processing {fpath}")

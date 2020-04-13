@@ -168,14 +168,14 @@ def click_split_params(func: Callable) -> Callable:
     as the keyword argument `datloader` and `datadumper`."""
 
     @functools.wraps(func)
-    def wrapper(dataformat, input_format, use_dir, src, output_format, override, dst, **kwargs):
+    def wrapper(dataformat, input_format, use_dir, src, output_format, override, dst, json_indent, **kwargs):
         _validate_params(use_dir, src)
         if use_dir:
             dataloader = DirDataLoader(src, input_format, dataformat)
         else:
             dataloader = FileDataLoader(src, input_format, dataformat)
 
-        datadumper = DataDumper(output_format, override=override)
+        datadumper = DataDumper(output_format, override=override, json_indent=json_indent)
         return func(dataloader=dataloader, datadumper=datadumper, dst=dst, **kwargs)
 
     decorated_func = click.argument("num", type=int, required=True)(_read_params(_write_params(wrapper)))
