@@ -1,14 +1,10 @@
 cython
 numpy
+click
+tabulate
+tqdm
 colorama
-gensim
 nltk
-sacremoses
-scikit-learn
 spacy
-tensorflow==1.15.2
-torch
-torchvision
-transformers
 # Numpy and Cython must be installed before installing benepar
 benepar

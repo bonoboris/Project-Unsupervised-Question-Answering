@@ -1,194 +1,70 @@
-from collections import Counter
-from typing import Iterable, Tuple, Any
+"""Constituency parsing with benepar using spacy framework."""
 
-from benepar.spacy_plugin import BeneparComponent
-import spacy
-from tqdm import tqdm
-from tabulate import tabulate
-import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import logging
+import os
+
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 logging.getLogger("tensorflow").setLevel(logging.ERROR)
+
+# pylint: disable=wrong-import-position
+from benepar import spacy_plugin
+import spacy
 import tensorflow as tf
+
+from uqa import context_utils, dataset
+
+# pylint: enable=wrong-import-position
+
+
+logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
+
+# pylint: disable=useless-suppression
 try:
-    tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
+    tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)  # pylint: disable=no-member
 except AttributeError:
-    tf.logging.set_verbosity(tf.logging.ERROR)
-    pass
-
-from context import Context, LabelNode
-from spacywrapper import SpacyFrenchModelWrapper as Model
-
-JsonT = Any
+    tf.logging.set_verbosity(tf.logging.ERROR)  # pylint: disable=no-member
+# pylint: enable=useless-suppression
 
 
-def span_to_node(span: spacy.tokens.Span) -> LabelNode:
-    node = LabelNode(span.start_char, span.end_char, "|".join(span._.labels))
+def span_to_node(span: spacy.tokens.Span) -> context_utils.LabelNode:
+    """Recursively convert a spacy Span object with parsed consituency information into a context.LabelNode."""
+    node = context_utils.LabelNode(span.start_char, span.end_char, "|".join(span._.labels))
     node.children = [span_to_node(child) for child in span._.children]
     return node
 
 
-def constituency_context(context_it: Iterable[Context]):
-    Model.model.add_pipe(BeneparComponent("benepar_fr"))
-    for context in context_it:
-        spacy_doc = Model.model(context.text, disable=["ner", "tagger"])
-        consts = list()
-        for sent in spacy_doc.sents:
-            consts.append(span_to_node(sent))
-        context.constituents = consts
-        yield context
+# def constituency_context(context_it: Iterable[Context]):
+#     Model.model.add_pipe(BeneparComponent("benepar_fr"))
+#     for context in context_it:
+#         spacy_doc = Model.model(context.text, disable=["ner", "tagger"])
+#         consts = list()
+#         for sent in spacy_doc.sents:
+#             consts.append(span_to_node(sent))
+#         context.constituents = consts
+#         yield context
 
 
-def constituency_fcontent(fcontent):
-    """Must add BeneparComponent to the pipe prior to the function call"""
+def constituency(fcontent: dataset.TJson, model: spacy.language.Model) -> dataset.TJson:
+    """Perform constituency parsing on a 'default' structure data collection."""
     for article in fcontent:
         print(f"Processing article {article['id_article']}")
-        for context in article["contexts"]:
-            spacy_doc = Model.model(context["text"], disable=["ner", "tagger"])
+        for cont in article["contexts"]:
+            spacy_doc = model(cont["text"])
             consts_json = [span_to_node(sent).to_json() for sent in spacy_doc.sents]
-            context["constituency"] = consts_json
+            cont["constituency"] = consts_json
     return fcontent
 
-import sys
 
-def constituency_json(json_file_it: Iterable[Tuple[str, JsonT]]):
-    Model.model.add_pipe(BeneparComponent("benepar_fr"))
-    for fpath, fcontent in json_file_it:
-        print(f"Processing {fpath}")
+def constituency_dl(data_it: dataset.DataIterable, model_name: str = "fr_core_news_md") -> dataset.DataIterable:
+    """Perform constituency parsing on a dataset."""
+    logger.info("Loading spacy model for constituency parsing")
+    model = spacy.load(model_name, disable=["tagger", "ner"])
+    logger.info("Spacy model for constituency parsing loaded")
+    logger.info("Adding benepar component")
+    model.add_pipe(spacy_plugin.BeneparComponent("benepar_fr"))
+    logger.info("Benepar component added to the pipe")
+    for fpath, fcontent in data_it:
         try:
-            yield fpath, constituency_fcontent(fcontent)
-        except Exception as e:
-            sys.stderr.write(f"Error while processing {fpath}:\n{repr(e)}\n{sys.exc_info()}\n{e}")
-
-def mp_consituency(dirpath, new_dir, max_workers=8):
-    dirs = dir_path.split("/")
-    new_dir = path.join(*dirs[:-1], new_dir)
-    
-    def init(lock: Lock):
-        return
-        print("--- INIT ---")
-        with lock:
-            print("--- LOCKED ---")
-            Model.model.add_pipe(BeneparComponent("benepar_fr"))
-            print("--- UNLOCK ---")
-        print("--- INIT FINISHED ---")
-
-    def work(fpath):
-        print(f"Processing {fpath}")
-        return
-        fcontent = None
-        with open(fpath, 'r', encoding='utf8') as file:
-            fcontent = json.load(file.read())
-        new_fcontent = constituency_fcontent(fcontent)
-        sub_path = path.relpath(fpath, start=dir_path)
-        new_path = path.join(new_dir, sub_path)
-        with open(new_path, 'w', encoding='utf8') as file:
-            json.dump(new_fcontent, file)
-        print(f"Saved {new_path}")
-        return new_path
-    
-    def work_ce(fpath):
-        print("in work ce")
-        try:
-            work(fpath)
-        except Exception as e:
-            print(f"While processing {fpath}:\n{e}")
-            pass
-
-    all_path_it = json_discover(dirpath)
-    lock = Lock()
-    with ProcessPoolExecutor(max_workers=max_workers, initializer=init, initargs=(lock,)) as executor:
-        print('----- WORKING -----')
-        res = list(executor.map(work, all_path_it))
-    return res
-
-
-def len_context_test(json_file_it):
-    context_len_count = Counter()
-    for fpath, json_content in tqdm(json_file_it, unit="file"):
-        print(f"Processing file {fpath}")
-        for article in tqdm(json_content, unit='articles'):
-            for context in article["contexts"]:
-                context_len_count[len(context["text"])//10] += 1
-                if len(context["text"]) < 10:
-                    print(context)
-                    print()
-    return context_len_count
-
-
-def len_sent_test(json_file_it):
-    sent_len_count = Counter()
-    for fpath, json_content in tqdm(json_file_it, unit="file"):
-        print(f"Processing file {fpath}")
-        for article in tqdm(json_content, unit='articles'):
-            for context in article["contexts"]:
-                spacy_doc = Model.model(context["text"], disable=["ner", "tagger"])
-                for sent in spacy_doc.sents:
-                    sent_len_count[len(sent)] += 1
-    return sent_len_count
-
-
-from argparse import ArgumentParser
-job_array_parser = ArgumentParser(
-    description="""Launch named constituency parssing as a job array, each job will handle a part of the work.
-                This only work for multifile database.""")
-job_array_parser.add_argument("job_index", type=int, help="The job index")
-job_array_parser.add_argument("num_jobs", type=int, help="The total number of jobs")
-job_array_parser.add_argument("dirpath", type=str, help="The directory containing the dataset")
-job_array_parser.add_argument("output_dirname", type=str, nargs="?", help="(Optional) The output directory name, if left empty the output dir name will be the input directoty name followed by '_const'.")
-job_array_parser.add_argument("-O","--override", type=bool, default=False, help="[default: False] Override existing output file. If false, raise an error if trying to override existing file.")
-
-
-if __name__ == "__main__":
-    from data import DATA_PATH, json_loader, change_dir, json_dumper, pickle_loader, json_discover, json_opener
-    from os import path
-    from context import contextify, jsonify
-    from concurrent.futures import ProcessPoolExecutor
-    from multiprocessing import Lock
-    import json
-
-    from data import json_discover, json_opener, json_dumper, add_suffix, change_dir, change_last_dir
-    from list_utils import split_chunks
-
-
-    fpath = path.join(DATA_PATH, "fsquad_ner.json")
-    for fpath in json_dumper(add_suffix(constituency_json(json_opener((fpath,))), "_const")):
-        print(f"Saved {fpath}")
-    exit()
-
-
-    args = job_array_parser.parse_args()
-
-    dirname = args.dirpath.rstrip("/").split("/")[-1]
-    files = list(sorted(json_discover(args.dirpath)))
-    if args.output_dirname:
-        out_dirname = args.output_dirname
-    else:
-        out_dirname = dirname + '_const'
-    out_dirpath = change_last_dir(args.dirpath, out_dirname)
-
-    unprocessed = []
-    for in_fpath, out_fpath in zip(files, change_dir(files, args.dirpath, out_dirpath)):
-        if not path.exists(out_fpath):
-            unprocessed.append(in_fpath)
-
-    files_chunk = list(split_chunks(unprocessed, args.num_jobs))[args.job_index]
-
-    print("Processing:", files_chunk)
-
-    for fpath in json_dumper(change_dir(constituency_json(json_opener(files_chunk)), args.dirpath, out_dirpath), override=args.override):
-        print(f"Saved {fpath}")
-    exit()
-
-    
-    # dir_path = path.join(DATA_PATH, "ga_json_small")
-    # res = mp_consituency(dir_path, "ga_const_json_small", 2)
-
-    # print(len(res), "file saved")
-    # fpath = path.join(DATA_PATH, "good_articles.pickle")
-    # len_context_test(pickle_loader(fpath))
-
-    # dir_path = path.join(DATA_PATH, "ner_json")
-    # for saved_path in json_dumper(change_dir(constituency_json(json_loader(dir_path)), "ner_json", "test_const"), override=True):
-    #     print(saved_path)
-    
+            yield fpath, constituency(fcontent, model)
+        except Exception:  # pylint: disable=broad-except
+            logger.exception(f"Error while processing {fpath}")
