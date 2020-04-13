@@ -46,7 +46,7 @@ def _read_params(func: Callable, default_dataformat_only: bool = False) -> Calla
         decorated_func = click.option(
             "-df",
             "--dataformat",
-            type=click.Choice(["default", "fsquad"], case_sensitive=False),
+            type=click.Choice(["default", "fquad"], case_sensitive=False),
             default="default",
             help="Data structure",
         )(decorated_func)

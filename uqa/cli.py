@@ -8,7 +8,7 @@ import click
 from uqa import (
     logging_utils,
     dataset,
-    fsquad_utils,
+    fquad_utils,
     cli_helpers,
     stats as stats_,
     clean as clean_,
@@ -90,8 +90,8 @@ def clean(
 ):
     """Clean data."""
     data_it = dataloader
-    if dataloader.dataformat == "fsquad":
-        data_it = fsquad_utils.fsquad_to_default_dl(data_it)
+    if dataloader.dataformat == "fquad":
+        data_it = fquad_utils.fquad_to_default_dl(data_it)
     if "clean" in action:
         data_it = clean_.clean_dl(data_it)
     if "filter" in action:
@@ -128,4 +128,4 @@ def constituency(dataloader: dataset.DataLoader, datadumper: dataset.DataDumper)
 @cli_helpers.click_read_write_data
 def qas(dataloader: dataset.DataLoader, datadumper: dataset.DataDumper):
     """Natural question / answer genration."""
-    datadumper.save(fsquad_utils.default_to_squad_dl(qa_gen.generate_qas_dl(dataloader)))
+    datadumper.save(fquad_utils.default_to_squad_dl(qa_gen.generate_qas_dl(dataloader)))

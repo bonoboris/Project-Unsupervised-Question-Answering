@@ -1,4 +1,4 @@
-"""Fsquad data format related functions."""
+"""fquad data format related functions."""
 
 import logging
 
@@ -7,8 +7,8 @@ from uqa import dataset
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
-def fsquad_to_default(fcontent: dataset.TJson, base_article_id: int = 0, include_qas: bool = False) -> dataset.TJson:
-    """Convert a data file's content from fsquad format to 'default' format."""
+def fquad_to_default(fcontent: dataset.TJson, base_article_id: int = 0, include_qas: bool = False) -> dataset.TJson:
+    """Convert a data file's content from fquad format to 'default' format."""
     default_fcontent = list()
     for num_article, article in enumerate(fcontent["data"]):
         default_article = dict(title=article["title"], id_article=base_article_id + num_article, contexts=list())
@@ -21,17 +21,17 @@ def fsquad_to_default(fcontent: dataset.TJson, base_article_id: int = 0, include
     return default_fcontent
 
 
-def fsquad_to_default_dl(data_it: dataset.DataIterable) -> dataset.DataIterable:
-    """Convert a datset from fsquad format to 'default' format."""
+def fquad_to_default_dl(data_it: dataset.DataIterable) -> dataset.DataIterable:
+    """Convert a datset from fquad format to 'default' format."""
     num_article = 0
     for fpath, fcontent in data_it:
-        default_fcontent = fsquad_to_default(fcontent, num_article)
+        default_fcontent = fquad_to_default(fcontent, num_article)
         yield fpath, default_fcontent
         num_article += len(default_fcontent)
 
 
 def default_to_squad(fcontent: dataset.TJson, version: str = "0.1") -> dataset.TJson:
-    """Convert a data file's content from fsquad format to 'default' format."""
+    """Convert a data file's content from fquad format to 'default' format."""
     qa_count = 0
     data = list()
     for article in fcontent:

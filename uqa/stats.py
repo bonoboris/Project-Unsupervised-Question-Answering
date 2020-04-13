@@ -21,7 +21,7 @@ def stats(fcontent, dataformat="default") -> TCounter[str]:
     if dataformat == "default":
         counts["articles"] = len(fcontent)
         counts["contexts"] = sum((len(art["contexts"]) for art in fcontent))
-    elif dataformat == "fsquad":
+    elif dataformat == "fquad":
         data = fcontent["data"]
         counts["articles"] = len(data)
         for art in data:

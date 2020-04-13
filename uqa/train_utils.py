@@ -36,9 +36,9 @@ def validate(json_file_it):
 
 
 if __name__ == "__main__":
-    data_file = path.join(DATA_PATH, "fsquad_train.json")
+    data_file = path.join(DATA_PATH, "fquad_train.json")
     fpath, fcontent = next(convert_fquad_into_good_format(json_opener((data_file,))))
     base, filename = path.split(fpath)
-    new_fpath = path.join(base, "fsquad.json")
+    new_fpath = path.join(base, "fquad.json")
     for fpath in json_dumper(((new_fpath, fcontent),)):
         print(f"Saved {fpath}")
