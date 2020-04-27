@@ -1,0 +1,316 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>uqa.list_utils module &mdash; Unsupervised-Question-Answering 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="uqa.logging_utils module" href="uqa.logging_utils.html" />
+    <link rel="prev" title="uqa.fquad_utils module" href="uqa.fquad_utils.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Unsupervised-Question-Answering
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_formats.html">Data Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../models.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../workflow.html">Basic workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cli_usage.html">CLI Usage</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">API documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="uqa.html">uqa</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="uqa.html#main-featutes-processing-pipeline">Main featutes / processing pipeline:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="uqa.html#question-answer-generation-key-points">Question / answer generation key points</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="uqa.html#modules">Modules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="uqa.clean.html">uqa.clean module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.cli.html">uqa.cli module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.cli_helpers.html">uqa.cli_helpers module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.constituency.html">uqa.constituency module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.context_utils.html">uqa.context_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.dataset.html">uqa.dataset module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.download.html">uqa.download module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.fquad_utils.html">uqa.fquad_utils module</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">uqa.list_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.logging_utils.html">uqa.logging_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.ner.html">uqa.ner module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.qa_gen.html">uqa.qa_gen module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.reading_wiki_dumps.html">uqa.reading_wiki_dumps module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.show.html">uqa.show module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.split.html">uqa.split module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.stats.html">uqa.stats module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.validate.html">uqa.validate module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Unsupervised-Question-Answering</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="modules.html">API documentation</a> &raquo;</li>
+        
+          <li><a href="uqa.html">uqa</a> &raquo;</li>
+        
+      <li>uqa.list_utils module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/uqa.list_utils.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-uqa.list_utils">
+<span id="uqa-list-utils-module"></span><h1>uqa.list_utils module<a class="headerlink" href="#module-uqa.list_utils" title="Permalink to this headline">¶</a></h1>
+<p>Helper functions for list and iterables.</p>
+<dl class="py data">
+<dt id="uqa.list_utils.T">
+<code class="sig-prename descclassname">uqa.list_utils.</code><code class="sig-name descname">T</code><em class="property"> = ~T</em><a class="headerlink" href="#uqa.list_utils.T" title="Permalink to this definition">¶</a></dt>
+<dd><p>A generic type</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="uqa.list_utils.PredicateT">
+<code class="sig-prename descclassname">uqa.list_utils.</code><code class="sig-name descname">PredicateT</code><em class="property"> = typing.Callable[[~T], bool]</em><a class="headerlink" href="#uqa.list_utils.PredicateT" title="Permalink to this definition">¶</a></dt>
+<dd><p>A predicate over <a class="reference internal" href="#uqa.list_utils.T" title="uqa.list_utils.T"><code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code></a> type elements.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="uqa.list_utils.split_chunks">
+<code class="sig-prename descclassname">uqa.list_utils.</code><code class="sig-name descname">split_chunks</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seq</span><span class="p">:</span> <span class="n">Sequence<span class="p">[</span>T<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">n</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></span></em><span class="sig-paren">)</span> &#x2192; Iterable<span class="p">[</span>List<span class="p">[</span>T<span class="p">]</span><span class="p">]</span><a class="reference internal" href="../_modules/uqa/list_utils.html#split_chunks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.list_utils.split_chunks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator with <cite>n</cite> chunks of <cite>seq</cite> elements with approximatly the same size.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="uqa.list_utils.find">
+<code class="sig-prename descclassname">uqa.list_utils.</code><code class="sig-name descname">find</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seq</span><span class="p">:</span> <span class="n">Sequence<span class="p">[</span>T<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">pred</span><span class="o">=</span><span class="default_value">typing.Callable[[~ T], bool]</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a><a class="reference internal" href="../_modules/uqa/list_utils.html#find"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.list_utils.find" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the first element of <cite>seq</cite> which holds <code class="docutils literal notranslate"><span class="pre">True</span></code> for prdeicate`pred`
+and returns its index or -1 if none found.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="uqa.list_utils.find_all">
+<code class="sig-prename descclassname">uqa.list_utils.</code><code class="sig-name descname">find_all</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seq</span><span class="p">:</span> <span class="n">Sequence<span class="p">[</span>T<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">pred</span><span class="o">=</span><span class="default_value">typing.Callable[[~ T], bool]</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a><span class="p">]</span><a class="reference internal" href="../_modules/uqa/list_utils.html#find_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.list_utils.find_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find all elements of <cite>seq</cite> which hold <code class="docutils literal notranslate"><span class="pre">True</span></code> for predicate <cite>pred</cite> and returns their indices.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="uqa.list_utils.find_subseq">
+<code class="sig-prename descclassname">uqa.list_utils.</code><code class="sig-name descname">find_subseq</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seq</span><span class="p">:</span> <span class="n">Sequence<span class="p">[</span>T<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">sub_seq</span><span class="p">:</span> <span class="n">Sequence<span class="p">[</span>T<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a><a class="reference internal" href="../_modules/uqa/list_utils.html#find_subseq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.list_utils.find_subseq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the first occurence of <cite>sub_seq</cite> in <cite>seq</cite>, if found returns the index of the first element,
+else returns -1.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="uqa.list_utils.find_subseq_spaced">
+<code class="sig-prename descclassname">uqa.list_utils.</code><code class="sig-name descname">find_subseq_spaced</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seq</span><span class="p">:</span> <span class="n">Sequence<span class="p">[</span>T<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">sub_seq</span><span class="p">:</span> <span class="n">Sequence<span class="p">[</span>T<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a><span class="p">]</span><a class="reference internal" href="../_modules/uqa/list_utils.html#find_subseq_spaced"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.list_utils.find_subseq_spaced" title="Permalink to this definition">¶</a></dt>
+<dd><p>If the subsequence <cite>sub_seq</cite> can be derived from <cite>seq</cite> return the indices <cite>sub_seq</cite> elements in <cite>seq</cite>
+else return an empty list.</p>
+<p>A subsequence is derived from a sequence by removing 0 or more elements from the sequence
+without changing the order of the remaining elements.
+If multiple results are possible returns the smallest one in terms of indices.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="uqa.list_utils.first_segment_where">
+<code class="sig-prename descclassname">uqa.list_utils.</code><code class="sig-name descname">first_segment_where</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seq</span><span class="p">:</span> <span class="n">Sequence<span class="p">[</span>T<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">pred</span><span class="p">:</span> <span class="n">Callable<span class="p">[</span><span class="p">[</span>T<span class="p">]</span><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">start</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">stop</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>Optional<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a><span class="p">]</span><span class="p">, </span>Optional<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a><span class="p">]</span><span class="p">]</span><a class="reference internal" href="../_modules/uqa/list_utils.html#first_segment_where"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.list_utils.first_segment_where" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the indices of the first segment of <cite>seq</cite> where all elements verify <cite>pred</cite>.
+If no elements verify <cite>pred</cite> returns <code class="docutils literal notranslate"><span class="pre">(-1,</span> <span class="pre">-1)</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seq</strong> (<em>Sequence</em><em>[</em><em>T</em><em>]</em>) – Sequence of elements</p></li>
+<li><p><strong>pred</strong> (<em>PredicateT</em>) – Predicate on the elements of <cite>seq</cite>.</p></li>
+<li><p><strong>start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – Index of the first element to consider.</p></li>
+<li><p><strong>stop</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – Index of the last element to consider plus 1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>i, j</strong> (<em>Tuple[int, int]</em>) – If <cite>i</cite> and <cite>j</cite> are not -1, then <code class="docutils literal notranslate"><span class="pre">seq[i]</span></code> is the first element of <code class="docutils literal notranslate"><span class="pre">seq[start:stop]</span></code>
+for which <cite>pred</cite> returns <code class="docutils literal notranslate"><span class="pre">True</span></code> and <code class="docutils literal notranslate"><span class="pre">seq[j]</span></code> is the first element of <code class="docutils literal notranslate"><span class="pre">seq[i:stop]</span></code>
+for which <cite>pred</cite> returns <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="uqa.list_utils.rd_it">
+<code class="sig-prename descclassname">uqa.list_utils.</code><code class="sig-name descname">rd_it</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seq</span><span class="p">:</span> <span class="n">Sequence<span class="p">[</span>T<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Iterable<span class="p">[</span>T<span class="p">]</span><a class="reference internal" href="../_modules/uqa/list_utils.html#rd_it"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.list_utils.rd_it" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a shuffled shallow copy of <cite>seq</cite> and iterate over it.</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="uqa.logging_utils.html" class="btn btn-neutral float-right" title="uqa.logging_utils module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="uqa.fquad_utils.html" class="btn btn-neutral float-left" title="uqa.fquad_utils module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Boris Tronch, Quentin Churet, Jiahao Lu
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

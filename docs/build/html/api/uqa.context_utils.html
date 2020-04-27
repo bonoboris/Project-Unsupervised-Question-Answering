@@ -1,0 +1,744 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>uqa.context_utils module &mdash; Unsupervised-Question-Answering 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="uqa.dataset module" href="uqa.dataset.html" />
+    <link rel="prev" title="uqa.constituency module" href="uqa.constituency.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Unsupervised-Question-Answering
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_formats.html">Data Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../models.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../workflow.html">Basic workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cli_usage.html">CLI Usage</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">API documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="uqa.html">uqa</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="uqa.html#main-featutes-processing-pipeline">Main featutes / processing pipeline:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="uqa.html#question-answer-generation-key-points">Question / answer generation key points</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="uqa.html#modules">Modules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="uqa.clean.html">uqa.clean module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.cli.html">uqa.cli module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.cli_helpers.html">uqa.cli_helpers module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.constituency.html">uqa.constituency module</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">uqa.context_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.dataset.html">uqa.dataset module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.download.html">uqa.download module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.fquad_utils.html">uqa.fquad_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.list_utils.html">uqa.list_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.logging_utils.html">uqa.logging_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.ner.html">uqa.ner module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.qa_gen.html">uqa.qa_gen module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.reading_wiki_dumps.html">uqa.reading_wiki_dumps module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.show.html">uqa.show module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.split.html">uqa.split module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.stats.html">uqa.stats module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.validate.html">uqa.validate module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Unsupervised-Question-Answering</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="modules.html">API documentation</a> &raquo;</li>
+        
+          <li><a href="uqa.html">uqa</a> &raquo;</li>
+        
+      <li>uqa.context_utils module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/uqa.context_utils.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-uqa.context_utils">
+<span id="uqa-context-utils-module"></span><h1>uqa.context_utils module<a class="headerlink" href="#module-uqa.context_utils" title="Permalink to this headline">¶</a></h1>
+<p>Data classes.</p>
+<div class="line-block">
+<div class="line"><a class="reference internal" href="#uqa.context_utils.Context" title="uqa.context_utils.Context"><code class="xref py py-class docutils literal notranslate"><span class="pre">Context</span></code></a> class stores context’s raw text, processing steps outputs and meta data.</div>
+<div class="line"><a class="reference internal" href="#uqa.context_utils.Label" title="uqa.context_utils.Label"><code class="xref py py-class docutils literal notranslate"><span class="pre">Label</span></code></a> class stores any extra information about a span of text.</div>
+<div class="line"><a class="reference internal" href="#uqa.context_utils.LabelNode" title="uqa.context_utils.LabelNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">LabelNode</span></code></a> class extends <a class="reference internal" href="#uqa.context_utils.Label" title="uqa.context_utils.Label"><code class="xref py py-class docutils literal notranslate"><span class="pre">Label</span></code></a> to represent hierarchical information on a raw text
+such as Constituency parsing results.</div>
+</div>
+<p>The classes implement features for easy manipulation, visualization and IO operations.</p>
+<dl class="py function">
+<dt id="uqa.context_utils.yellow">
+<code class="sig-prename descclassname">uqa.context_utils.</code><code class="sig-name descname">yellow</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><a class="reference internal" href="../_modules/uqa/context_utils.html#yellow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.context_utils.yellow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enclose and return <cite>text</cite> str with ASCII yellow color espace sequence.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="uqa.context_utils.blue">
+<code class="sig-prename descclassname">uqa.context_utils.</code><code class="sig-name descname">blue</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><a class="reference internal" href="../_modules/uqa/context_utils.html#blue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.context_utils.blue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enclose and return <cite>text</cite> str with ASCII blue color espace sequence.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="uqa.context_utils.red">
+<code class="sig-prename descclassname">uqa.context_utils.</code><code class="sig-name descname">red</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><a class="reference internal" href="../_modules/uqa/context_utils.html#red"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.context_utils.red" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enclose and return <cite>text</cite> str with ASCII red color espace sequence.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="uqa.context_utils.colorize">
+<code class="sig-prename descclassname">uqa.context_utils.</code><code class="sig-name descname">colorize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em>, <em class="sig-param"><span class="n">color</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uqa/context_utils.html#colorize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.context_utils.colorize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Colorize and return <cite>text</cite> with color <cite>color</cite>.</p>
+<p>Use ASCII color escape sequence and will only display properly on terminal supporting those espace sequence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>color</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Has to be one of: black, red, green, yellow, blue, magenta, cyan, white</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="uqa.context_utils.Label">
+<em class="property">class </em><code class="sig-prename descclassname">uqa.context_utils.</code><code class="sig-name descname">Label</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></span></em>, <em class="sig-param"><span class="n">end</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></span></em>, <em class="sig-param"><span class="n">label</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em>, <em class="sig-param"><span class="o">**</span><span class="n">extras</span><span class="p">:</span> <span class="n">Any</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uqa/context_utils.html#Label"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.context_utils.Label" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">uqa.context_utils._SimpleRepr</span></code></p>
+<p>Represent label span of text defined by its start and end indices and a label string.</p>
+<p><cite>Label</cite> instances also have an <a class="reference internal" href="#uqa.context_utils.Label.extras" title="uqa.context_utils.Label.extras"><code class="xref py py-attr docutils literal notranslate"><span class="pre">extras</span></code></a> attribute to hold any other characteristic,
+such as <cite>color</cite> for printing purpose.</p>
+<p>Implements order operators so that sorting a list of labels returns label
+with increasing <a class="reference internal" href="#uqa.context_utils.Label.start" title="uqa.context_utils.Label.start"><code class="xref py py-attr docutils literal notranslate"><span class="pre">start</span></code></a> indices and from the outermost label to inner most label.</p>
+<p>Two labels are equals if they have the same <a class="reference internal" href="#uqa.context_utils.Label.start" title="uqa.context_utils.Label.start"><code class="xref py py-attr docutils literal notranslate"><span class="pre">start</span></code></a>, <a class="reference internal" href="#uqa.context_utils.Label.end" title="uqa.context_utils.Label.end"><code class="xref py py-attr docutils literal notranslate"><span class="pre">end</span></code></a> indices and <a class="reference internal" href="#uqa.context_utils.Label.label" title="uqa.context_utils.Label.label"><code class="xref py py-attr docutils literal notranslate"><span class="pre">label</span></code></a>.</p>
+<p>The <cite>in</cite> operator returns <code class="docutils literal notranslate"><span class="pre">True</span></code> is the left operand label is (strictly or not) included
+in the right operand label.</p>
+<p>Also implement dictionnary like attribute accessor for convinience.</p>
+<dl class="py attribute">
+<dt id="uqa.context_utils.Label.start">
+<code class="sig-name descname">start</code><a class="headerlink" href="#uqa.context_utils.Label.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>start index of the label</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="uqa.context_utils.Label.end">
+<code class="sig-name descname">end</code><a class="headerlink" href="#uqa.context_utils.Label.end" title="Permalink to this definition">¶</a></dt>
+<dd><p>end index of the label</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="uqa.context_utils.Label.label">
+<code class="sig-name descname">label</code><a class="headerlink" href="#uqa.context_utils.Label.label" title="Permalink to this definition">¶</a></dt>
+<dd><p>label category</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="uqa.context_utils.Label.extras">
+<code class="sig-name descname">extras</code><a class="headerlink" href="#uqa.context_utils.Label.extras" title="Permalink to this definition">¶</a></dt>
+<dd><p>holds extra informations such as color for pretty printing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Dict[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a>, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="uqa.context_utils.Label.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></span></em>, <em class="sig-param"><span class="n">end</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></span></em>, <em class="sig-param"><span class="n">label</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em>, <em class="sig-param"><span class="o">**</span><span class="n">extras</span><span class="p">:</span> <span class="n">Any</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uqa/context_utils.html#Label.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.context_utils.Label.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – start index of the label</p></li>
+<li><p><strong>end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – end index of the label</p></li>
+<li><p><strong>label</strong> (<em>string</em>) – label category</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>extras</strong> – Stored as <a class="reference internal" href="#uqa.context_utils.Label.extras" title="uqa.context_utils.Label.extras"><code class="xref py py-attr docutils literal notranslate"><span class="pre">extras</span></code></a> entries</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="uqa.context_utils.Label.extract">
+<code class="sig-name descname">extract</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><a class="reference internal" href="../_modules/uqa/context_utils.html#Label.extract"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.context_utils.Label.extract" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return text[<a class="reference internal" href="#uqa.context_utils.Label.start" title="uqa.context_utils.Label.start"><code class="xref py py-attr docutils literal notranslate"><span class="pre">start</span></code></a>, <a class="reference internal" href="#uqa.context_utils.Label.end" title="uqa.context_utils.Label.end"><code class="xref py py-attr docutils literal notranslate"><span class="pre">end</span></code></a>]</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="uqa.context_utils.Label.to_json">
+<code class="sig-name descname">to_json</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">exclude_extras</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="../_modules/uqa/context_utils.html#Label.to_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.context_utils.Label.to_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the instance attributes as a json-like dict.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>exclude_extras</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em>, </em><em>default=True</em>) – If True, exclude <a class="reference internal" href="#uqa.context_utils.Label.extras" title="uqa.context_utils.Label.extras"><code class="xref py py-attr docutils literal notranslate"><span class="pre">extras</span></code></a> value from the result.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="uqa.context_utils.Label.copy">
+<code class="sig-name descname">copy</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">extras</span><span class="p">:</span> <span class="n">Any</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uqa/context_utils.html#Label.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.context_utils.Label.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a deep copy of the label.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments</dt>
+<dd class="field-odd"><p><strong>extras</strong> – Entries to add / update in the copied <a class="reference internal" href="#uqa.context_utils.Label.extras" title="uqa.context_utils.Label.extras"><code class="xref py py-attr docutils literal notranslate"><span class="pre">extras</span></code></a> attribute.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="uqa.context_utils.LabelNode">
+<em class="property">class </em><code class="sig-prename descclassname">uqa.context_utils.</code><code class="sig-name descname">LabelNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></span></em>, <em class="sig-param"><span class="n">end</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></span></em>, <em class="sig-param"><span class="n">label</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em>, <em class="sig-param"><span class="n">children</span><span class="p">:</span> <span class="n">List<span class="p">[</span>LabelNode<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">()</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">extras</span><span class="p">:</span> <span class="n">Any</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uqa/context_utils.html#LabelNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.context_utils.LabelNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#uqa.context_utils.Label" title="uqa.context_utils.Label"><code class="xref py py-class docutils literal notranslate"><span class="pre">uqa.context_utils.Label</span></code></a></p>
+<p>Extend <a class="reference internal" href="#uqa.context_utils.Label" title="uqa.context_utils.Label"><code class="xref py py-class docutils literal notranslate"><span class="pre">Label</span></code></a> with a <a class="reference internal" href="#uqa.context_utils.LabelNode.children" title="uqa.context_utils.LabelNode.children"><code class="xref py py-attr docutils literal notranslate"><span class="pre">children</span></code></a> attribute to represent a labels hierarchy.</p>
+<dl class="py attribute">
+<dt id="uqa.context_utils.LabelNode.children">
+<code class="sig-name descname">children</code><a class="headerlink" href="#uqa.context_utils.LabelNode.children" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of childen in ascending order</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of <a class="reference internal" href="#uqa.context_utils.LabelNode" title="uqa.context_utils.LabelNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">LabelNode</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="uqa.context_utils.LabelNode.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></span></em>, <em class="sig-param"><span class="n">end</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></span></em>, <em class="sig-param"><span class="n">label</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em>, <em class="sig-param"><span class="n">children</span><span class="p">:</span> <span class="n">List<span class="p">[</span>LabelNode<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">()</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">extras</span><span class="p">:</span> <span class="n">Any</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uqa/context_utils.html#LabelNode.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.context_utils.LabelNode.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – start index of the label</p></li>
+<li><p><strong>end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – end index of the label</p></li>
+<li><p><strong>label</strong> (<em>string</em>) – label category</p></li>
+<li><p><strong>children</strong> (<em>Iterable</em><em>[</em><a class="reference internal" href="#uqa.context_utils.LabelNode" title="uqa.context_utils.LabelNode"><em>LabelNode</em></a><em>]</em>) – List of children nodes.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>extras</strong> – Stored as <a class="reference internal" href="#uqa.context_utils.Label.extras" title="uqa.context_utils.Label.extras"><code class="xref py py-attr docutils literal notranslate"><span class="pre">extras</span></code></a> entries</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="uqa.context_utils.LabelNode.to_json">
+<code class="sig-name descname">to_json</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">exclude_extras</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="../_modules/uqa/context_utils.html#LabelNode.to_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.context_utils.LabelNode.to_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the hierachy labels hierarchy as a json-like dict.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>exclude_extras</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em>, </em><em>default=True</em>) – If True, exclude <a class="reference internal" href="#uqa.context_utils.Label.extras" title="uqa.context_utils.Label.extras"><code class="xref py py-attr docutils literal notranslate"><span class="pre">extras</span></code></a> value from the result.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="uqa.context_utils.LabelNode.from_json">
+<em class="property">classmethod </em><code class="sig-name descname">from_json</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">jsonlike</span><span class="p">:</span> <span class="n">MutableMapping</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#uqa.context_utils.LabelNode" title="uqa.context_utils.LabelNode">uqa.context_utils.LabelNode</a><a class="reference internal" href="../_modules/uqa/context_utils.html#LabelNode.from_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.context_utils.LabelNode.from_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instaciate and return an <cite>LabelNode</cite> instance from a json-like data structure.</p>
+<p><cite>jsonlike</cite> keys name must match the attribute names,
+any extra field content will be stored in <a class="reference internal" href="#uqa.context_utils.Label.extras" title="uqa.context_utils.Label.extras"><code class="xref py py-attr docutils literal notranslate"><span class="pre">extras</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="uqa.context_utils.LabelNode.flat_iter">
+<code class="sig-name descname">flat_iter</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Iterable<span class="p">[</span><a class="reference internal" href="#uqa.context_utils.LabelNode" title="uqa.context_utils.LabelNode">uqa.context_utils.LabelNode</a><span class="p">]</span><a class="reference internal" href="../_modules/uqa/context_utils.html#LabelNode.flat_iter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.context_utils.LabelNode.flat_iter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterate the sub tree defined by this node from lowest to biggest (relative to Label order).</p>
+<p>The first label yielded is always the instance bounded.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="uqa.context_utils.LabelNode.to_label">
+<code class="sig-name descname">to_label</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#uqa.context_utils.Label" title="uqa.context_utils.Label">uqa.context_utils.Label</a><a class="reference internal" href="../_modules/uqa/context_utils.html#LabelNode.to_label"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.context_utils.LabelNode.to_label" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a Label instance containing the same <a class="reference internal" href="#uqa.context_utils.Label.start" title="uqa.context_utils.Label.start"><code class="xref py py-attr docutils literal notranslate"><span class="pre">start</span></code></a>, <a class="reference internal" href="#uqa.context_utils.Label.end" title="uqa.context_utils.Label.end"><code class="xref py py-attr docutils literal notranslate"><span class="pre">end</span></code></a> and <a class="reference internal" href="#uqa.context_utils.Label.extras" title="uqa.context_utils.Label.extras"><code class="xref py py-attr docutils literal notranslate"><span class="pre">extras</span></code></a> values.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="uqa.context_utils.LabelNode.copy">
+<code class="sig-name descname">copy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">depth</span><span class="o">=</span><span class="default_value">- 1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uqa/context_utils.html#LabelNode.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.context_utils.LabelNode.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a deep-copy of this instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>depth</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>, </em><em>default=-1</em>) – The depth to which the copy is done, if negative the entire hierarchy is copied,
+if 0, similar to self.copy_no_child()</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#uqa.context_utils.LabelNode" title="uqa.context_utils.LabelNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">LabelNode</span></code></a> – The new copied instance.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="uqa.context_utils.LabelNode.copy_no_child">
+<code class="sig-name descname">copy_no_child</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">extras</span><span class="p">:</span> <span class="n">Any</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#uqa.context_utils.LabelNode" title="uqa.context_utils.LabelNode">uqa.context_utils.LabelNode</a><a class="reference internal" href="../_modules/uqa/context_utils.html#LabelNode.copy_no_child"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.context_utils.LabelNode.copy_no_child" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copy this instance without copying its children.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments</dt>
+<dd class="field-odd"><p><strong>extras</strong> – Udpate the copied instance <a class="reference internal" href="#uqa.context_utils.Label.extras" title="uqa.context_utils.Label.extras"><code class="xref py py-attr docutils literal notranslate"><span class="pre">extras</span></code></a> dictionnary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="uqa.context_utils.LabelNode.from_labels">
+<em class="property">classmethod </em><code class="sig-name descname">from_labels</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">labels</span><span class="p">:</span> <span class="n">Iterable<span class="p">[</span><a class="reference internal" href="#uqa.context_utils.Label" title="uqa.context_utils.Label">uqa.context_utils.Label</a><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span><a class="reference internal" href="#uqa.context_utils.LabelNode" title="uqa.context_utils.LabelNode">uqa.context_utils.LabelNode</a><span class="p">]</span><a class="reference internal" href="../_modules/uqa/context_utils.html#LabelNode.from_labels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.context_utils.LabelNode.from_labels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build and return a list LabelNode hierarchies from <cite>labels</cite> iterable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>labels</strong> (Iterable of <a class="reference internal" href="#uqa.context_utils.Label" title="uqa.context_utils.Label"><code class="xref py py-class docutils literal notranslate"><span class="pre">Label</span></code></a>) – An iterable of labels either included in ou distinct from one another.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of <a class="reference internal" href="#uqa.context_utils.LabelNode" title="uqa.context_utils.LabelNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">LabelNode</span></code></a> – The forest (graph theory) made of labels in <cite>labels</cite> iterable as a list of the roots of each tree.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="uqa.context_utils.set_color_all">
+<code class="sig-prename descclassname">uqa.context_utils.</code><code class="sig-name descname">set_color_all</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">label_iterable</span><span class="p">:</span> <span class="n">Iterable<span class="p">[</span>Label<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">color</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)">None</a><a class="reference internal" href="../_modules/uqa/context_utils.html#set_color_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.context_utils.set_color_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the color <cite>color</cite> to all labels in <cite>label_iterable</cite>, if the iterable contains a label node
+set the color to the whole hierarchy</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="uqa.context_utils.set_color_hier">
+<code class="sig-prename descclassname">uqa.context_utils.</code><code class="sig-name descname">set_color_hier</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">label_nodes</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference internal" href="#uqa.context_utils.LabelNode" title="uqa.context_utils.LabelNode">uqa.context_utils.LabelNode</a><span class="p">, </span>Iterable<span class="p">[</span><a class="reference internal" href="#uqa.context_utils.LabelNode" title="uqa.context_utils.LabelNode">uqa.context_utils.LabelNode</a><span class="p">]</span><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">colors</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>List<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">depth_offset</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></span> <span class="o">=</span> <span class="default_value">0</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)">None</a><a class="reference internal" href="../_modules/uqa/context_utils.html#set_color_hier"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.context_utils.set_color_hier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cycle through <cite>colors</cite> and assign a color to each labels in <cite>label_nodes</cite>
+and their hierarchy depending to their depth.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>label_node</strong> (<a class="reference internal" href="#uqa.context_utils.LabelNode" title="uqa.context_utils.LabelNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">LabelNode</span></code></a> or Iterable of <a class="reference internal" href="#uqa.context_utils.LabelNode" title="uqa.context_utils.LabelNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">LabelNode</span></code></a>) – a single <a class="reference internal" href="#uqa.context_utils.LabelNode" title="uqa.context_utils.LabelNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">LabelNode</span></code></a> or an iterable of <a class="reference internal" href="#uqa.context_utils.LabelNode" title="uqa.context_utils.LabelNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">LabelNode</span></code></a></p></li>
+<li><p><strong>colors</strong> – List of colors to use</p></li>
+<li><p><strong>depth_offset</strong> – The depth offset of the label(s) in <cite>label_nodes</cite>, the first color used is colors[depth_off % len(colors)].</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="uqa.context_utils.QA">
+<em class="property">class </em><code class="sig-prename descclassname">uqa.context_utils.</code><code class="sig-name descname">QA</code><a class="reference internal" href="../_modules/uqa/context_utils.html#QA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.context_utils.QA" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a></p>
+<p>A question / answer pair of labels, the question is a string while the answer is a <a class="reference internal" href="#uqa.context_utils.Label" title="uqa.context_utils.Label"><code class="xref py py-class docutils literal notranslate"><span class="pre">Label</span></code></a></p>
+<dl class="py method">
+<dt id="uqa.context_utils.QA.question">
+<em class="property">property </em><code class="sig-name descname">question</code><a class="headerlink" href="#uqa.context_utils.QA.question" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="uqa.context_utils.QA.answer">
+<em class="property">property </em><code class="sig-name descname">answer</code><a class="headerlink" href="#uqa.context_utils.QA.answer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="uqa.context_utils.QA.to_json">
+<code class="sig-name descname">to_json</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">exclude_extras</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">, </span>Any<span class="p">]</span><a class="reference internal" href="../_modules/uqa/context_utils.html#QA.to_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.context_utils.QA.to_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a json-like dict representing the <a class="reference internal" href="#uqa.context_utils.QA" title="uqa.context_utils.QA"><code class="xref py py-class docutils literal notranslate"><span class="pre">QA</span></code></a> instance.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="uqa.context_utils.Context">
+<em class="property">class </em><code class="sig-prename descclassname">uqa.context_utils.</code><code class="sig-name descname">Context</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fpath</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em>, <em class="sig-param"><span class="n">doc_id</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></span></em>, <em class="sig-param"><span class="n">doc_title</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em>, <em class="sig-param"><span class="n">context_id</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></span></em>, <em class="sig-param"><span class="n">text</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em>, <em class="sig-param"><span class="n">ner</span><span class="p">:</span> <span class="n">Iterable<span class="p">[</span><a class="reference internal" href="#uqa.context_utils.Label" title="uqa.context_utils.Label">uqa.context_utils.Label</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">()</span></em>, <em class="sig-param"><span class="n">constituents</span><span class="p">:</span> <span class="n">Iterable<span class="p">[</span><a class="reference internal" href="#uqa.context_utils.LabelNode" title="uqa.context_utils.LabelNode">uqa.context_utils.LabelNode</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">()</span></em>, <em class="sig-param"><span class="n">qas</span><span class="p">:</span> <span class="n">Iterable<span class="p">[</span><a class="reference internal" href="#uqa.context_utils.QA" title="uqa.context_utils.QA">uqa.context_utils.QA</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">()</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uqa/context_utils.html#Context"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.context_utils.Context" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">uqa.context_utils._SimpleRepr</span></code></p>
+<p>Represent a context and its computed features.</p>
+<dl class="py attribute">
+<dt id="uqa.context_utils.Context.fpath">
+<code class="sig-name descname">fpath</code><a class="headerlink" href="#uqa.context_utils.Context.fpath" title="Permalink to this definition">¶</a></dt>
+<dd><p>The file from which this context was red from</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="uqa.context_utils.Context.doc_id">
+<code class="sig-name descname">doc_id</code><a class="headerlink" href="#uqa.context_utils.Context.doc_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The context’s document (article) id</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="uqa.context_utils.Context.doc_title">
+<code class="sig-name descname">doc_title</code><a class="headerlink" href="#uqa.context_utils.Context.doc_title" title="Permalink to this definition">¶</a></dt>
+<dd><p>The context’s document title</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="uqa.context_utils.Context.context_id">
+<code class="sig-name descname">context_id</code><a class="headerlink" href="#uqa.context_utils.Context.context_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The context’s index in its document</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="uqa.context_utils.Context.text">
+<code class="sig-name descname">text</code><a class="headerlink" href="#uqa.context_utils.Context.text" title="Permalink to this definition">¶</a></dt>
+<dd><p>The context raw text</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="uqa.context_utils.Context.ner">
+<code class="sig-name descname">ner</code><a class="headerlink" href="#uqa.context_utils.Context.ner" title="Permalink to this definition">¶</a></dt>
+<dd><p>The list of computed named entities.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Iterable of <a class="reference internal" href="#uqa.context_utils.Label" title="uqa.context_utils.Label"><code class="xref py py-class docutils literal notranslate"><span class="pre">Label</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="uqa.context_utils.Context.constituents">
+<code class="sig-name descname">constituents</code><a class="headerlink" href="#uqa.context_utils.Context.constituents" title="Permalink to this definition">¶</a></dt>
+<dd><p>The forest of constituent as a list of <a class="reference internal" href="#uqa.context_utils.LabelNode" title="uqa.context_utils.LabelNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">LabelNode</span></code></a>; each root is a sentence in the <a class="reference internal" href="#uqa.context_utils.Context.text" title="uqa.context_utils.Context.text"><code class="xref py py-attr docutils literal notranslate"><span class="pre">text</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Iterable of <a class="reference internal" href="#uqa.context_utils.LabelNode" title="uqa.context_utils.LabelNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">LabelNode</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="uqa.context_utils.Context.qas">
+<code class="sig-name descname">qas</code><a class="headerlink" href="#uqa.context_utils.Context.qas" title="Permalink to this definition">¶</a></dt>
+<dd><p>The list of generated question answer pairs</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Iterable of <a class="reference internal" href="#uqa.context_utils.QA" title="uqa.context_utils.QA"><code class="xref py py-class docutils literal notranslate"><span class="pre">QA</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="uqa.context_utils.Context.from_json">
+<em class="property">classmethod </em><code class="sig-name descname">from_json</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="p">:</span> <span class="n">Dict</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#uqa.context_utils.Context" title="uqa.context_utils.Context">uqa.context_utils.Context</a><a class="reference internal" href="../_modules/uqa/context_utils.html#Context.from_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.context_utils.Context.from_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instanciate a context from json-like data structure with keys matching this class attributes names.</p>
+<p>The classmethod cast sub-dictionnaries of <cite>data</cite> into the appropriate types <a class="reference internal" href="#uqa.context_utils.Label" title="uqa.context_utils.Label"><code class="xref py py-class docutils literal notranslate"><span class="pre">Label</span></code></a>, <a class="reference internal" href="#uqa.context_utils.LabelNode" title="uqa.context_utils.LabelNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">LabelNode</span></code></a>
+and <a class="reference internal" href="#uqa.context_utils.QA" title="uqa.context_utils.QA"><code class="xref py py-class docutils literal notranslate"><span class="pre">QA</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="uqa.context_utils.Context.set_color_all">
+<code class="sig-name descname">set_color_all</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr_name</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em>, <em class="sig-param"><span class="n">color</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)">None</a><a class="reference internal" href="../_modules/uqa/context_utils.html#Context.set_color_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.context_utils.Context.set_color_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls <a class="reference internal" href="#uqa.context_utils.set_color_all" title="uqa.context_utils.set_color_all"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_color_all()</span></code></a> on the attribute named <cite>attr_name</cite> with <cite>color</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="uqa.context_utils.Context.set_color_hier">
+<code class="sig-name descname">set_color_hier</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr_name</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em>, <em class="sig-param"><span class="n">colors</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>List<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)">None</a><a class="reference internal" href="../_modules/uqa/context_utils.html#Context.set_color_hier"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.context_utils.Context.set_color_hier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls <a class="reference internal" href="#uqa.context_utils.set_color_hier" title="uqa.context_utils.set_color_hier"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_color_hier()</span></code></a> on the attribute named <cite>attr_name</cite> with <cite>colors</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="uqa.context_utils.Context.header">
+<code class="sig-name descname">header</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">color</span><span class="p">:</span> <span class="n">Union[str, Tuple[str, str], None]</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><a class="reference internal" href="../_modules/uqa/context_utils.html#Context.header"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.context_utils.Context.header" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a string with the file path in the first line and the article id,
+title and the context id in the second line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>color</strong> (<a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)"><em>None</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, or </em><em>pair of str</em><em>, </em><em>default=None</em>) – <div class="line-block">
+<div class="line">If None, no coloring is applied,</div>
+<div class="line">if one color is passed, colorize both lines with it</div>
+<div class="line">if a pair of colors is passed colorize each line with one the colors.</div>
+</div>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="uqa.context_utils.decorate_span">
+<code class="sig-prename descclassname">uqa.context_utils.</code><code class="sig-name descname">decorate_span</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text_span</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em>, <em class="sig-param"><span class="n">label</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#uqa.context_utils.Label" title="uqa.context_utils.Label">uqa.context_utils.Label</a></span></em>, <em class="sig-param"><span class="n">template</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span> <span class="o">=</span> <span class="default_value">'[{label} {txt}]'</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><a class="reference internal" href="../_modules/uqa/context_utils.html#decorate_span"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.context_utils.decorate_span" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorate the whole <cite>text_span</cite> with <cite>label</cite> following the <cite>template</cite>.</p>
+<div class="line-block">
+<div class="line">If <cite>label</cite> contains a <cite>color</cite> entry in its <a class="reference internal" href="#uqa.context_utils.Label.extras" title="uqa.context_utils.Label.extras"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Label.extras</span></code></a> attribute, the color is applied
+to all characters but the <cite>text_span</cite>.</div>
+<div class="line"><a class="reference internal" href="#uqa.context_utils.Label.start" title="uqa.context_utils.Label.start"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Label.start</span></code></a> and <a class="reference internal" href="#uqa.context_utils.Label.end" title="uqa.context_utils.Label.end"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Label.end</span></code></a> are ignored.</div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text_span</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Piece of text to decorate</p></li>
+<li><p><strong>label</strong> (<a class="reference internal" href="#uqa.context_utils.Label" title="uqa.context_utils.Label"><code class="xref py py-class docutils literal notranslate"><span class="pre">Label</span></code></a>) – A <a class="reference internal" href="#uqa.context_utils.Label" title="uqa.context_utils.Label"><code class="xref py py-class docutils literal notranslate"><span class="pre">Label</span></code></a> or <a class="reference internal" href="#uqa.context_utils.LabelNode" title="uqa.context_utils.LabelNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">LabelNode</span></code></a> instance</p></li>
+<li><p><strong>template</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><em>default=&quot;</em><em>[</em><em>{label} {txt}</em><em>]</em><em>&quot;</em>) – A template str with placeholders <cite>{label}</cite> and <cite>{txt}</cite></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>str</em> – <cite>text_span</cite> decorated with <cite>label</cite> according to the template</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="uqa.context_utils.decorate">
+<code class="sig-prename descclassname">uqa.context_utils.</code><code class="sig-name descname">decorate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em>, <em class="sig-param"><span class="n">labels</span><span class="p">:</span> <span class="n">Iterable</span></em>, <em class="sig-param"><span class="n">template</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span> <span class="o">=</span> <span class="default_value">'[{label} {txt}]'</span></em>, <em class="sig-param"><span class="n">autocoloring</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">show_no_label</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><a class="reference internal" href="../_modules/uqa/context_utils.html#decorate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.context_utils.decorate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorate <cite>text</cite> with <cite>labels</cite> according to the <cite>template</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The text to decorate</p></li>
+<li><p><strong>labels</strong> (<em>Iterable</em>) – An recursivesly iterable container where all leaves are either <a class="reference internal" href="#uqa.context_utils.Label" title="uqa.context_utils.Label"><code class="xref py py-class docutils literal notranslate"><span class="pre">Label</span></code></a>, <a class="reference internal" href="#uqa.context_utils.LabelNode" title="uqa.context_utils.LabelNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">LabelNode</span></code></a> or
+dict representing a Label.</p></li>
+<li><p><strong>format</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – template for the decoration part must contains placeholders {label} and {txt}.</p></li>
+<li><p><strong>autocoloring</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em>, </em><em>default=False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> override <cite>color</cite> <a class="reference internal" href="#uqa.context_utils.Label.extras" title="uqa.context_utils.Label.extras"><code class="xref py py-attr docutils literal notranslate"><span class="pre">extras</span></code></a> setting with cyclic coloring of the label.</p></li>
+<li><p><strong>show_no_label</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em>, </em><em>default=False</em>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code> don’t use <cite>labels</cite> with empty <a class="reference internal" href="#uqa.context_utils.Label.label" title="uqa.context_utils.Label.label"><code class="xref py py-attr docutils literal notranslate"><span class="pre">label</span></code></a> value.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>str</em> – The decorated colorized string</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p><cite>labels</cite> must be either nested in or distinct from one another.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="uqa.context_utils.contextify">
+<code class="sig-prename descclassname">uqa.context_utils.</code><code class="sig-name descname">contextify</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data_it</span><span class="p">:</span> <span class="n">Iterable<span class="p">[</span>Tuple<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">, </span>Union<span class="p">[</span>Dict<span class="p">, </span>List<span class="p">]</span><span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Iterable<span class="p">[</span><a class="reference internal" href="#uqa.context_utils.Context" title="uqa.context_utils.Context">uqa.context_utils.Context</a><span class="p">]</span><a class="reference internal" href="../_modules/uqa/context_utils.html#contextify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.context_utils.contextify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract and yield <a class="reference internal" href="#uqa.context_utils.Context" title="uqa.context_utils.Context"><code class="xref py py-class docutils literal notranslate"><span class="pre">Context</span></code></a> instances from <cite>default</cite> structre iterable <cite>data_it</cite>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="uqa.context_utils.contextify_rd">
+<code class="sig-prename descclassname">uqa.context_utils.</code><code class="sig-name descname">contextify_rd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data_it</span></em><span class="sig-paren">)</span> &#x2192; Iterable<span class="p">[</span><a class="reference internal" href="#uqa.context_utils.Context" title="uqa.context_utils.Context">uqa.context_utils.Context</a><span class="p">]</span><a class="reference internal" href="../_modules/uqa/context_utils.html#contextify_rd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.context_utils.contextify_rd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract and shuffle and yield <a class="reference internal" href="#uqa.context_utils.Context" title="uqa.context_utils.Context"><code class="xref py py-class docutils literal notranslate"><span class="pre">Context</span></code></a> instances from <cite>default</cite> structre iterable <cite>data_it</cite>.</p>
+<p>Shuffling is done per file content.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="uqa.context_utils.jsonify">
+<code class="sig-prename descclassname">uqa.context_utils.</code><code class="sig-name descname">jsonify</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context_it</span><span class="p">:</span> <span class="n">Iterable<span class="p">[</span><a class="reference internal" href="#uqa.context_utils.Context" title="uqa.context_utils.Context">uqa.context_utils.Context</a><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">include_qas</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span> &#x2192; Iterable<span class="p">[</span>Tuple<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">, </span>Union<span class="p">[</span>Dict<span class="p">, </span>List<span class="p">]</span><span class="p">]</span><span class="p">]</span><a class="reference internal" href="../_modules/uqa/context_utils.html#jsonify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.context_utils.jsonify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reverse operation of <code class="xref py py-func docutils literal notranslate"><span class="pre">conetxtify()</span></code>,
+recrate a dataset iterable from an ordered <cite>context_it</cite>.</p>
+<p><cite>context_it</cite> must yield context in the order it was created by <a class="reference internal" href="#uqa.context_utils.contextify" title="uqa.context_utils.contextify"><code class="xref py py-func docutils literal notranslate"><span class="pre">contextify()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>context_it</strong> (Iterable of <a class="reference internal" href="#uqa.context_utils.Context" title="uqa.context_utils.Context"><code class="xref py py-class docutils literal notranslate"><span class="pre">Context</span></code></a>) – Context iterable</p></li>
+<li><p><strong>include_qas</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em>, </em><em>default=True</em>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code> discard <a class="reference internal" href="#uqa.context_utils.Context.qas" title="uqa.context_utils.Context.qas"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Context.qas</span></code></a> values.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="uqa.dataset.html" class="btn btn-neutral float-right" title="uqa.dataset module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="uqa.constituency.html" class="btn btn-neutral float-left" title="uqa.constituency module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Boris Tronch, Quentin Churet, Jiahao Lu
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

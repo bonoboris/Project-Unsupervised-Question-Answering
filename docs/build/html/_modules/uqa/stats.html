@@ -1,0 +1,282 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>uqa.stats &mdash; Unsupervised-Question-Answering 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Unsupervised-Question-Answering
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../data_formats.html">Data Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../models.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../workflow.html">Basic workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cli_usage.html">CLI Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/modules.html">API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Unsupervised-Question-Answering</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>uqa.stats</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for uqa.stats</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Compute and log simple dataset stats.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Counter</span> <span class="k">as</span> <span class="n">TCounter</span><span class="p">,</span> <span class="n">Mapping</span>
+
+<span class="kn">from</span> <span class="nn">uqa</span> <span class="kn">import</span> <span class="n">dataset</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
+
+
+<div class="viewcode-block" id="mapping_str"><a class="viewcode-back" href="../../api/uqa.stats.html#uqa.stats.mapping_str">[docs]</a><span class="k">def</span> <span class="nf">mapping_str</span><span class="p">(</span><span class="n">mapping</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">item_str_template</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{k}</span><span class="s2">: </span><span class="si">{v}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">item_sep</span><span class="o">=</span><span class="s2">&quot; | &quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Returns a string representation of a mapping.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    mapping: Mapping</span>
+<span class="sd">        A mapping</span>
+<span class="sd">    item_str_template: str</span>
+<span class="sd">        A template string with `{k}` and `{v}` placeholders for the entries key and value respectively</span>
+<span class="sd">    item_sep: str</span>
+<span class="sd">        The separator to use between mapping entries string.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+<span class="sd">        The mapping representation as a string</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sub_strs</span> <span class="o">=</span> <span class="p">[</span><span class="n">item_str_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">mapping</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
+    <span class="k">return</span> <span class="n">item_sep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sub_strs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="stats"><a class="viewcode-back" href="../../api/uqa.stats.html#uqa.stats.stats">[docs]</a><span class="k">def</span> <span class="nf">stats</span><span class="p">(</span><span class="n">fcontent</span><span class="p">:</span> <span class="n">dataset</span><span class="o">.</span><span class="n">TJson</span><span class="p">,</span> <span class="n">dataformat</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TCounter</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Return simple stats over `fcontent`.</span>
+
+<span class="sd">    | Count the numbers of `articles` and `contexts`.</span>
+<span class="sd">    | For `fquad` dataformat also count the number of `questions`</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fcontent: :obj:`dataset.TJson`</span>
+<span class="sd">        The data container</span>
+<span class="sd">    dataformat: str, default=&quot;default&quot;</span>
+<span class="sd">        The data format</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    collections.Counter</span>
+<span class="sd">        A Counter instance with entries `articles` and `contexts` and optionaly `questions`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">counts</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">Counter</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">dataformat</span> <span class="o">==</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span>
+        <span class="n">counts</span><span class="p">[</span><span class="s2">&quot;articles&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">fcontent</span><span class="p">)</span>
+        <span class="n">counts</span><span class="p">[</span><span class="s2">&quot;contexts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">art</span><span class="p">[</span><span class="s2">&quot;contexts&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">art</span> <span class="ow">in</span> <span class="n">fcontent</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="n">dataformat</span> <span class="o">==</span> <span class="s2">&quot;fquad&quot;</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">fcontent</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+        <span class="n">counts</span><span class="p">[</span><span class="s2">&quot;articles&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">art</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">counts</span><span class="p">[</span><span class="s2">&quot;contexts&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">art</span><span class="p">[</span><span class="s2">&quot;paragraphs&quot;</span><span class="p">])</span>
+            <span class="n">counts</span><span class="p">[</span><span class="s2">&quot;questions&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">para</span><span class="p">[</span><span class="s2">&quot;qas&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">para</span> <span class="ow">in</span> <span class="n">art</span><span class="p">[</span><span class="s2">&quot;paragraphs&quot;</span><span class="p">]))</span>
+    <span class="k">return</span> <span class="n">counts</span></div>
+
+
+<div class="viewcode-block" id="stats_dl"><a class="viewcode-back" href="../../api/uqa.stats.html#uqa.stats.stats_dl">[docs]</a><span class="k">def</span> <span class="nf">stats_dl</span><span class="p">(</span><span class="n">dataloader</span><span class="p">:</span> <span class="n">dataset</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">,</span> <span class="n">detailed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TCounter</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Return simple stats over the :obj:`dataset.DataLoader` instance `dataloader`.</span>
+
+<span class="sd">    | For `default` format dataset count the number `articles` and `contexts`.</span>
+<span class="sd">    | For `fquad` format dataset also count the number of `questions`</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dataloader: :obj:`dataset.DataLoader`</span>
+<span class="sd">        A :obj:`dataset.DataLoader` instance.</span>
+<span class="sd">    detailed: bool, default=True</span>
+<span class="sd">        If ``True`` logs per file stats</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    collections.Counter</span>
+<span class="sd">        A Counter instance with entries `articles` and `contexts` and optionaly `questions`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">counts</span><span class="p">:</span> <span class="n">TCounter</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">Counter</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">fcontent</span> <span class="ow">in</span> <span class="n">dataloader</span><span class="p">:</span>
+        <span class="n">fcounts</span> <span class="o">=</span> <span class="n">stats</span><span class="p">(</span><span class="n">fcontent</span><span class="p">,</span> <span class="n">dataloader</span><span class="o">.</span><span class="n">dataformat</span><span class="p">)</span>
+        <span class="n">counts</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">fcounts</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">detailed</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">mapping_str</span><span class="p">(</span><span class="n">fcounts</span><span class="p">))</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;TOTAL: </span><span class="si">{</span><span class="n">mapping_str</span><span class="p">(</span><span class="n">counts</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">counts</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Boris Tronch, Quentin Churet, Jiahao Lu
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

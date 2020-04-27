@@ -1,0 +1,713 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>uqa.dataset &mdash; Unsupervised-Question-Answering 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Unsupervised-Question-Answering
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../data_formats.html">Data Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../models.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../workflow.html">Basic workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cli_usage.html">CLI Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/modules.html">API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Unsupervised-Question-Answering</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>uqa.dataset</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for uqa.dataset</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Classes to load and save data.</span>
+
+<span class="sd">:class:`DataLoader` and :class:`DataDumper` are designed to work with/as :obj:`DataIterable` types,</span>
+<span class="sd">while encapsulating the different dataset structure and format specificities.</span>
+
+<span class="sd">Examples</span>
+<span class="sd">--------</span>
+<span class="sd">Read a single file pickle dataset, process it and save a single json file::</span>
+
+<span class="sd">    &gt;&gt;&gt; # Load a single pickle file</span>
+<span class="sd">    &gt;&gt;&gt; dataloader = FileDataLoader(&quot;data.pickle&quot;, fileformat=&quot;pickle&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; # Processing returns an `DataIterble` object with a single element</span>
+<span class="sd">    &gt;&gt;&gt; data_it = some_processing_step(dataloader)</span>
+<span class="sd">    &gt;&gt;&gt; # Get a path_modifier which simply returns a new path</span>
+<span class="sd">    &gt;&gt;&gt; path_modifier = DataDumper.path_replacer(&quot;foo/data.json&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; DataDumper(</span>
+<span class="sd">    ...     fileformat=&quot;json&quot;,              # save in JSON fileformat</span>
+<span class="sd">    ...     path_modifier=path_modifier,    # use new path</span>
+<span class="sd">    ...     json_indent=2,                  # set json indentation level to 2</span>
+<span class="sd">    ... ).save(data_it)                     # Save the processed data</span>
+<span class="sd">    &gt;&gt;&gt; # File &#39;foo/data.json&#39; is created and contains the processed data</span>
+<span class="sd">    &gt;&gt;&gt; # if &#39;foo&#39; directory doesn&#39;t exist, it&#39;s created.</span>
+
+<span class="sd">Read a multiple-file json dataset, process it and write result in a new directory.::</span>
+
+<span class="sd">    &gt;&gt;&gt; # Load multiple json file</span>
+<span class="sd">    &gt;&gt;&gt; dataloader = FileDataLoader([&quot;data_train.json&quot;, &quot;bar/data_eval.json&quot;, &quot;bar/data_test.json&quot;])</span>
+<span class="sd">    &gt;&gt;&gt; # Processing returns an `DataIterble` object with a 3 elements.</span>
+<span class="sd">    &gt;&gt;&gt; data_it = some_processing_step(dataloader)</span>
+<span class="sd">    &gt;&gt;&gt; # Get the path modifier</span>
+<span class="sd">    &gt;&gt;&gt; path_modifier = DataDumper.file_in_dir(&quot;foo&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; DataDumper(</span>
+<span class="sd">    ...     fileformat=&quot;json&quot;,              # save in JSON fileformat</span>
+<span class="sd">    ...     path_modifier=path_modifier,    # use new path</span>
+<span class="sd">    ...     json_indent=2,                  # set json indentation level to 2</span>
+<span class="sd">    ... ).save(data_it)                     # Save the processed data</span>
+<span class="sd">    &gt;&gt;&gt; # Files &#39;foo/data_train.json&#39;, &#39;foo/data_eval.json&#39;, &#39;foo/data_test.json&#39;] are created</span>
+<span class="sd">    &gt;&gt;&gt; # if &#39;foo&#39; directory doesn&#39;t exist, it&#39;s created.</span>
+
+<span class="sd">Read a directory json dataset, process it and write result in a new directory.::</span>
+
+<span class="sd">    &gt;&gt;&gt; # Load all json file in directory &quot;bar&quot; and its sub-directories</span>
+<span class="sd">    &gt;&gt;&gt; dataloader = DirDataLoader(&quot;bar&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; # Processing returns an `DataIterble` object.</span>
+<span class="sd">    &gt;&gt;&gt; data_it = some_processing_step(dataloader)</span>
+<span class="sd">    &gt;&gt;&gt; # Get the directory modifier function</span>
+<span class="sd">    &gt;&gt;&gt; path_modifier = DataDumper.dir_replacer(&quot;bar&quot;, &quot;baz/foo&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; DataDumper(</span>
+<span class="sd">    ...     fileformat=&quot;json&quot;,              # save in JSON fileformat</span>
+<span class="sd">    ...     path_modifier=path_modifier,    # use new path</span>
+<span class="sd">    ...     json_indent=2,                  # set json indentation level to 2</span>
+<span class="sd">    ... ).save(data_it)                     # Save the processed data</span>
+<span class="sd">    &gt;&gt;&gt; # For each file with path &quot;bar/{subpath}&quot; a file &quot;foo/baz/{subpath}&quot; is created.</span>
+<span class="sd">    &gt;&gt;&gt; # All non-exsting directories and sub-directories are also created</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">abc</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">errno</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">import</span> <span class="nn">random</span> <span class="k">as</span> <span class="nn">rd</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">ujson</span> <span class="k">as</span> <span class="nn">json</span>
+<span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">json</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
+
+<span class="c1">#: | Json-like container, representing data usually in `default` format.</span>
+<span class="c1">#: | See -- :doc:`/data_formats`</span>
+<span class="n">TJson</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">]</span>
+
+<span class="c1">#: Dataset Iterable, each element is a pair ``(path, fcontent)``</span>
+<span class="c1">#:</span>
+<span class="c1">#: * **path** (`str`) -- File&#39;s path</span>
+<span class="c1">#: * **fcontent** (:obj:`TJson`) -- File&#39;s content</span>
+<span class="n">DataIterable</span> <span class="o">=</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TJson</span><span class="p">]]</span>
+
+
+<div class="viewcode-block" id="read_json"><a class="viewcode-back" href="../../api/uqa.dataset.html#uqa.dataset.read_json">[docs]</a><span class="k">def</span> <span class="nf">read_json</span><span class="p">(</span><span class="n">fpath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TJson</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Read a json file and return its content.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fpath: str</span>
+<span class="sd">        Relative or absolute path of the JSON file to read</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    :obj:`TJson`</span>
+<span class="sd">        The JSON file&#39;s content</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reading: json file: </span><span class="si">{</span><span class="n">fpath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fpath</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">fcontent</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loaded: </span><span class="si">{</span><span class="n">fpath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fcontent</span></div>
+
+
+<div class="viewcode-block" id="read_pickle"><a class="viewcode-back" href="../../api/uqa.dataset.html#uqa.dataset.read_pickle">[docs]</a><span class="k">def</span> <span class="nf">read_pickle</span><span class="p">(</span><span class="n">fpath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Unpickle a file and return its content.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fpath: str</span>
+<span class="sd">        Relative or absolute path of the pickle file to read</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Any</span>
+<span class="sd">        The unpickled object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reading: pickle file: </span><span class="si">{</span><span class="n">fpath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fpath</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">,)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">fcontent</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loaded: </span><span class="si">{</span><span class="n">fpath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fcontent</span></div>
+
+
+<div class="viewcode-block" id="write_json"><a class="viewcode-back" href="../../api/uqa.dataset.html#uqa.dataset.write_json">[docs]</a><span class="k">def</span> <span class="nf">write_json</span><span class="p">(</span><span class="n">fpath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fcontent</span><span class="p">:</span> <span class="n">TJson</span><span class="p">,</span> <span class="n">override</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">indent</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Write `fcontent` json-like structure at path `fpath`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fpath: str</span>
+<span class="sd">        Relative or absolute path of the file to write.</span>
+<span class="sd">    fcontent: :obj:`TJson`</span>
+<span class="sd">        Json-like content to write.</span>
+<span class="sd">    override: bool, default=False</span>
+<span class="sd">        If a file with path `fpath` already exists and overriden is ``True`` the file is overriden,</span>
+<span class="sd">        else if override is ``False`` a :exc:`FileExistsError` exception is raised.</span>
+<span class="sd">    indent: int, default=0</span>
+<span class="sd">        JSON indentation number of whitespace to use, use 0 for compact JSON</span>
+
+<span class="sd">    Keyword Args</span>
+<span class="sd">    ------------</span>
+<span class="sd">    kwargs</span>
+<span class="sd">        Ignored.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Writing: json file: </span><span class="si">{</span><span class="n">fpath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fpath</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">override</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span><span class="n">errno</span><span class="o">.</span><span class="n">EEXIST</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="o">.</span><span class="n">EEXIST</span><span class="p">),</span> <span class="n">fpath</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Overriding: </span><span class="si">{</span><span class="n">fpath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">path_dir</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">fpath</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">path_dir</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">path_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fpath</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">fcontent</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">fcontent</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="n">indent</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Written: </span><span class="si">{</span><span class="n">fpath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="write_pickle"><a class="viewcode-back" href="../../api/uqa.dataset.html#uqa.dataset.write_pickle">[docs]</a><span class="k">def</span> <span class="nf">write_pickle</span><span class="p">(</span><span class="n">fpath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fcontent</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">override</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Picke and write `fcontent` object at path `fpath`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fpath: str</span>
+<span class="sd">        Relative or absolute path of the file to write.</span>
+<span class="sd">    fcontent: :obj:`TJson`</span>
+<span class="sd">        Picklable object to write.</span>
+<span class="sd">    override: bool, default=False</span>
+<span class="sd">        If a file with path `fpath` already exists and overriden is ``True`` the file is overriden,</span>
+<span class="sd">        else if override is ``False`` a :exc:`FileExistsError` exception is raised.</span>
+
+<span class="sd">    Keyword Args</span>
+<span class="sd">    ------------</span>
+<span class="sd">    kwargs</span>
+<span class="sd">        Ignored.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Writing: pickle file: </span><span class="si">{</span><span class="n">fpath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fpath</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">override</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span><span class="n">errno</span><span class="o">.</span><span class="n">EEXIST</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="o">.</span><span class="n">EEXIST</span><span class="p">),</span> <span class="n">fpath</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Overriding: </span><span class="si">{</span><span class="n">fpath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">path_dir</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">fpath</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">path_dir</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">path_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fpath</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">fcontent</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">fcontent</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Written: </span><span class="si">{</span><span class="n">fpath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DataLoader"><a class="viewcode-back" href="../../api/uqa.dataset.html#uqa.dataset.DataLoader">[docs]</a><span class="k">class</span> <span class="nc">DataLoader</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Data loaders base class.</span>
+
+<span class="sd">    | Derived classes only need to implement :meth:`filepaths` abstract methods.</span>
+<span class="sd">    | Manage dataset reading for single or multiple files dataset and allow to specify a directory as a dataset.</span>
+<span class="sd">    | Iterating over an `DataLoader` instance will yield each file path and content.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ---------</span>
+<span class="sd">    sort_filename: bool, default=True</span>
+<span class="sd">        If ``True`` file path and content pairs are sorted in lexicographic order relative to the path.</span>
+<span class="sd">        else files order is randomized</span>
+<span class="sd">    skip_file_cb: Callable[[str], bool], default=None</span>
+<span class="sd">        If provided, each file&#39;s path in the dataset is passed to this callback, if the callback returns ``True``</span>
+<span class="sd">        the file is skipped</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`DataIterable`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DataLoader.__init__"><a class="viewcode-back" href="../../api/uqa.dataset.html#uqa.dataset.DataLoader.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">datapath</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
+        <span class="n">fileformat</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">dataformat</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
+        <span class="n">sort_filename</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">skip_file_cb</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        datapath: str or iterable of str</span>
+<span class="sd">            | Path(s) to a file or directory.</span>
+<span class="sd">            | A path to a directory will be recursively explored and files with the correct extension</span>
+<span class="sd">              will be considered part of the dataset.</span>
+<span class="sd">        fileformat: str, [&quot;json&quot;, &quot;pickle&quot;], default=&quot;json&quot;</span>
+<span class="sd">            | A supported fileformat.</span>
+<span class="sd">            | With ``&quot;json&quot;`` fileformat only ``*.json`` will be matched when exploring a folder.</span>
+<span class="sd">            | With ``&quot;pickle&quot;`` fileformat only ``*.pickle`` will be matched when exploring a folder.</span>
+<span class="sd">        dataformat: str, [&quot;default&quot;, &quot;fquad&quot;], default=&quot;default&quot;</span>
+<span class="sd">            | One of the supported data format.</span>
+<span class="sd">            | The given value is only stored and does not affect the instance behaviour.</span>
+<span class="sd">        sort_filename: bool, default=True</span>
+<span class="sd">            If ``True`` file path and content pairs are sorted in lexicographic order relative to the path.</span>
+<span class="sd">            else files order is randomized</span>
+<span class="sd">        skip_file_cb: Callable[[str], bool], default=None</span>
+<span class="sd">            If provided, each file&#39;s path in the dataset is passed to this callback, if the callback returns ``True``</span>
+<span class="sd">            the file is skipped</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">datapath</span> <span class="o">=</span> <span class="p">[</span><span class="n">datapath</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">datapath</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="n">datapath</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_datapath</span> <span class="o">=</span> <span class="n">datapath</span>
+
+        <span class="n">valid_fileformat</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;json&quot;</span><span class="p">,</span> <span class="s2">&quot;pickle&quot;</span><span class="p">]</span>
+        <span class="n">fileformat</span> <span class="o">=</span> <span class="n">fileformat</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">fileformat</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">valid_fileformat</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;invalid `fileformat`: &#39;</span><span class="si">{</span><span class="n">fileformat</span><span class="si">}</span><span class="s2">&#39;; must be one of </span><span class="si">{</span><span class="n">valid_fileformat</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fileformat</span> <span class="o">=</span> <span class="n">fileformat</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dataformat</span> <span class="o">=</span> <span class="n">dataformat</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sort_filename</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">sort_filename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">skip_file_cb</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">skip_file_cb</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_num_files</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepaths</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_paths_it</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepaths</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">fileformat</span> <span class="o">==</span> <span class="s2">&quot;json&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_reader</span> <span class="o">=</span> <span class="n">read_json</span>
+        <span class="k">elif</span> <span class="n">fileformat</span> <span class="o">==</span> <span class="s2">&quot;pickle&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_reader</span> <span class="o">=</span> <span class="n">read_pickle</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">datapath</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;list of str: List of path passed at initialization.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_datapath</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">fileformat</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;str: File format, one of (`json`, `pickle`).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fileformat</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">dataformat</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;str: Data format, one of (`default`, `fquad`).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dataformat</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_files</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;int: Number of files in the dataset.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_files</span>
+
+<div class="viewcode-block" id="DataLoader.filepaths"><a class="viewcode-back" href="../../api/uqa.dataset.html#uqa.dataset.DataLoader.filepaths">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">filepaths</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Return the list of file paths in the dataset, order depends on :attr:`sort_filename` value.&quot;&quot;&quot;</span>
+        <span class="o">...</span></div>
+
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataIterable</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Use :meth:`filepaths` method result to iterate over the dataset.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        :obj:`.DataIterable`:</span>
+<span class="sd">            `self`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_paths_it</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepaths</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="fm">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="n">fpath</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_paths_it</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_i</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_i</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_files</span><span class="si">}</span><span class="s2">] </span><span class="si">{</span><span class="n">fpath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip_file_cb</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip_file_cb</span><span class="p">(</span><span class="n">fpath</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Skipped!&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">fpath</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reader</span><span class="p">(</span><span class="n">fpath</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FileDataLoader"><a class="viewcode-back" href="../../api/uqa.dataset.html#uqa.dataset.FileDataLoader">[docs]</a><span class="k">class</span> <span class="nc">FileDataLoader</span><span class="p">(</span><span class="n">DataLoader</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Data loader for single/multiple files.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="FileDataLoader.filepaths"><a class="viewcode-back" href="../../api/uqa.dataset.html#uqa.dataset.FileDataLoader.filepaths">[docs]</a>    <span class="k">def</span> <span class="nf">filepaths</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sort_filename</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_datapath</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">paths</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_datapath</span><span class="p">)</span>
+            <span class="n">rd</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">paths</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">paths</span></div></div>
+
+
+<div class="viewcode-block" id="DirDataLoader"><a class="viewcode-back" href="../../api/uqa.dataset.html#uqa.dataset.DirDataLoader">[docs]</a><span class="k">class</span> <span class="nc">DirDataLoader</span><span class="p">(</span><span class="n">DataLoader</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Data loader for single/multiple directory.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">datapath</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
+        <span class="n">fileformat</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">dataformat</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
+        <span class="n">sort_filename</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_paths</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">datapath</span><span class="p">,</span> <span class="n">fileformat</span><span class="p">,</span> <span class="n">dataformat</span><span class="p">,</span> <span class="n">sort_filename</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DirDataLoader.filepaths"><a class="viewcode-back" href="../../api/uqa.dataset.html#uqa.dataset.DirDataLoader.filepaths">[docs]</a>    <span class="k">def</span> <span class="nf">filepaths</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_paths</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_paths</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">dirpath</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datapath</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_paths</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">discover_files</span><span class="p">(</span><span class="n">dirpath</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fileformat</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sort_filename</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_paths</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">paths</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_paths</span><span class="p">)</span>
+            <span class="n">rd</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">paths</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">paths</span></div>
+
+<div class="viewcode-block" id="DirDataLoader.discover_files"><a class="viewcode-back" href="../../api/uqa.dataset.html#uqa.dataset.DirDataLoader.discover_files">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">discover_files</span><span class="p">(</span><span class="n">dirpath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">extension</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Recursively find the files with `extension` in the directory `dir_path` and its subdirectories.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dirpath: str</span>
+<span class="sd">            The path of the folder to explore</span>
+<span class="sd">        extension: str</span>
+<span class="sd">            The target extension</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list of str</span>
+<span class="sd">            The list of files in `dirpath` directory and its sub-directories with extension `extension`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">paths</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">extension</span> <span class="o">=</span> <span class="n">extension</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">subdirpath</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">dirpath</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">filename</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">extension</span><span class="p">:</span>
+                    <span class="n">paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">subdirpath</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">paths</span></div></div>
+
+
+<div class="viewcode-block" id="DataDumper"><a class="viewcode-back" href="../../api/uqa.dataset.html#uqa.dataset.DataDumper">[docs]</a><span class="k">class</span> <span class="nc">DataDumper</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Data dumping class.</span>
+
+<span class="sd">    | Implement fetures for saving a :obj:`DataIterable` in JSON or Pickle format as well</span>
+<span class="sd">      as path modifier factories.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path_modifier: Callable[[str], str], default=no-op</span>
+<span class="sd">        A callback to transform path.</span>
+<span class="sd">    override: bool, default=False</span>
+<span class="sd">        Flag setting existing file overriding behaviour</span>
+<span class="sd">    json_indent: int, default=0</span>
+<span class="sd">        JSON indentation number of whitespace, ignored if using Pickle fileformat</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">fileformat</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path_modifier</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">override</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">json_indent</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="n">valid_fileformat</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;json&quot;</span><span class="p">,</span> <span class="s2">&quot;pickle&quot;</span><span class="p">]</span>
+        <span class="n">fileformat</span> <span class="o">=</span> <span class="n">fileformat</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">fileformat</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">valid_fileformat</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;invalid `fileformat`: &#39;</span><span class="si">{</span><span class="n">fileformat</span><span class="si">}</span><span class="s2">&#39;; must be one of </span><span class="si">{</span><span class="n">valid_fileformat</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fileformat</span> <span class="o">=</span> <span class="n">fileformat</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">path_modifier</span> <span class="o">=</span> <span class="n">path_modifier</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">noop_path_mod</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">override</span> <span class="o">=</span> <span class="n">override</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">json_indent</span> <span class="o">=</span> <span class="n">json_indent</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fileformat</span> <span class="o">==</span> <span class="s2">&quot;json&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span> <span class="o">=</span> <span class="n">write_json</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">fileformat</span> <span class="o">==</span> <span class="s2">&quot;pickle&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span> <span class="o">=</span> <span class="n">write_pickle</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">fileformat</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;str: File format, one of (`json`, `pickle`).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fileformat</span>
+
+<div class="viewcode-block" id="DataDumper.save"><a class="viewcode-back" href="../../api/uqa.dataset.html#uqa.dataset.DataDumper.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_it</span><span class="p">:</span> <span class="n">DataIterable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Apply :attr:`path_modifier` and dump the elements in `data_it`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data_it: DataIterable</span>
+<span class="sd">            An iterator of the data to save.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">fpath</span><span class="p">,</span> <span class="n">fcontent</span> <span class="ow">in</span> <span class="n">data_it</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path_modifier</span><span class="p">(</span><span class="n">fpath</span><span class="p">),</span> <span class="n">fcontent</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">override</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">json_indent</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataDumper.make_skip_cb"><a class="viewcode-back" href="../../api/uqa.dataset.html#uqa.dataset.DataDumper.make_skip_cb">[docs]</a>    <span class="k">def</span> <span class="nf">make_skip_cb</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a function taking an input path as argument and check if the modified path exists.</span>
+
+<span class="sd">        The modified path of a given path ``fpath`` is the result of applying :attr:`path_modifier` to ``fpath``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">override</span><span class="p">:</span>
+            <span class="k">return</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="k">lambda</span> <span class="n">fpath</span><span class="p">:</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path_modifier</span><span class="p">(</span><span class="n">fpath</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="DataDumper.noop_path_mod"><a class="viewcode-back" href="../../api/uqa.dataset.html#uqa.dataset.DataDumper.noop_path_mod">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">noop_path_mod</span><span class="p">(</span><span class="n">fpath</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A function returning its argument without modification.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">fpath</span></div>
+
+<div class="viewcode-block" id="DataDumper.dir_replacer"><a class="viewcode-back" href="../../api/uqa.dataset.html#uqa.dataset.DataDumper.dir_replacer">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">dir_replacer</span><span class="p">(</span><span class="n">from_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">to_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Function factory returning a path modifier function replacing the last occurence</span>
+<span class="sd">        of `from_dir` to `to_dir` in the path.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        from_dir: str</span>
+<span class="sd">            A directory name (doesn&#39;t allow multiple directory)</span>
+<span class="sd">        to_dir: str</span>
+<span class="sd">            A string to substitute `from_dir` with (accepts mutliple dir, i.e. &quot;foo/bar&quot;)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Callable[[str], str]</span>
+<span class="sd">            A function taking a &#39;/&#39;-path string as an argument and replacing the last occurence</span>
+<span class="sd">            of `from_dir` with `to_dir`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">path_modifier</span><span class="p">(</span><span class="n">fpath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="n">dirs</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">fpath</span><span class="p">)</span>
+            <span class="n">sdirs</span> <span class="o">=</span> <span class="n">dirs</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sdirs</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">sdirs</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">from_dir</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Replacing </span><span class="si">{</span><span class="n">from_dir</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">to_dir</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">from_dir</span><span class="si">}</span><span class="s2"> not part of the path </span><span class="si">{</span><span class="n">fpath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">new_spath</span> <span class="o">=</span> <span class="n">sdirs</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">to_dir</span><span class="p">]</span> <span class="o">+</span> <span class="n">sdirs</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span> <span class="o">+</span> <span class="p">[</span><span class="n">filename</span><span class="p">]</span>
+                <span class="k">return</span> <span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="n">new_spath</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">path_modifier</span></div>
+
+<div class="viewcode-block" id="DataDumper.path_replacer"><a class="viewcode-back" href="../../api/uqa.dataset.html#uqa.dataset.DataDumper.path_replacer">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">path_replacer</span><span class="p">(</span><span class="n">new_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Function factory returning a path modifier function replacing the whole path with `new_path`.</span>
+
+<span class="sd">        | Returns ``lambda _: new_path``</span>
+<span class="sd">        | Used for single file dataset.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        new_path: str</span>
+<span class="sd">            The `new_path` to return</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Callable[[str], str]</span>
+<span class="sd">            A function taking a single argument and returning `new_path`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="n">new_path</span></div>
+
+<div class="viewcode-block" id="DataDumper.path_in_dir"><a class="viewcode-back" href="../../api/uqa.dataset.html#uqa.dataset.DataDumper.path_in_dir">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">path_in_dir</span><span class="p">(</span><span class="n">new_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Function factory returning a path modifier function joining `new_dir` and its path argument.</span>
+
+<span class="sd">        | Returns ``lamda fpath: os.path.join(new_dir, fpath)``</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        new_dir: str</span>
+<span class="sd">            A directory name (accepts multiple directory, i.e. &quot;foo/bar&quot;)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Callable[[str], str]</span>
+<span class="sd">            A function taking a &#39;/&#39;-path string argument `fpath` and returning the joined path of</span>
+<span class="sd">            `fpath` in directory `new_dir`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="k">lambda</span> <span class="n">fpath</span><span class="p">:</span> <span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">new_dir</span><span class="p">,</span> <span class="n">fpath</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataDumper.file_in_dir"><a class="viewcode-back" href="../../api/uqa.dataset.html#uqa.dataset.DataDumper.file_in_dir">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">file_in_dir</span><span class="p">(</span><span class="n">new_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Function factory returning a path modifier function joining `new_dir` and its path argument filename.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        new_dir: str</span>
+<span class="sd">            A directory name (accepts multiple directory, i.e. &quot;foo/bar&quot;)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Callable[[str], str]</span>
+<span class="sd">            A function taking a &#39;/&#39;-path string argument `fpath` and returning the joined path of</span>
+<span class="sd">            `fpath` **filename** in directory `new_dir`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="k">lambda</span> <span class="n">fpath</span><span class="p">:</span> <span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">new_dir</span><span class="p">,</span> <span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">fpath</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Boris Tronch, Quentin Churet, Jiahao Lu
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

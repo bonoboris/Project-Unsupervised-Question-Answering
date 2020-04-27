@@ -1,0 +1,847 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>uqa.context_utils &mdash; Unsupervised-Question-Answering 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Unsupervised-Question-Answering
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../data_formats.html">Data Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../models.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../workflow.html">Basic workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cli_usage.html">CLI Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/modules.html">API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Unsupervised-Question-Answering</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>uqa.context_utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for uqa.context_utils</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Data classes.</span>
+
+<span class="sd">| :class:`Context` class stores context&#39;s raw text, processing steps outputs and meta data.</span>
+<span class="sd">| :class:`Label` class stores any extra information about a span of text.</span>
+<span class="sd">| :class:`LabelNode` class extends :class:`Label` to represent hierarchical information on a raw text</span>
+<span class="sd">  such as Constituency parsing results.</span>
+
+<span class="sd">The classes implement features for easy manipulation, visualization and IO operations.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">copy</span> <span class="k">as</span> <span class="nn">cp</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">random</span> <span class="k">as</span> <span class="nn">rd</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">MutableMapping</span><span class="p">,</span> <span class="n">NamedTuple</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Text</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">colorama</span> <span class="kn">import</span> <span class="n">Fore</span>
+
+<span class="kn">from</span> <span class="nn">uqa</span> <span class="kn">import</span> <span class="n">dataset</span>
+
+
+<span class="k">class</span> <span class="nc">_SimpleRepr</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A mixin implementing a simple __repr__.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{klass}</span><span class="s2">(</span><span class="si">{attrs}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">klass</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">=</span><span class="si">{!r}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()),</span>
+        <span class="p">)</span>
+
+
+<div class="viewcode-block" id="yellow"><a class="viewcode-back" href="../../api/uqa.context_utils.html#uqa.context_utils.yellow">[docs]</a><span class="k">def</span> <span class="nf">yellow</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Enclose and return `text` str with ASCII yellow color espace sequence.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">Fore</span><span class="o">.</span><span class="n">YELLOW</span> <span class="o">+</span> <span class="n">text</span> <span class="o">+</span> <span class="n">Fore</span><span class="o">.</span><span class="n">RESET</span></div>
+
+
+<div class="viewcode-block" id="blue"><a class="viewcode-back" href="../../api/uqa.context_utils.html#uqa.context_utils.blue">[docs]</a><span class="k">def</span> <span class="nf">blue</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Enclose and return `text` str with ASCII blue color espace sequence.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">Fore</span><span class="o">.</span><span class="n">BLUE</span> <span class="o">+</span> <span class="n">text</span> <span class="o">+</span> <span class="n">Fore</span><span class="o">.</span><span class="n">RESET</span></div>
+
+
+<div class="viewcode-block" id="red"><a class="viewcode-back" href="../../api/uqa.context_utils.html#uqa.context_utils.red">[docs]</a><span class="k">def</span> <span class="nf">red</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Enclose and return `text` str with ASCII red color espace sequence.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">Fore</span><span class="o">.</span><span class="n">RED</span> <span class="o">+</span> <span class="n">text</span> <span class="o">+</span> <span class="n">Fore</span><span class="o">.</span><span class="n">RESET</span></div>
+
+
+<div class="viewcode-block" id="colorize"><a class="viewcode-back" href="../../api/uqa.context_utils.html#uqa.context_utils.colorize">[docs]</a><span class="k">def</span> <span class="nf">colorize</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Colorize and return `text` with color `color`.</span>
+
+<span class="sd">    Use ASCII color escape sequence and will only display properly on terminal supporting those espace sequence.</span>
+
+<span class="sd">    Args</span>
+<span class="sd">    ----</span>
+<span class="sd">    color: str</span>
+<span class="sd">        Has to be one of: black, red, green, yellow, blue, magenta, cyan, white</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">Fore</span><span class="p">,</span> <span class="n">color</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span> <span class="o">+</span> <span class="n">text</span> <span class="o">+</span> <span class="n">Fore</span><span class="o">.</span><span class="n">RESET</span></div>
+
+
+<div class="viewcode-block" id="Label"><a class="viewcode-back" href="../../api/uqa.context_utils.html#uqa.context_utils.Label">[docs]</a><span class="k">class</span> <span class="nc">Label</span><span class="p">(</span><span class="n">_SimpleRepr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Represent label span of text defined by its start and end indices and a label string.</span>
+
+<span class="sd">    `Label` instances also have an :attr:`extras` attribute to hold any other characteristic,</span>
+<span class="sd">    such as `color` for printing purpose.</span>
+
+<span class="sd">    Implements order operators so that sorting a list of labels returns label</span>
+<span class="sd">    with increasing :attr:`start` indices and from the outermost label to inner most label.</span>
+
+<span class="sd">    Two labels are equals if they have the same :attr:`start`, :attr:`end` indices and :attr:`label`.</span>
+
+<span class="sd">    The `in` operator returns ``True`` is the left operand label is (strictly or not) included</span>
+<span class="sd">    in the right operand label.</span>
+
+<span class="sd">    Also implement dictionnary like attribute accessor for convinience.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    start: int</span>
+<span class="sd">        start index of the label</span>
+<span class="sd">    end: int</span>
+<span class="sd">        end index of the label</span>
+<span class="sd">    label: string</span>
+<span class="sd">        label category</span>
+<span class="sd">    extras: Dict[str, Any]</span>
+<span class="sd">        holds extra informations such as color for pretty printing.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Label.__init__"><a class="viewcode-back" href="../../api/uqa.context_utils.html#uqa.context_utils.Label.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">extras</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        start: int</span>
+<span class="sd">            start index of the label</span>
+<span class="sd">        end: int</span>
+<span class="sd">            end index of the label</span>
+<span class="sd">        label: string</span>
+<span class="sd">            label category</span>
+
+<span class="sd">        Keyword Arguments</span>
+<span class="sd">        -----------------</span>
+<span class="sd">        extras:</span>
+<span class="sd">            Stored as :attr:`extras` entries</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">start</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end</span> <span class="o">=</span> <span class="n">end</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">label</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extras</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="o">**</span><span class="n">extras</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Label.extract"><a class="viewcode-back" href="../../api/uqa.context_utils.html#uqa.context_utils.Label.extract">[docs]</a>    <span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return text[:attr:`.start`, :attr:`.end`]&quot;&quot;&quot;</span>
+        <span class="n">off</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extras</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;offset&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">text</span><span class="p">[</span><span class="n">off</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="p">:</span> <span class="n">off</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Label.to_json"><a class="viewcode-back" href="../../api/uqa.context_utils.html#uqa.context_utils.Label.to_json">[docs]</a>    <span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude_extras</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns the instance attributes as a json-like dict.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        exclude_extras: bool, default=True</span>
+<span class="sd">            If True, exclude :attr:`.extras` value from the result.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">exclude_extras</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;extras&quot;</span> <span class="ow">in</span> <span class="n">ret</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;extras&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">ret</span></div>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Get instance attibrute with name `key`.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set instance attribute `key` with `value`.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;Label&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Label</span><span class="p">):</span>
+            <span class="k">return</span> <span class="ne">NotImplementedError</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">start</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">start</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span> <span class="o">&gt;</span> <span class="n">other</span><span class="o">.</span><span class="n">end</span>
+
+    <span class="k">def</span> <span class="fm">__le__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;Label&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Label</span><span class="p">):</span>
+            <span class="k">return</span> <span class="ne">NotImplementedError</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">start</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">start</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span> <span class="o">&gt;=</span> <span class="n">other</span><span class="o">.</span><span class="n">end</span>
+
+    <span class="k">def</span> <span class="fm">__gt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;Label&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span> <span class="o">&lt;=</span> <span class="n">other</span>
+
+    <span class="k">def</span> <span class="fm">__ge__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;Label&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span> <span class="o">&lt;</span> <span class="n">other</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;Label&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Label</span><span class="p">):</span>
+            <span class="k">return</span> <span class="ne">NotImplementedError</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">start</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">end</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">label</span>
+
+    <span class="k">def</span> <span class="nf">__neq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;Label&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">other</span>
+
+    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;Label&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Label</span><span class="p">):</span>
+            <span class="k">return</span> <span class="ne">NotImplementedError</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">&lt;=</span> <span class="n">other</span><span class="o">.</span><span class="n">start</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">end</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span>
+
+<div class="viewcode-block" id="Label.copy"><a class="viewcode-back" href="../../api/uqa.context_utils.html#uqa.context_utils.Label.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">extras</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns a deep copy of the label.</span>
+
+<span class="sd">        Keyword Arguments</span>
+<span class="sd">        ------------------</span>
+<span class="sd">        extras</span>
+<span class="sd">            Entries to add / update in the copied :attr:`extras` attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cop</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">extras</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">cop</span><span class="o">.</span><span class="n">extras</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+        <span class="k">return</span> <span class="n">cop</span></div></div>
+
+
+<div class="viewcode-block" id="LabelNode"><a class="viewcode-back" href="../../api/uqa.context_utils.html#uqa.context_utils.LabelNode">[docs]</a><span class="k">class</span> <span class="nc">LabelNode</span><span class="p">(</span><span class="n">Label</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Extend :class:`Label` with a :attr:`children` attribute to represent a labels hierarchy.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    children: list of :class:`LabelNode`</span>
+<span class="sd">        List of childen in ascending order</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="LabelNode.__init__"><a class="viewcode-back" href="../../api/uqa.context_utils.html#uqa.context_utils.LabelNode.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">children</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;LabelNode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span> <span class="o">**</span><span class="n">extras</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        start: int</span>
+<span class="sd">            start index of the label</span>
+<span class="sd">        end: int</span>
+<span class="sd">            end index of the label</span>
+<span class="sd">        label: string</span>
+<span class="sd">            label category</span>
+<span class="sd">        children: Iterable[LabelNode]</span>
+<span class="sd">            List of children nodes.</span>
+
+<span class="sd">        Keyword Arguments</span>
+<span class="sd">        -----------------</span>
+<span class="sd">        extras:</span>
+<span class="sd">            Stored as :attr:`.extras` entries</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="o">**</span><span class="n">extras</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;LabelNode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">children</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="LabelNode.to_json"><a class="viewcode-back" href="../../api/uqa.context_utils.html#uqa.context_utils.LabelNode.to_json">[docs]</a>    <span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude_extras</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns the hierachy labels hierarchy as a json-like dict.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        exclude_extras: bool, default=True</span>
+<span class="sd">            If True, exclude :attr:`.extras` value from the result.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">exclude_extras</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ret</span><span class="p">[</span><span class="s2">&quot;children&quot;</span><span class="p">])):</span>
+            <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;children&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;children&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span>
+        <span class="n">ord_ret</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="n">ord_ret</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span>
+        <span class="n">ord_ret</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">]</span>
+        <span class="n">ord_ret</span><span class="p">[</span><span class="s2">&quot;end&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;end&quot;</span><span class="p">]</span>
+        <span class="n">other_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">({</span><span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="s2">&quot;children&quot;</span><span class="p">})</span>
+        <span class="n">ord_ret</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">ret</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">other_keys</span><span class="p">})</span>
+        <span class="n">ord_ret</span><span class="p">[</span><span class="s2">&quot;children&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[</span><span class="s2">&quot;children&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">ord_ret</span></div>
+
+<div class="viewcode-block" id="LabelNode.from_json"><a class="viewcode-back" href="../../api/uqa.context_utils.html#uqa.context_utils.LabelNode.from_json">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">jsonlike</span><span class="p">:</span> <span class="n">MutableMapping</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;LabelNode&quot;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Instaciate and return an `LabelNode` instance from a json-like data structure.</span>
+
+<span class="sd">        `jsonlike` keys name must match the attribute names,</span>
+<span class="sd">        any extra field content will be stored in :attr:`.extras`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">children</span> <span class="o">=</span> <span class="n">jsonlike</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;children&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">())</span>
+        <span class="n">inst</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">jsonlike</span><span class="p">)</span>
+        <span class="n">inst</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">children</span><span class="p">:</span>
+            <span class="n">inst</span><span class="o">.</span><span class="n">children</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">child</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">inst</span></div>
+
+<div class="viewcode-block" id="LabelNode.flat_iter"><a class="viewcode-back" href="../../api/uqa.context_utils.html#uqa.context_utils.LabelNode.flat_iter">[docs]</a>    <span class="k">def</span> <span class="nf">flat_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="s2">&quot;LabelNode&quot;</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Iterate the sub tree defined by this node from lowest to biggest (relative to Label order).</span>
+
+<span class="sd">        The first label yielded is always the instance bounded.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">yield</span> <span class="bp">self</span>
+        <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+            <span class="k">yield from</span> <span class="n">child</span><span class="o">.</span><span class="n">flat_iter</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="LabelNode.to_label"><a class="viewcode-back" href="../../api/uqa.context_utils.html#uqa.context_utils.LabelNode.to_label">[docs]</a>    <span class="k">def</span> <span class="nf">to_label</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Label</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns a Label instance containing the same :attr:`.start`, :attr:`.end` and :attr:`.extras` values.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Label</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">extras</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="LabelNode.copy"><a class="viewcode-back" href="../../api/uqa.context_utils.html#uqa.context_utils.LabelNode.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">depth</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>  <span class="c1"># pylint: disable=arguments-differ</span>
+        <span class="sd">&quot;&quot;&quot;Return a deep-copy of this instance.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        depth: int, default=-1</span>
+<span class="sd">            The depth to which the copy is done, if negative the entire hierarchy is copied,</span>
+<span class="sd">            if 0, similar to self.copy_no_child()</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        :class:`LabelNode`</span>
+<span class="sd">            The new copied instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy_no_child</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">depth</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+                <span class="n">cop</span><span class="o">.</span><span class="n">children</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">child</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">depth</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">cop</span></div>
+
+<div class="viewcode-block" id="LabelNode.copy_no_child"><a class="viewcode-back" href="../../api/uqa.context_utils.html#uqa.context_utils.LabelNode.copy_no_child">[docs]</a>    <span class="k">def</span> <span class="nf">copy_no_child</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">extras</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;LabelNode&quot;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Copy this instance without copying its children.</span>
+
+<span class="sd">        Keyword Arguments</span>
+<span class="sd">        -----------------</span>
+<span class="sd">        extras:</span>
+<span class="sd">            Udpate the copied instance :attr:`.extras` dictionnary</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cop</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">cop</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="n">cop</span><span class="o">.</span><span class="n">extras</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extras</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cop</span></div>
+
+<div class="viewcode-block" id="LabelNode.from_labels"><a class="viewcode-back" href="../../api/uqa.context_utils.html#uqa.context_utils.LabelNode.from_labels">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_labels</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">labels</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Label</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;LabelNode&quot;</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Build and return a list LabelNode hierarchies from `labels` iterable.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        labels: Iterable of :class:`Label`</span>
+<span class="sd">            An iterable of labels either included in ou distinct from one another.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list of :class:`LabelNode`</span>
+<span class="sd">            The forest (graph theory) made of labels in `labels` iterable as a list of the roots of each tree.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">labels</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Label</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">parents</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;LabelNode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">root</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>
+            <span class="k">while</span> <span class="n">l</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">parents</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="n">parents</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="n">inst</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="nb">vars</span><span class="p">(</span><span class="n">l</span><span class="p">))</span>
+            <span class="n">parents</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">children</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">inst</span><span class="p">)</span>
+            <span class="n">parents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">inst</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">root</span><span class="o">.</span><span class="n">children</span></div></div>
+
+
+<div class="viewcode-block" id="set_color_all"><a class="viewcode-back" href="../../api/uqa.context_utils.html#uqa.context_utils.set_color_all">[docs]</a><span class="k">def</span> <span class="nf">set_color_all</span><span class="p">(</span><span class="n">label_iterable</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="s2">&quot;Label&quot;</span><span class="p">],</span> <span class="n">color</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Set the color `color` to all labels in `label_iterable`, if the iterable contains a label node</span>
+<span class="sd">    set the color to the whole hierarchy&quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">label_iterable</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">LabelNode</span><span class="p">):</span>
+            <span class="n">label</span><span class="o">.</span><span class="n">extras</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">color</span>
+            <span class="k">for</span> <span class="n">sub_label</span> <span class="ow">in</span> <span class="n">label</span><span class="o">.</span><span class="n">flat_iter</span><span class="p">():</span>
+                <span class="n">sub_label</span><span class="o">.</span><span class="n">extras</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">color</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">Label</span><span class="p">):</span>
+            <span class="n">label</span><span class="o">.</span><span class="n">extras</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">color</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">set_color_all</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="set_color_hier"><a class="viewcode-back" href="../../api/uqa.context_utils.html#uqa.context_utils.set_color_hier">[docs]</a><span class="k">def</span> <span class="nf">set_color_hier</span><span class="p">(</span>
+    <span class="n">label_nodes</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">LabelNode</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">LabelNode</span><span class="p">]],</span> <span class="n">colors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">depth_offset</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Cycle through `colors` and assign a color to each labels in `label_nodes`</span>
+<span class="sd">    and their hierarchy depending to their depth.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    label_node: :class:`LabelNode` or Iterable of :class:`LabelNode`</span>
+<span class="sd">        a single :class:`LabelNode` or an iterable of :class:`LabelNode`</span>
+<span class="sd">    colors:</span>
+<span class="sd">        List of colors to use</span>
+<span class="sd">    depth_offset:</span>
+<span class="sd">        The depth offset of the label(s) in `label_nodes`, the first color used is colors[depth_off % len(colors)].</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">colors</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="n">color</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">color</span> <span class="ow">in</span> <span class="s2">&quot;red, green, yellow, blue, magenta, cyan&quot;</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">label_nodes</span><span class="p">,</span> <span class="n">LabelNode</span><span class="p">):</span>
+        <span class="n">label_nodes</span><span class="o">.</span><span class="n">extras</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">colors</span><span class="p">[</span><span class="n">depth_offset</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">colors</span><span class="p">)]</span>
+        <span class="n">set_color_hier</span><span class="p">(</span><span class="n">label_nodes</span><span class="o">.</span><span class="n">children</span><span class="p">,</span> <span class="n">colors</span><span class="p">,</span> <span class="n">depth_offset</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">label_nodes</span><span class="p">:</span>
+            <span class="n">set_color_hier</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">colors</span><span class="p">,</span> <span class="n">depth_offset</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="QA"><a class="viewcode-back" href="../../api/uqa.context_utils.html#uqa.context_utils.QA">[docs]</a><span class="k">class</span> <span class="nc">QA</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">,</span> <span class="n">_SimpleRepr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A question / answer pair of labels, the question is a string while the answer is a :class:`Label`&quot;&quot;&quot;</span>
+
+    <span class="n">question</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">answer</span><span class="p">:</span> <span class="n">Label</span>
+
+<div class="viewcode-block" id="QA.to_json"><a class="viewcode-back" href="../../api/uqa.context_utils.html#uqa.context_utils.QA.to_json">[docs]</a>    <span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude_extras</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Return a json-like dict representing the :class:`QA` instance.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">(</span><span class="n">question</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">question</span><span class="p">,</span> <span class="n">answer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">answer</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">exclude_extras</span><span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="Context"><a class="viewcode-back" href="../../api/uqa.context_utils.html#uqa.context_utils.Context">[docs]</a><span class="k">class</span> <span class="nc">Context</span><span class="p">(</span><span class="n">_SimpleRepr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Represent a context and its computed features.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fpath: str</span>
+<span class="sd">        The file from which this context was red from</span>
+<span class="sd">    doc_id: int</span>
+<span class="sd">        The context&#39;s document (article) id</span>
+<span class="sd">    doc_title: str</span>
+<span class="sd">        The context&#39;s document title</span>
+<span class="sd">    context_id: int</span>
+<span class="sd">        The context&#39;s index in its document</span>
+<span class="sd">    text: str</span>
+<span class="sd">        The context raw text</span>
+<span class="sd">    ner: Iterable of :class:`Label`</span>
+<span class="sd">        The list of computed named entities.</span>
+<span class="sd">    constituents: Iterable of :class:`LabelNode`</span>
+<span class="sd">        The forest of constituent as a list of :class:`LabelNode`; each root is a sentence in the :attr:`text`.</span>
+<span class="sd">    qas: Iterable of :class:`QA`</span>
+<span class="sd">        The list of generated question answer pairs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">fpath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">doc_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">doc_title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">context_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">ner</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Label</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
+        <span class="n">constituents</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">LabelNode</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
+        <span class="n">qas</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">QA</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fpath</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">fpath</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">doc_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">doc_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">doc_title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">doc_title</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">context_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">context_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">text</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ner</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Label</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">ner</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">constituents</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">LabelNode</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">constituents</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qas</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">QA</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">qas</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Context.from_json"><a class="viewcode-back" href="../../api/uqa.context_utils.html#uqa.context_utils.Context.from_json">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Context&quot;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Instanciate a context from json-like data structure with keys matching this class attributes names.</span>
+
+<span class="sd">        The classmethod cast sub-dictionnaries of `data` into the appropriate types :class:`Label`, :class:`LabelNode`</span>
+<span class="sd">        and :class:`QA`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">inst</span><span class="p">:</span> <span class="n">Context</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;fpath&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;doc_id&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;doc_title&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;context_id&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s2">&quot;ner&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">ent</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;ner&quot;</span><span class="p">]:</span>
+                <span class="n">inst</span><span class="o">.</span><span class="n">ner</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Label</span><span class="p">(</span><span class="o">**</span><span class="n">ent</span><span class="p">))</span>
+        <span class="k">if</span> <span class="s2">&quot;constituents&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">sent_consts</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;constituents&quot;</span><span class="p">]:</span>
+                <span class="n">inst</span><span class="o">.</span><span class="n">constituents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">LabelNode</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">sent_consts</span><span class="p">))</span>
+        <span class="k">if</span> <span class="s2">&quot;qas&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">qa</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;qas&quot;</span><span class="p">]:</span>
+                <span class="n">inst</span><span class="o">.</span><span class="n">qas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">QA</span><span class="p">(</span><span class="n">question</span><span class="o">=</span><span class="n">qa</span><span class="p">[</span><span class="s2">&quot;question&quot;</span><span class="p">],</span> <span class="n">answer</span><span class="o">=</span><span class="n">Label</span><span class="p">(</span><span class="o">**</span><span class="n">qa</span><span class="p">[</span><span class="s2">&quot;answer&quot;</span><span class="p">])))</span>
+        <span class="k">return</span> <span class="n">inst</span></div>
+
+<div class="viewcode-block" id="Context.set_color_all"><a class="viewcode-back" href="../../api/uqa.context_utils.html#uqa.context_utils.Context.set_color_all">[docs]</a>    <span class="k">def</span> <span class="nf">set_color_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Calls :func:`set_color_all` on the attribute named `attr_name` with `color`.&quot;&quot;&quot;</span>
+        <span class="n">set_color_all</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">),</span> <span class="n">color</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Context.set_color_hier"><a class="viewcode-back" href="../../api/uqa.context_utils.html#uqa.context_utils.Context.set_color_hier">[docs]</a>    <span class="k">def</span> <span class="nf">set_color_hier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">colors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Calls :func:`set_color_hier` on the attribute named `attr_name` with `colors`.&quot;&quot;&quot;</span>
+        <span class="n">set_color_hier</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">),</span> <span class="n">colors</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Context.header"><a class="viewcode-back" href="../../api/uqa.context_utils.html#uqa.context_utils.Context.header">[docs]</a>    <span class="k">def</span> <span class="nf">header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns a string with the file path in the first line and the article id,</span>
+<span class="sd">        title and the context id in the second line.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        color: None, str, or pair of str, default=None</span>
+<span class="sd">            | If None, no coloring is applied,</span>
+<span class="sd">            | if one color is passed, colorize both lines with it</span>
+<span class="sd">            | if a pair of colors is passed colorize each line with one the colors.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">line1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fpath</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">line2</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">doc_id</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">doc_title</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">context_id</span><span class="si">}</span><span class="s2">]&quot;</span>
+        <span class="k">if</span> <span class="n">color</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">line1</span> <span class="o">+</span> <span class="n">line2</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">color</span><span class="p">,</span> <span class="n">Text</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">colorize</span><span class="p">(</span><span class="n">line1</span> <span class="o">+</span> <span class="n">line2</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">col1</span><span class="p">,</span> <span class="n">col2</span> <span class="o">=</span> <span class="n">color</span>
+            <span class="k">return</span> <span class="n">colorize</span><span class="p">(</span><span class="n">line1</span><span class="p">,</span> <span class="n">col1</span><span class="p">)</span> <span class="o">+</span> <span class="n">colorize</span><span class="p">(</span><span class="n">line2</span><span class="p">,</span> <span class="n">col2</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="decorate_span"><a class="viewcode-back" href="../../api/uqa.context_utils.html#uqa.context_utils.decorate_span">[docs]</a><span class="k">def</span> <span class="nf">decorate_span</span><span class="p">(</span><span class="n">text_span</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="n">Label</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;[</span><span class="si">{label}</span><span class="s2"> </span><span class="si">{txt}</span><span class="s2">]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Decorate the whole `text_span` with `label` following the `template`.</span>
+
+<span class="sd">    | If `label` contains a `color` entry in its :attr:`Label.extras` attribute, the color is applied</span>
+<span class="sd">      to all characters but the `text_span`.</span>
+<span class="sd">    | :attr:`Label.start` and :attr:`Label.end` are ignored.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    text_span: str</span>
+<span class="sd">        Piece of text to decorate</span>
+<span class="sd">    label: :class:`Label`</span>
+<span class="sd">        A :class:`Label` or :class:`LabelNode` instance</span>
+<span class="sd">    template: str, default=&quot;[{label} {txt}]&quot;</span>
+<span class="sd">        A template str with placeholders `{label}` and `{txt}`</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str:</span>
+<span class="sd">        `text_span` decorated with `label` according to the template</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;color&quot;</span> <span class="ow">in</span> <span class="n">label</span><span class="o">.</span><span class="n">extras</span><span class="p">:</span>
+        <span class="n">color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">extras</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">]</span>
+        <span class="n">text_span</span> <span class="o">=</span> <span class="n">Fore</span><span class="o">.</span><span class="n">RESET</span> <span class="o">+</span> <span class="n">text_span</span> <span class="o">+</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">Fore</span><span class="p">,</span> <span class="n">color</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="n">colorize</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">txt</span><span class="o">=</span><span class="n">text_span</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="decorate"><a class="viewcode-back" href="../../api/uqa.context_utils.html#uqa.context_utils.decorate">[docs]</a><span class="k">def</span> <span class="nf">decorate</span><span class="p">(</span>
+    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">labels</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;[</span><span class="si">{label}</span><span class="s2"> </span><span class="si">{txt}</span><span class="s2">]&quot;</span><span class="p">,</span> <span class="n">autocoloring</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show_no_label</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Decorate `text` with `labels` according to the `template`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    text: str</span>
+<span class="sd">        The text to decorate</span>
+<span class="sd">    labels: Iterable</span>
+<span class="sd">        An recursivesly iterable container where all leaves are either :class:`Label`, :class:`LabelNode` or</span>
+<span class="sd">        dict representing a Label.</span>
+<span class="sd">    format: str</span>
+<span class="sd">        template for the decoration part must contains placeholders {label} and {txt}.</span>
+<span class="sd">    autocoloring: bool, default=False</span>
+<span class="sd">        If ``True`` override `color` :attr:`.extras` setting with cyclic coloring of the label.</span>
+<span class="sd">    show_no_label: bool, default=False</span>
+<span class="sd">        If ``False`` don&#39;t use `labels` with empty :attr:`~.Label.label` value.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str:</span>
+<span class="sd">        The decorated colorized string</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">        `labels` must be either nested in or distinct from one another.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">flatten</span><span class="p">(</span><span class="n">labels_it</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">):</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">labels_it</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">LabelNode</span><span class="p">):</span>
+                <span class="n">ret</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">flat_iter</span><span class="p">())</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Label</span><span class="p">):</span>
+                <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+                <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Label</span><span class="p">(</span><span class="o">**</span><span class="n">obj</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ret</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">flatten</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">flatten</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">show_no_label</span><span class="p">:</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">l</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">labels</span> <span class="k">if</span> <span class="n">l</span><span class="o">.</span><span class="n">label</span><span class="p">]</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">autocoloring</span><span class="p">:</span>
+        <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="n">el</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="s2">&quot;red, green, yellow, blue, magenta, cyan&quot;</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">labels</span><span class="p">):</span>
+            <span class="n">l</span><span class="o">.</span><span class="n">extras</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">colors</span><span class="p">[</span><span class="n">i</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">colors</span><span class="p">)]</span>
+
+    <span class="k">def</span> <span class="nf">_rec</span><span class="p">(</span><span class="n">li</span><span class="p">,</span> <span class="n">lj</span><span class="p">,</span> <span class="n">ti</span><span class="p">,</span> <span class="n">tj</span><span class="p">):</span>
+        <span class="c1"># simple case: label interval == empty, return the text in [ti, tj]</span>
+        <span class="k">if</span> <span class="n">lj</span> <span class="o">==</span> <span class="n">li</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">text</span><span class="p">[</span><span class="n">ti</span><span class="p">:</span><span class="n">tj</span><span class="p">]</span>
+        <span class="c1"># simple case: label interval == singleton, return the decorated text in [ti, tj]</span>
+        <span class="k">if</span> <span class="n">lj</span> <span class="o">-</span> <span class="n">li</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">li</span><span class="p">]</span>
+            <span class="n">_before</span> <span class="o">=</span> <span class="n">text</span><span class="p">[</span><span class="n">ti</span> <span class="p">:</span> <span class="n">label</span><span class="o">.</span><span class="n">start</span><span class="p">]</span>
+            <span class="n">_to_dec</span> <span class="o">=</span> <span class="n">text</span><span class="p">[</span><span class="n">label</span><span class="o">.</span><span class="n">start</span> <span class="p">:</span> <span class="n">label</span><span class="o">.</span><span class="n">end</span><span class="p">]</span>
+            <span class="n">_after</span> <span class="o">=</span> <span class="n">text</span><span class="p">[</span><span class="n">label</span><span class="o">.</span><span class="n">end</span> <span class="p">:</span> <span class="n">tj</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">_before</span> <span class="o">+</span> <span class="n">decorate_span</span><span class="p">(</span><span class="n">_to_dec</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">template</span><span class="p">)</span> <span class="o">+</span> <span class="n">_after</span>
+        <span class="c1"># rec:</span>
+        <span class="c1">#   args are so that ti &lt;= labels[li].start &lt; labels[lj-1].end &lt;= tj</span>
+        <span class="c1">#   operations: inside labels[li:lj] and text[ti:tj]:</span>
+        <span class="c1">#       - for each parent label find the final substring they decorate by rec (final meaning after decoration of childs labels)</span>
+        <span class="c1">#           and apply the decoration</span>
+        <span class="c1">#       - concatenate non decorated parts and parent decorated parts</span>
+
+        <span class="c1"># add first non decorated part</span>
+        <span class="n">decorated</span> <span class="o">=</span> <span class="n">text</span><span class="p">[</span><span class="n">ti</span> <span class="p">:</span> <span class="n">labels</span><span class="p">[</span><span class="n">li</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">]</span>
+
+        <span class="n">lp</span> <span class="o">=</span> <span class="n">li</span>
+        <span class="n">parent</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">lp</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">li</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">lj</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">labels</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">parent</span><span class="p">:</span>
+                <span class="c1"># get substring to be decorated</span>
+                <span class="n">substr</span> <span class="o">=</span> <span class="n">_rec</span><span class="p">(</span><span class="n">lp</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">parent</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">parent</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>
+                <span class="c1"># decorate and concatenate</span>
+                <span class="n">decorated</span> <span class="o">+=</span> <span class="n">decorate_span</span><span class="p">(</span><span class="n">substr</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">template</span><span class="p">)</span>
+                <span class="c1"># concatenate non decorated part</span>
+                <span class="n">decorated</span> <span class="o">+=</span> <span class="n">text</span><span class="p">[</span><span class="n">parent</span><span class="o">.</span><span class="n">end</span> <span class="p">:</span> <span class="n">labels</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">]</span>
+                <span class="c1"># update parent, lp</span>
+                <span class="n">lp</span> <span class="o">=</span> <span class="n">k</span>
+                <span class="n">parent</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">lp</span><span class="p">]</span>
+        <span class="c1"># add last parent</span>
+        <span class="n">substr</span> <span class="o">=</span> <span class="n">_rec</span><span class="p">(</span><span class="n">lp</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">lj</span><span class="p">,</span> <span class="n">parent</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">parent</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>
+        <span class="n">decorated</span> <span class="o">+=</span> <span class="n">decorate_span</span><span class="p">(</span><span class="n">substr</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">template</span><span class="p">)</span>
+
+        <span class="c1"># add last non decorated part</span>
+        <span class="n">decorated</span> <span class="o">+=</span> <span class="n">text</span><span class="p">[</span><span class="n">parent</span><span class="o">.</span><span class="n">end</span> <span class="p">:</span> <span class="n">tj</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">decorated</span>
+
+    <span class="k">return</span> <span class="n">_rec</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="contextify"><a class="viewcode-back" href="../../api/uqa.context_utils.html#uqa.context_utils.contextify">[docs]</a><span class="k">def</span> <span class="nf">contextify</span><span class="p">(</span><span class="n">data_it</span><span class="p">:</span> <span class="n">dataset</span><span class="o">.</span><span class="n">DataIterable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Context</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Extract and yield :class:`Context` instances from `default` structre iterable `data_it`.&quot;&quot;&quot;</span>
+    <span class="n">jcontext</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">fpath</span><span class="p">,</span> <span class="n">fcontent</span> <span class="ow">in</span> <span class="n">data_it</span><span class="p">:</span>
+        <span class="n">jcontext</span><span class="p">[</span><span class="s2">&quot;fpath&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fpath</span>
+        <span class="k">for</span> <span class="n">article</span> <span class="ow">in</span> <span class="n">fcontent</span><span class="p">:</span>
+            <span class="n">jcontext</span><span class="p">[</span><span class="s2">&quot;doc_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">article</span><span class="p">[</span><span class="s2">&quot;id_article&quot;</span><span class="p">]</span>
+            <span class="n">jcontext</span><span class="p">[</span><span class="s2">&quot;doc_title&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">article</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">para</span> <span class="ow">in</span> <span class="n">article</span><span class="p">[</span><span class="s2">&quot;contexts&quot;</span><span class="p">]:</span>
+                <span class="n">jcontext</span><span class="p">[</span><span class="s2">&quot;context_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">para</span><span class="p">[</span><span class="s2">&quot;id_context&quot;</span><span class="p">]</span>
+                <span class="n">jcontext</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">para</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span>
+                <span class="n">jcontext</span><span class="p">[</span><span class="s2">&quot;ner&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">para</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;entities&quot;</span><span class="p">,</span> <span class="p">())</span>
+                <span class="n">jcontext</span><span class="p">[</span><span class="s2">&quot;constituents&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">para</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;constituency&quot;</span><span class="p">,</span> <span class="p">())</span>
+                <span class="n">jcontext</span><span class="p">[</span><span class="s2">&quot;qas&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">para</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;qas&quot;</span><span class="p">,</span> <span class="p">())</span>
+                <span class="k">yield</span> <span class="n">Context</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">jcontext</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="contextify_rd"><a class="viewcode-back" href="../../api/uqa.context_utils.html#uqa.context_utils.contextify_rd">[docs]</a><span class="k">def</span> <span class="nf">contextify_rd</span><span class="p">(</span><span class="n">data_it</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Context</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Extract and shuffle and yield :class:`Context` instances from `default` structre iterable `data_it`.</span>
+
+<span class="sd">    Shuffling is done per file content.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">fpath</span><span class="p">,</span> <span class="n">fcontent</span> <span class="ow">in</span> <span class="n">data_it</span><span class="p">:</span>
+        <span class="n">fcontexts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">contextify</span><span class="p">((</span><span class="n">fpath</span><span class="p">,</span> <span class="n">fcontent</span><span class="p">)))</span>
+        <span class="n">rd</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">fcontexts</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">context</span> <span class="ow">in</span> <span class="n">fcontexts</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">context</span></div>
+
+
+<div class="viewcode-block" id="jsonify"><a class="viewcode-back" href="../../api/uqa.context_utils.html#uqa.context_utils.jsonify">[docs]</a><span class="k">def</span> <span class="nf">jsonify</span><span class="p">(</span><span class="n">context_it</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Context</span><span class="p">],</span> <span class="n">include_qas</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dataset</span><span class="o">.</span><span class="n">DataIterable</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Reverse operation of :func:`conetxtify`,</span>
+<span class="sd">    recrate a dataset iterable from an ordered `context_it`.</span>
+
+<span class="sd">    `context_it` must yield context in the order it was created by :func:`contextify`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    context_it: Iterable of :class:`Context`</span>
+<span class="sd">        Context iterable</span>
+<span class="sd">    include_qas: bool, default=True</span>
+<span class="sd">        If ``False`` discard :attr:`Context.qas` values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">articles_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">cur_fpath</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">context</span> <span class="ow">in</span> <span class="n">context_it</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">cur_fpath</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cur_fpath</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">fpath</span>
+        <span class="k">if</span> <span class="n">context</span><span class="o">.</span><span class="n">fpath</span> <span class="o">!=</span> <span class="n">cur_fpath</span><span class="p">:</span>
+            <span class="n">json_content</span> <span class="o">=</span> <span class="p">[</span><span class="n">article</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">article</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">articles_dict</span><span class="o">.</span><span class="n">items</span><span class="p">())]</span>
+            <span class="k">yield</span> <span class="n">cur_fpath</span><span class="p">,</span> <span class="n">json_content</span>
+            <span class="n">articles_dict</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="n">cur_fpath</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">fpath</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">context</span><span class="o">.</span><span class="n">doc_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">articles_dict</span><span class="p">:</span>
+                <span class="n">articles_dict</span><span class="p">[</span><span class="n">context</span><span class="o">.</span><span class="n">doc_id</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">id_doc</span><span class="o">=</span><span class="n">context</span><span class="o">.</span><span class="n">doc_id</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">context</span><span class="o">.</span><span class="n">doc_title</span><span class="p">,</span> <span class="n">contexts</span><span class="o">=</span><span class="nb">list</span><span class="p">())</span>
+            <span class="n">dct</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">id_context</span><span class="o">=</span><span class="n">context</span><span class="o">.</span><span class="n">context_id</span><span class="p">,</span>
+                <span class="n">text</span><span class="o">=</span><span class="n">context</span><span class="o">.</span><span class="n">text</span><span class="p">,</span>
+                <span class="n">entities</span><span class="o">=</span><span class="p">[</span><span class="n">el</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">context</span><span class="o">.</span><span class="n">ner</span><span class="p">],</span>
+                <span class="n">constituency</span><span class="o">=</span><span class="p">[</span><span class="n">el</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">context</span><span class="o">.</span><span class="n">constituents</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">include_qas</span><span class="p">:</span>
+                <span class="n">dct</span><span class="p">[</span><span class="s2">&quot;qas&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">qa</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span> <span class="k">for</span> <span class="n">qa</span> <span class="ow">in</span> <span class="n">context</span><span class="o">.</span><span class="n">qas</span><span class="p">]</span>
+            <span class="n">articles_dict</span><span class="p">[</span><span class="n">context</span><span class="o">.</span><span class="n">doc_id</span><span class="p">][</span><span class="s2">&quot;contexts&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dct</span><span class="p">)</span>
+
+    <span class="c1"># yield last json file content</span>
+    <span class="n">json_content</span> <span class="o">=</span> <span class="p">[</span><span class="n">article</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">article</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">articles_dict</span><span class="o">.</span><span class="n">items</span><span class="p">())]</span>
+    <span class="k">yield</span> <span class="n">cur_fpath</span><span class="p">,</span> <span class="n">json_content</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Boris Tronch, Quentin Churet, Jiahao Lu
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

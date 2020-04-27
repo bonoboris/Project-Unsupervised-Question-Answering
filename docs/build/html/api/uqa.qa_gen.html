@@ -1,0 +1,339 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>uqa.qa_gen module &mdash; Unsupervised-Question-Answering 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="uqa.reading_wiki_dumps module" href="uqa.reading_wiki_dumps.html" />
+    <link rel="prev" title="uqa.ner module" href="uqa.ner.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Unsupervised-Question-Answering
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_formats.html">Data Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../models.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../workflow.html">Basic workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cli_usage.html">CLI Usage</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">API documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="uqa.html">uqa</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="uqa.html#main-featutes-processing-pipeline">Main featutes / processing pipeline:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="uqa.html#question-answer-generation-key-points">Question / answer generation key points</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="uqa.html#modules">Modules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="uqa.clean.html">uqa.clean module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.cli.html">uqa.cli module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.cli_helpers.html">uqa.cli_helpers module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.constituency.html">uqa.constituency module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.context_utils.html">uqa.context_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.dataset.html">uqa.dataset module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.download.html">uqa.download module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.fquad_utils.html">uqa.fquad_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.list_utils.html">uqa.list_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.logging_utils.html">uqa.logging_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.ner.html">uqa.ner module</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">uqa.qa_gen module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.reading_wiki_dumps.html">uqa.reading_wiki_dumps module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.show.html">uqa.show module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.split.html">uqa.split module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.stats.html">uqa.stats module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.validate.html">uqa.validate module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Unsupervised-Question-Answering</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="modules.html">API documentation</a> &raquo;</li>
+        
+          <li><a href="uqa.html">uqa</a> &raquo;</li>
+        
+      <li>uqa.qa_gen module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/uqa.qa_gen.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-uqa.qa_gen">
+<span id="uqa-qa-gen-module"></span><h1>uqa.qa_gen module<a class="headerlink" href="#module-uqa.qa_gen" title="Permalink to this headline">¶</a></h1>
+<p>Natural question / answer pairs generation.</p>
+<p>Using output of <cite>ner</cite> and <cite>constituency parsing</cite> steps this module implements
+rules to generate question / answer pairs in natural looking French.</p>
+<p class="rubric">Notes</p>
+<p>For visualization purposes question / anwser pairs generation process is split in 2 steps:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Matching interesting patterns in sentences constituency and / or named entity
+(see <a class="reference internal" href="#uqa.qa_gen.rule1" title="uqa.qa_gen.rule1"><code class="xref py py-func docutils literal notranslate"><span class="pre">rule1()</span></code></a> and <a class="reference internal" href="#uqa.qa_gen.rule1_ext" title="uqa.qa_gen.rule1_ext"><code class="xref py py-func docutils literal notranslate"><span class="pre">rule1_ext()</span></code></a>)</p></li>
+<li><p>Generating the questions answers from those patterns (see <a class="reference internal" href="#uqa.qa_gen.rule1_to_qa" title="uqa.qa_gen.rule1_to_qa"><code class="xref py py-func docutils literal notranslate"><span class="pre">rule1_to_qa()</span></code></a>)</p></li>
+</ol>
+</div></blockquote>
+<dl class="py function">
+<dt id="uqa.qa_gen.use_qword_quel">
+<code class="sig-prename descclassname">uqa.qa_gen.</code><code class="sig-name descname">use_qword_quel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">txt</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a><a class="reference internal" href="../_modules/uqa/qa_gen.html#use_qword_quel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.qa_gen.use_qword_quel" title="Permalink to this definition">¶</a></dt>
+<dd><p>(unused). Analyse <cite>txt</cite> and returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if the generated question should use ‘quel’ question word.</p>
+<p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if a superlative or an ordinal is found in the sentence.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="uqa.qa_gen.Rule1_RT">
+<code class="sig-prename descclassname">uqa.qa_gen.</code><code class="sig-name descname">Rule1_RT</code><em class="property"> = typing.List[typing.Tuple[uqa.context_utils.LabelNode, uqa.context_utils.Label]]</em><a class="headerlink" href="#uqa.qa_gen.Rule1_RT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return type of <a class="reference internal" href="#uqa.qa_gen.rule1" title="uqa.qa_gen.rule1"><code class="xref py py-func docutils literal notranslate"><span class="pre">rule1()</span></code></a> and <a class="reference internal" href="#uqa.qa_gen.rule1_ext" title="uqa.qa_gen.rule1_ext"><code class="xref py py-func docutils literal notranslate"><span class="pre">rule1_ext()</span></code></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="uqa.qa_gen.rule1">
+<code class="sig-prename descclassname">uqa.qa_gen.</code><code class="sig-name descname">rule1</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span><span class="p">:</span> <span class="n"><a class="reference internal" href="uqa.context_utils.html#uqa.context_utils.Context" title="uqa.context_utils.Context">uqa.context_utils.Context</a></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>Tuple<span class="p">[</span><a class="reference internal" href="uqa.context_utils.html#uqa.context_utils.LabelNode" title="uqa.context_utils.LabelNode">uqa.context_utils.LabelNode</a><span class="p">, </span><a class="reference internal" href="uqa.context_utils.html#uqa.context_utils.Label" title="uqa.context_utils.Label">uqa.context_utils.Label</a><span class="p">]</span><span class="p">]</span><a class="reference internal" href="../_modules/uqa/qa_gen.html#rule1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.qa_gen.rule1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract <cite>‘NP-SUJ’</cite>, <cite>‘VN’</cite>, <cite>‘NP-ATS’</cite> constituents continuous subsequence in sentence
+if <cite>‘NP-SUJ’</cite> contains a single named entity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#uqa.qa_gen.Rule1_RT" title="uqa.qa_gen.Rule1_RT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Rule1_RT</span></code></a> – A list of pairs. Each pair first element is a <code class="xref py py-class docutils literal notranslate"><span class="pre">LabelNode</span></code>
+with <cite>‘NP-SUJ’</cite>, <cite>‘VN’</cite>, <cite>‘NP-ATS’</cite> labels as children and second element is the <cite>NER</cite> label.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="uqa.qa_gen.rule1_ext">
+<code class="sig-prename descclassname">uqa.qa_gen.</code><code class="sig-name descname">rule1_ext</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span><span class="p">:</span> <span class="n"><a class="reference internal" href="uqa.context_utils.html#uqa.context_utils.Context" title="uqa.context_utils.Context">uqa.context_utils.Context</a></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>Tuple<span class="p">[</span><a class="reference internal" href="uqa.context_utils.html#uqa.context_utils.LabelNode" title="uqa.context_utils.LabelNode">uqa.context_utils.LabelNode</a><span class="p">, </span><a class="reference internal" href="uqa.context_utils.html#uqa.context_utils.Label" title="uqa.context_utils.Label">uqa.context_utils.Label</a><span class="p">]</span><span class="p">]</span><a class="reference internal" href="../_modules/uqa/qa_gen.html#rule1_ext"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.qa_gen.rule1_ext" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract <cite>‘NP-SUJ’</cite> – <cite>‘VN’</cite> – <cite>‘NP-ATS’</cite> or <cite>‘NP-SUJ’</cite> – <cite>‘VN’</cite> – <cite>‘NP-ATS + PP’</cite>
+constituents subsequence in sentence if <cite>‘NP-SUJ’</cite> contains a single named entity.</p>
+<div class="line-block">
+<div class="line">Here subsequence corresponds with the mathematical definition (see <a class="reference internal" href="uqa.list_utils.html#uqa.list_utils.find_subseq_spaced" title="uqa.list_utils.find_subseq_spaced"><code class="xref py py-func docutils literal notranslate"><span class="pre">find_subseq_spaced()</span></code></a>)</div>
+<div class="line">If <cite>‘NP-ATS’</cite> is followed by a <cite>‘PP’</cite> constituent <cite>‘NP-ATS’</cite> and <cite>‘PP’</cite> are merged into a single constituent.</div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#uqa.qa_gen.Rule1_RT" title="uqa.qa_gen.Rule1_RT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Rule1_RT</span></code></a> – A list of pairs. Each pair first element is a <code class="xref py py-class docutils literal notranslate"><span class="pre">LabelNode</span></code>
+with constituents labels as children and second element is the <cite>NER</cite> label.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="uqa.qa_gen.rule1_to_qa">
+<code class="sig-prename descclassname">uqa.qa_gen.</code><code class="sig-name descname">rule1_to_qa</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context</span><span class="p">:</span> <span class="n"><a class="reference internal" href="uqa.context_utils.html#uqa.context_utils.Context" title="uqa.context_utils.Context">uqa.context_utils.Context</a></span></em>, <em class="sig-param"><span class="n">rule1_ret</span><span class="p">:</span> <span class="n">List<span class="p">[</span>Tuple<span class="p">[</span><a class="reference internal" href="uqa.context_utils.html#uqa.context_utils.LabelNode" title="uqa.context_utils.LabelNode">uqa.context_utils.LabelNode</a><span class="p">, </span><a class="reference internal" href="uqa.context_utils.html#uqa.context_utils.Label" title="uqa.context_utils.Label">uqa.context_utils.Label</a><span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)">None</a><a class="reference internal" href="../_modules/uqa/qa_gen.html#rule1_to_qa"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.qa_gen.rule1_to_qa" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate question / answer pairs from either <a class="reference internal" href="#uqa.qa_gen.rule1" title="uqa.qa_gen.rule1"><code class="xref py py-func docutils literal notranslate"><span class="pre">rule1()</span></code></a> or <a class="reference internal" href="#uqa.qa_gen.rule1_ext" title="uqa.qa_gen.rule1_ext"><code class="xref py py-func docutils literal notranslate"><span class="pre">rule1_ext()</span></code></a> outputs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>context</strong> (<a class="reference internal" href="uqa.context_utils.html#uqa.context_utils.Context" title="uqa.context_utils.Context"><code class="xref py py-class docutils literal notranslate"><span class="pre">Context</span></code></a>) – Context instance for which <cite>rule1_ret</cite> is derived, generated <a class="reference internal" href="uqa.context_utils.html#uqa.context_utils.QA" title="uqa.context_utils.QA"><code class="xref py py-class docutils literal notranslate"><span class="pre">QA</span></code></a> are stored in
+<cite>context</cite> <a class="reference internal" href="uqa.context_utils.html#uqa.context_utils.Context.qas" title="uqa.context_utils.Context.qas"><code class="xref py py-attr docutils literal notranslate"><span class="pre">qas</span></code></a> attribute.</p></li>
+<li><p><strong>rule1_ret</strong> (<a class="reference internal" href="#uqa.qa_gen.Rule1_RT" title="uqa.qa_gen.Rule1_RT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Rule1_RT</span></code></a>) – The ouptut of either <a class="reference internal" href="#uqa.qa_gen.rule1" title="uqa.qa_gen.rule1"><code class="xref py py-func docutils literal notranslate"><span class="pre">rule1()</span></code></a> or <a class="reference internal" href="#uqa.qa_gen.rule1_ext" title="uqa.qa_gen.rule1_ext"><code class="xref py py-func docutils literal notranslate"><span class="pre">rule1_ext()</span></code></a> applied to <cite>context</cite></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="uqa.qa_gen.generate_qas_context_it">
+<code class="sig-prename descclassname">uqa.qa_gen.</code><code class="sig-name descname">generate_qas_context_it</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">context_it</span><span class="p">:</span> <span class="n">Iterable<span class="p">[</span><a class="reference internal" href="uqa.context_utils.html#uqa.context_utils.Context" title="uqa.context_utils.Context">uqa.context_utils.Context</a><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">filter_no_qa</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span> &#x2192; Iterable<span class="p">[</span><a class="reference internal" href="uqa.context_utils.html#uqa.context_utils.Context" title="uqa.context_utils.Context">uqa.context_utils.Context</a><span class="p">]</span><a class="reference internal" href="../_modules/uqa/qa_gen.html#generate_qas_context_it"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.qa_gen.generate_qas_context_it" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate question / answers pairs on a context iterable.</p>
+<p>NER and constituency parsing steps must have been realized prior to q/a generation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data_it</strong> (Iterable[<a class="reference internal" href="uqa.context_utils.html#uqa.context_utils.Context" title="uqa.context_utils.Context"><code class="xref py py-class docutils literal notranslate"><span class="pre">Context</span></code></a>]) – A context iterable.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataIterble</span></code> – The processed dateset iterable.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="uqa.qa_gen.generate_qas_dl">
+<code class="sig-prename descclassname">uqa.qa_gen.</code><code class="sig-name descname">generate_qas_dl</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data_it</span><span class="p">:</span> <span class="n">Iterable<span class="p">[</span>Tuple<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">, </span>Union<span class="p">[</span>Dict<span class="p">, </span>List<span class="p">]</span><span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Iterable<span class="p">[</span>Tuple<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">, </span>Union<span class="p">[</span>Dict<span class="p">, </span>List<span class="p">]</span><span class="p">]</span><span class="p">]</span><a class="reference internal" href="../_modules/uqa/qa_gen.html#generate_qas_dl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.qa_gen.generate_qas_dl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate question / answers pairs on a dataset.</p>
+<p>NER and constituency parsing steps must have been realized prior to q/a generation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data_it</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">DataIterble</span></code>) – A dateset iterable in <cite>default</cite> format.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataIterble</span></code> – The processed dateset iterable.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="uqa.reading_wiki_dumps.html" class="btn btn-neutral float-right" title="uqa.reading_wiki_dumps module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="uqa.ner.html" class="btn btn-neutral float-left" title="uqa.ner module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Boris Tronch, Quentin Churet, Jiahao Lu
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

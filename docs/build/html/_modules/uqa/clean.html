@@ -1,0 +1,452 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>uqa.clean &mdash; Unsupervised-Question-Answering 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Unsupervised-Question-Answering
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../data_formats.html">Data Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../models.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../workflow.html">Basic workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cli_usage.html">CLI Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/modules.html">API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Unsupervised-Question-Answering</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>uqa.clean</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for uqa.clean</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Cleaning and preprocessing tools.</span>
+
+<span class="sd">Impletent a &#39;clean&#39; feature working at character level and a &#39;filter&#39; feature working</span>
+<span class="sd">at context level.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">string</span>
+<span class="kn">import</span> <span class="nn">unicodedata</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">DefaultDict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Set</span>
+
+<span class="kn">from</span> <span class="nn">uqa</span> <span class="kn">import</span> <span class="n">dataset</span>
+
+<span class="c1">#: Valid letters in French (ascii letters and accented letters)</span>
+<span class="n">ALPHA</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_letters</span><span class="p">)</span>
+<span class="n">ALPHA</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="s2">&quot;À Â Ä Ç É È Ê Ë Î Ï Ô Ö Ù Û Ü Ÿ à â ä ç é è ê ë î ï ô ö ù û ü ÿ æ œ Æ Œ&quot;</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">))</span>
+
+<span class="c1">#: List of allowed characters</span>
+<span class="n">ALLOWED</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">ALPHA</span><span class="p">)</span>
+<span class="n">ALLOWED</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="s2">&quot;… § ‰&quot;</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">))</span>
+
+<span class="c1">#: Character replacement rule based on categorie</span>
+<span class="n">REPLACE_CAT</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Zs&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;Pd&quot;</span><span class="p">:</span> <span class="s2">&quot;-&quot;</span><span class="p">}</span>
+
+<span class="c1">#: Character replacement table, override :obj:`REPLACE_CAT`</span>
+<span class="n">REPLACE_DICT</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;、&quot;</span><span class="p">:</span> <span class="s2">&quot;,&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;，&quot;</span><span class="p">:</span> <span class="s2">&quot;,&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;•&quot;</span><span class="p">:</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;«&quot;</span><span class="p">:</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">,</span>
+    <span class="s2">&quot;»&quot;</span><span class="p">:</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">,</span>
+    <span class="s2">&quot;”&quot;</span><span class="p">:</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">,</span>
+    <span class="s2">&quot;“&quot;</span><span class="p">:</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">,</span>
+    <span class="s2">&quot;〟&quot;</span><span class="p">:</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">,</span>
+    <span class="s2">&quot;„&quot;</span><span class="p">:</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">,</span>
+    <span class="s2">&quot;〝&quot;</span><span class="p">:</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">,</span>
+    <span class="s2">&quot;’&quot;</span><span class="p">:</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;‛&quot;</span><span class="p">:</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;‘&quot;</span><span class="p">:</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;′&quot;</span><span class="p">:</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;″&quot;</span><span class="p">:</span> <span class="s2">&quot;&#39;&#39;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;！&quot;</span><span class="p">:</span> <span class="s2">&quot;!&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;¡&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;＆&quot;</span><span class="p">:</span> <span class="s2">&quot;&amp;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;·&quot;</span><span class="p">:</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;・&quot;</span><span class="p">:</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;（&quot;</span><span class="p">:</span> <span class="s2">&quot;(&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;）&quot;</span><span class="p">:</span> <span class="s2">&quot;)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;【&quot;</span><span class="p">:</span> <span class="s2">&quot;(&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;】&quot;</span><span class="p">:</span> <span class="s2">&quot;)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;〈&quot;</span><span class="p">:</span> <span class="s2">&quot;(&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;〉&quot;</span><span class="p">:</span> <span class="s2">&quot;)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;†&quot;</span><span class="p">:</span> <span class="s2">&quot; mort &quot;</span><span class="p">,</span>
+    <span class="s2">&quot;：&quot;</span><span class="p">:</span> <span class="s2">&quot;:&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;։&quot;</span><span class="p">:</span> <span class="s2">&quot;:&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;‹&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;›&quot;</span><span class="p">:</span> <span class="s2">&quot;&gt;&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
+
+
+<div class="viewcode-block" id="count_alpha"><a class="viewcode-back" href="../../api/uqa.clean.html#uqa.clean.count_alpha">[docs]</a><span class="k">def</span> <span class="nf">count_alpha</span><span class="p">(</span><span class="n">txt</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return the number of letters in `txt`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    txt: str</span>
+<span class="sd">        A string</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    int</span>
+<span class="sd">        the number of character of `txt` that are in :obj:`ALPHA`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">([</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">txt</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">ALPHA</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="extract_bad_char"><a class="viewcode-back" href="../../api/uqa.clean.html#uqa.clean.extract_bad_char">[docs]</a><span class="k">def</span> <span class="nf">extract_bad_char</span><span class="p">(</span><span class="n">txt</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Return the set of non-allowed characters in `txt`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    txt: str</span>
+<span class="sd">        The string to process.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    set of str</span>
+<span class="sd">        set of characters of `txt` that are not in :obj:`ALLOWED`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">ALLOWED</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="classify_bad_chars"><a class="viewcode-back" href="../../api/uqa.clean.html#uqa.clean.classify_bad_chars">[docs]</a><span class="k">def</span> <span class="nf">classify_bad_chars</span><span class="p">(</span><span class="n">bad_chars</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">DefaultDict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+    <span class="sd">&quot;&quot;&quot;Classify `bad_chars` set into unicode categories.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    bad_chars: set of character str</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    defaultdict</span>
+<span class="sd">        keys are unicode categories str, values are lists of character str</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    `List of unicode categories &lt;http://www.unicode.org/reports/tr44/#General_Category_Values&gt;`_</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">bad_chars_cat</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">bad_chars</span><span class="p">:</span>  <span class="c1"># pylint: disable=invalid-name</span>
+        <span class="n">bad_chars_cat</span><span class="p">[</span><span class="n">unicodedata</span><span class="o">.</span><span class="n">category</span><span class="p">(</span><span class="n">c</span><span class="p">)]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">bad_chars_cat</span></div>
+
+
+<div class="viewcode-block" id="clean_text"><a class="viewcode-back" href="../../api/uqa.clean.html#uqa.clean.clean_text">[docs]</a><span class="k">def</span> <span class="nf">clean_text</span><span class="p">(</span><span class="n">txt</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Clean and return `txt` either removing or replacing illegal characters.</span>
+
+<span class="sd">    Illegal characters are characters not part of :const:`ALLOWED`.</span>
+<span class="sd">    Illegal characters are replaced if they have an entry in :const:`REPLACE_DICT` or if their unicode category</span>
+<span class="sd">    have an entry in :const:`REPLACE_CAT`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    txt: str</span>
+<span class="sd">        The string to process</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ret: str</span>
+<span class="sd">        The string with illegal characters eiter replaced or removed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">bad_chars</span> <span class="o">=</span> <span class="n">extract_bad_char</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
+    <span class="n">replace_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">bad_char</span> <span class="ow">in</span> <span class="n">bad_chars</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">bad_char</span> <span class="ow">in</span> <span class="n">REPLACE_DICT</span><span class="p">:</span>
+            <span class="n">replace_dict</span><span class="p">[</span><span class="n">bad_char</span><span class="p">]</span> <span class="o">=</span> <span class="n">REPLACE_DICT</span><span class="p">[</span><span class="n">bad_char</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">bad_char_cat</span> <span class="o">=</span> <span class="n">unicodedata</span><span class="o">.</span><span class="n">category</span><span class="p">(</span><span class="n">bad_char</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">bad_char_cat</span> <span class="ow">in</span> <span class="n">REPLACE_CAT</span><span class="p">:</span>
+                <span class="n">replace_dict</span><span class="p">[</span><span class="n">bad_char</span><span class="p">]</span> <span class="o">=</span> <span class="n">REPLACE_DICT</span><span class="p">[</span><span class="n">bad_char_cat</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">bad_char</span> <span class="ow">in</span> <span class="n">bad_chars</span><span class="p">:</span>
+        <span class="n">txt</span> <span class="o">=</span> <span class="n">txt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">bad_char</span><span class="p">,</span> <span class="n">replace_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bad_char</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">txt</span></div>
+
+
+<div class="viewcode-block" id="clean"><a class="viewcode-back" href="../../api/uqa.clean.html#uqa.clean.clean">[docs]</a><span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="n">fcontent</span><span class="p">:</span> <span class="n">dataset</span><span class="o">.</span><span class="n">TJson</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dataset</span><span class="o">.</span><span class="n">TJson</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Clean `fcontent` json-like container in &#39;default&#39; data format.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fcontent: :obj:`.TJson`</span>
+<span class="sd">        Json-like container in `default` data format</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    cleaned_fcontent: :obj:`.TJson`</span>
+<span class="sd">        The processed data in `default` data format</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">article</span> <span class="ow">in</span> <span class="n">fcontent</span><span class="p">:</span>
+        <span class="n">article</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">clean_text</span><span class="p">(</span><span class="n">article</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">context</span> <span class="ow">in</span> <span class="n">article</span><span class="p">[</span><span class="s2">&quot;contexts&quot;</span><span class="p">]:</span>
+            <span class="n">context</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">clean_text</span><span class="p">(</span><span class="n">context</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">fcontent</span></div>
+
+
+<div class="viewcode-block" id="clean_dl"><a class="viewcode-back" href="../../api/uqa.clean.html#uqa.clean.clean_dl">[docs]</a><span class="k">def</span> <span class="nf">clean_dl</span><span class="p">(</span><span class="n">data_it</span><span class="p">:</span> <span class="n">dataset</span><span class="o">.</span><span class="n">DataIterable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Iterate through the dataset in &#39;default&#39; data format.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data_it: DataIterable</span>
+<span class="sd">        Dataset iterable, elements must be pairs (fpath, fcontent) where fpath is the data file path and</span>
+<span class="sd">        fcontent is the file&#39;s content</span>
+
+<span class="sd">    Yields</span>
+<span class="sd">    ------</span>
+<span class="sd">    fpath: str</span>
+<span class="sd">        The processed file path</span>
+<span class="sd">    filtered_fcontent: json-like</span>
+<span class="sd">        The processed file content in default data format</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">fpath</span><span class="p">,</span> <span class="n">fcontent</span> <span class="ow">in</span> <span class="n">data_it</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Processing </span><span class="si">{</span><span class="n">fpath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">article</span> <span class="ow">in</span> <span class="n">fcontent</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">context</span> <span class="ow">in</span> <span class="n">article</span><span class="p">[</span><span class="s2">&quot;contexts&quot;</span><span class="p">]:</span>
+                <span class="n">context</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">clean_text</span><span class="p">(</span><span class="n">context</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf8&quot;</span><span class="p">))</span>
+        <span class="k">yield</span> <span class="n">fpath</span><span class="p">,</span> <span class="n">fcontent</span></div>
+
+
+<div class="viewcode-block" id="filter_contexts"><a class="viewcode-back" href="../../api/uqa.clean.html#uqa.clean.filter_contexts">[docs]</a><span class="k">def</span> <span class="nf">filter_contexts</span><span class="p">(</span><span class="n">fcontent</span><span class="p">:</span> <span class="n">dataset</span><span class="o">.</span><span class="n">TJson</span><span class="p">,</span> <span class="n">min_num_alpha</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dataset</span><span class="o">.</span><span class="n">TJson</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Filter contexts of all articles in `fcontent`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fcontent: json-like</span>
+<span class="sd">        Json-like container in default data format</span>
+<span class="sd">    min_num_alpha: int</span>
+<span class="sd">        Minimum number of letters if the context to be valid.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    filtered_fcontent: json-like</span>
+<span class="sd">        The processed data in default data format</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">num_removed</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">num_total</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">new_fcontent</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">article</span> <span class="ow">in</span> <span class="n">fcontent</span><span class="p">:</span>
+        <span class="n">new_article</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">id_article</span><span class="o">=</span><span class="n">article</span><span class="p">[</span><span class="s2">&quot;id_article&quot;</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="n">article</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">],)</span>
+        <span class="n">new_id_context</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">new_contexts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="n">num_total</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">article</span><span class="p">[</span><span class="s2">&quot;contexts&quot;</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">context</span> <span class="ow">in</span> <span class="n">article</span><span class="p">[</span><span class="s2">&quot;contexts&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">count_alpha</span><span class="p">(</span><span class="n">context</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">min_num_alpha</span><span class="p">:</span>
+                <span class="n">num_removed</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">new_context</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">id_context</span><span class="o">=</span><span class="n">new_id_context</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">context</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">])</span>
+                <span class="n">new_contexts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_context</span><span class="p">)</span>
+                <span class="n">new_id_context</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">new_article</span><span class="p">[</span><span class="s2">&quot;contexts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_contexts</span>
+        <span class="n">new_fcontent</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_article</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">new_fcontent</span><span class="p">,</span> <span class="p">(</span><span class="n">num_removed</span><span class="p">,</span> <span class="n">num_total</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="filter_contexts_dl"><a class="viewcode-back" href="../../api/uqa.clean.html#uqa.clean.filter_contexts_dl">[docs]</a><span class="k">def</span> <span class="nf">filter_contexts_dl</span><span class="p">(</span><span class="n">data_it</span><span class="p">:</span> <span class="n">dataset</span><span class="o">.</span><span class="n">DataIterable</span><span class="p">,</span> <span class="n">min_num_alpha</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">detailed</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Filter all contexts in the dataset.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data_it: DataIterable</span>
+<span class="sd">        Dataset iterable, elements must be pairs (fpath, fcontent) where fpath is the data file path and</span>
+<span class="sd">        fcontent is the file&#39;s content</span>
+<span class="sd">    min_num_alpha: int, optional</span>
+<span class="sd">        Minimum number of letters if the context to be valid, defaults to 10.</span>
+<span class="sd">    detailed: bool, optional</span>
+<span class="sd">        If True, logs per file number of removed context</span>
+
+<span class="sd">    Yields</span>
+<span class="sd">    ------</span>
+<span class="sd">    fpath: str</span>
+<span class="sd">        The processed file path</span>
+<span class="sd">    filtered_fcontent: json-like</span>
+<span class="sd">        The processed file content in default data format</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sum_removed</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">sum_total</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">fpath</span><span class="p">,</span> <span class="n">fcontent</span> <span class="ow">in</span> <span class="n">data_it</span><span class="p">:</span>
+        <span class="n">filtered</span><span class="p">,</span> <span class="p">(</span><span class="n">num_removed</span><span class="p">,</span> <span class="n">num_total</span><span class="p">)</span> <span class="o">=</span> <span class="n">filter_contexts</span><span class="p">(</span><span class="n">fcontent</span><span class="p">,</span> <span class="n">min_num_alpha</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">detailed</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Removed contexts: </span><span class="si">{</span><span class="n">num_removed</span><span class="si">}</span><span class="s2"> /  </span><span class="si">{</span><span class="n">num_total</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">sum_removed</span> <span class="o">+=</span> <span class="n">num_removed</span>
+        <span class="n">sum_total</span> <span class="o">+=</span> <span class="n">num_total</span>
+        <span class="k">yield</span> <span class="n">fpath</span><span class="p">,</span> <span class="n">filtered</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;TOTAL: Removed contexts: </span><span class="si">{</span><span class="n">sum_removed</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">sum_total</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Boris Tronch, Quentin Churet, Jiahao Lu
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

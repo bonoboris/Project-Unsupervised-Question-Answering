@@ -1,116 +1,59 @@
-import itertools
+"""Named entity recognition with SpaCy french model."""
 
-from spacywrapper import SpacyFrenchModelWrapper
+import logging
 
+import spacy
 
-test_data = [
-    [
-        {
-            "id_doc": 0,
-            "contexts": [
-                {
-                    "id_context": 0,
-                    "text": "Je suis le context 0."
-                },
-                {
-                    "id_context": 1,
-                    "text": "Je suis à Paris avec mon ami Jacques."
-                },
-            ]
-        },
-        {
-            "id_doc": 1,
-            "contexts": [
-                {
-                    "id_context": 0,
-                    "text": "Je suis le context 1."
-                },
-                {
-                    "id_context": 1,
-                    "text": "Je suis le context 2."
-                },
-            ]
-        }
-    ],
-    [
-        {
-            "id_doc": 2,
-            "contexts": [
-                {
-                    "id_context": 0,
-                    "text": "Je suis le context 3."
-                },
-                {
-                    "id_context": 1,
-                    "text": "Je suis le context 4."
-                },
-            ]
-        },
-        {
-            "id_doc": 3,
-            "contexts": [
-                {
-                    "id_context": 0,
-                    "text": "Je suis le context 5."
-                },
-                {
-                    "id_context": 1,
-                    "text": "Je suis le context 6."
-                },
-            ]
-        }
-    ],
-    [
-        {
-            "id_doc": 3,
-            "contexts": [
-                {
-                    "id_context": 0,
-                    "text": "Je suis le context 7."
-                },
-                {
-                    "id_context": 1,
-                    "text": "Je suis le context 8."
-                },
-            ]
-        },
-        {
-            "id_doc": 4,
-            "contexts": [
-                {
-                    "id_context": 0,
-                    "text": "Je suis le context 9."
-                },
-                {
-                    "id_context": 1,
-                    "text": "Je suis le context 10."
-                },
-            ]
-        }
-    ],
-]
+from uqa import dataset
+
+logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
-def ner_gen(json_file_it):
-    json_file_it, json_file_it_copy = itertools.tee(json_file_it)
-    context_it = (context["text"] for json_file in json_file_it_copy for article in json_file for context in article["contexts"])
-    docs_it = SpacyFrenchModelWrapper.model.pipe(context_it, disable=["parser", "tagger"])
-    for num_file, json_file in enumerate(json_file_it):
-        print(f"File {num_file}")
-        for num_article, json_article in enumerate(json_file):
-            print(f"Article {num_article} with id {json_article['id_doc']}")
-            for num_context, json_context in enumerate(json_article["contexts"]):
-                print(f"Context {num_context} with id {json_context['id_context']}")
-                doc = next(docs_it)
-                print(doc.text)
-                json_context["ents"] = doc.to_json()["ents"]
-        yield json_file
+def ner(fcontent: dataset.TJson, model: spacy.language.Language) -> dataset.TJson:
+    """Use `model` to perform NER on the 'default' structure data container `fcontent`.
+
+    Parameters
+    ----------
+    fcontent: :obj:`.TJson`
+        A json-like data object with `default` structure.
+    model: spacy.language.Language
+        A loaded SpaCy model with 'ner' pipe in the pipeline
+
+    Returns
+    -------
+    :obj:`.TJson`
+        The processed data
+    """
+    article = None
+    context = None
+    for article in fcontent:
+        for context in article["contexts"]:
+            doc = model(context["text"])
+            context["entities"] = doc.to_json()["ents"]
+    return fcontent
 
 
-def main():
-    for json_like in ner_gen(test_data):
-        print(json_like)
+def ner_dl(data_it: dataset.DataIterable, model_name="fr_core_news_md") -> dataset.DataIterable:
+    """Load spacy `model_name` perform NER on the 'default' structure dataset iterable `data_it`.
 
+    Parameters
+    ----------
+    data_it: :obj:`.DataIterble`
+        A dateset iterable in `default` format.
+    model_name: str, default="fr_core_news_md"
+        The name of the spacy model to load, the model has to be locally installed prior to be used.
 
-if __name__ == '__main__':
-    main()
+    Returns
+    -------
+    :obj:`.DataIterble`
+        The processed dateset iterable.
+    """
+    logger.info("Loading spacy model for NER")
+    model = spacy.load(model_name, disable=["tagger", "parser"])
+    logger.info("Spacy model for NER loaded")
+    for fpath, fcontent in data_it:
+        logger.debug(f"Performing NER on {fpath}")
+        try:
+            yield fpath, ner(fcontent, model)
+        except:
+            logger.exception(f"while performing NER on {fpath}:")

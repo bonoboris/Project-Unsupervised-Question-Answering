@@ -1,0 +1,609 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>CLI Usage &mdash; Unsupervised-Question-Answering 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API documentation" href="api/modules.html" />
+    <link rel="prev" title="Basic workflow" href="workflow.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Unsupervised-Question-Answering
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_formats.html">Data Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow.html">Basic workflow</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">CLI Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#general-usage-and-arguments">General usage and arguments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#download-subcommand"><code class="docutils literal notranslate"><span class="pre">download</span></code> subcommand</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-processing-subcommands">Data processing subcommands</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#positional-arguments">Positional arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data-reading">Data reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data-writing">Data writing</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#validate-subcommand"><code class="docutils literal notranslate"><span class="pre">validate</span></code> subcommand</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#split-subcommand"><code class="docutils literal notranslate"><span class="pre">split</span></code> subcommand</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#show-subcommand"><code class="docutils literal notranslate"><span class="pre">show</span></code> subcommand</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/modules.html">API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Unsupervised-Question-Answering</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>CLI Usage</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/cli_usage.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="cli-usage">
+<h1>CLI Usage<a class="headerlink" href="#cli-usage" title="Permalink to this headline">¶</a></h1>
+<p>For general usage and arguments description run <code class="docutils literal notranslate"><span class="pre">uqa</span> <span class="pre">--help</span></code> or <code class="docutils literal notranslate"><span class="pre">uqa</span> <span class="pre">-h</span></code>.</p>
+<p>Help is also avaible for subcommands (ex: <code class="docutils literal notranslate"><span class="pre">uqa</span> <span class="pre">ner</span> <span class="pre">--help</span></code>)</p>
+<div class="section" id="general-usage-and-arguments">
+<h2>General usage and arguments<a class="headerlink" href="#general-usage-and-arguments" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">uqa</span></code> CLI is a group of subcommands:</p>
+<ul class="simple">
+<li><p>clean</p></li>
+<li><p>ner</p></li>
+<li><p>constituency</p></li>
+<li><p>qas</p></li>
+<li><p>show</p></li>
+<li><p>validate</p></li>
+<li><p>split</p></li>
+</ul>
+<p>General options allow to configure verbosity and logging behaviour:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Alias</p></th>
+<th class="head"><p>Option Name</p></th>
+<th class="head"><p>Value(s)</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-h</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">--help</span></code></p></td>
+<td></td>
+<td><p>Show help message</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--quiet</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">--silent</span></code></p></td>
+<td></td>
+<td><p>Disable console logging</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">--no-log</span></code></p></td>
+<td></td>
+<td><p>Disable file logging</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-v</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">--verbosity</span></code></p></td>
+<td><div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">[&quot;debug&quot;,</span> <span class="pre">&quot;info&quot;,</span></code></div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">&quot;warning&quot;,</span> <span class="pre">&quot;error&quot;]</span></code></div>
+</div>
+</td>
+<td><div class="line-block">
+<div class="line">(default: info)</div>
+<div class="line">Set console logging level</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-lf</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">--log-file</span></code></p></td>
+<td><p><cite>path</cite></p></td>
+<td><p>Log file path (default: <cite>uqa.log</cite>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-lv</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">--log-verbosity</span></code></p></td>
+<td><div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">[&quot;debug&quot;,</span> <span class="pre">&quot;info&quot;,</span></code></div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">&quot;warning&quot;,</span> <span class="pre">&quot;error&quot;]</span></code></div>
+</div>
+</td>
+<td><div class="line-block">
+<div class="line">(default: debug)</div>
+<div class="line">Set file logging level</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="download-subcommand">
+<h2><code class="docutils literal notranslate"><span class="pre">download</span></code> subcommand<a class="headerlink" href="#download-subcommand" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">download</span></code> subcommand is a shortcut for downloading pre-trained model required to perform NER and constituency parsing.</p>
+<p>Usage::</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uqa</span> <span class="p">[</span><span class="n">options</span><span class="p">]</span> <span class="n">download</span> <span class="p">[</span><span class="o">-</span><span class="n">n</span><span class="o">/--</span><span class="n">name</span> <span class="n">STR</span><span class="p">]</span> <span class="n">MODEL</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">MODEL</span></code> can either be <cite>all</cite>, <cite>spacy</cite> or <cite>benepar</cite>.</p>
+<ul>
+<li><p><cite>all</cite> will install default models</p></li>
+<li><div class="line-block">
+<div class="line"><cite>spacy</cite> or <cite>benepar</cite> will install SpaCy french model or Benepar french constituency parsing model respectively</div>
+<div class="line">they can be used with <code class="docutils literal notranslate"><span class="pre">-n</span> <span class="pre">/</span> <span class="pre">--name</span></code> option to specify the model to install</div>
+</div>
+</li>
+</ul>
+<p>See <a class="reference internal" href="models.html"><span class="doc">Models</span></a></p>
+</div>
+<div class="section" id="data-processing-subcommands">
+<h2>Data processing subcommands<a class="headerlink" href="#data-processing-subcommands" title="Permalink to this headline">¶</a></h2>
+<p>Subcommands:</p>
+<ul class="simple">
+<li><p>clean</p></li>
+<li><p>ner</p></li>
+<li><p>constituency</p></li>
+<li><p>qas</p></li>
+</ul>
+<p>Usage::</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uqa</span> <span class="p">[</span><span class="n">options</span><span class="p">]</span> <span class="o">&lt;</span><span class="n">subcommand</span><span class="o">&gt;</span> <span class="p">[</span><span class="n">options</span><span class="p">]</span> <span class="n">SRC</span><span class="o">...</span> <span class="n">DST</span>
+</pre></div>
+</div>
+<p>Data processing commands both read and write data, for each input file and output file is generated.</p>
+<div class="section" id="positional-arguments">
+<h3>Positional arguments<a class="headerlink" href="#positional-arguments" title="Permalink to this headline">¶</a></h3>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Argument</p></th>
+<th class="head"><p>Value(s)</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>SRC</p></td>
+<td><p>path(s)</p></td>
+<td><div class="line-block">
+<div class="line">Single path to a dir</div>
+<div class="line">one / mulitple path(s) to file(s)</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p>DST</p></td>
+<td><p>path</p></td>
+<td><p>Single DST path</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="data-reading">
+<span id="data-reading-arguments"></span><h3>Data reading<a class="headerlink" href="#data-reading" title="Permalink to this headline">¶</a></h3>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Alias</p></th>
+<th class="head"><p>Option Name</p></th>
+<th class="head"><p>Value(s)</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-h</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">--help</span></code></p></td>
+<td></td>
+<td><p>Display help message</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-d</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">--dir</span></code></p></td>
+<td></td>
+<td><p>Indicate SRC as a directory</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-if</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">--input-format</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[&quot;json&quot;,</span> <span class="pre">&quot;pickle&quot;]</span></code></p></td>
+<td><div class="line-block">
+<div class="line">(default: “json”)</div>
+<div class="line">File format to read</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-df</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">--data-format</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[&quot;default&quot;,</span> <span class="pre">&quot;fquad&quot;]</span></code></p></td>
+<td><div class="line-block">
+<div class="line">(default: “default”)</div>
+<div class="line">Data format</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>A dataset can be stored as either <cite>JSON</cite> or <cite>pickle</cite> files.</p>
+<p><code class="docutils literal notranslate"><span class="pre">clean</span></code>, <code class="docutils literal notranslate"><span class="pre">ner</span></code> and <code class="docutils literal notranslate"><span class="pre">constituency</span></code> subcommands support reading data in either <a class="reference internal" href="data_formats.html#default-data-format"><span class="std std-ref">Default data format</span></a> or <a class="reference internal" href="data_formats.html#fquad-data-format"><span class="std std-ref">FQuAD data format</span></a>
+as they work independently from each others, wheras <code class="docutils literal notranslate"><span class="pre">qas</span></code> command depends on``ner`` and <code class="docutils literal notranslate"><span class="pre">constituency</span></code> steps ouputs
+and thus only accepts <cite>default</cite> data format.</p>
+<p>All subcommands can process:</p>
+<ul class="simple">
+<li><p>a single file</p></li>
+<li><p>mulitple files enumerated in SRC…</p></li>
+<li><p>a whole directory (with <code class="docutils literal notranslate"><span class="pre">-d</span></code> option)</p></li>
+</ul>
+<p>For the directory case, all files and subdirectory are explored and files with the expected extension are processed
+(<code class="docutils literal notranslate"><span class="pre">.json</span></code> for json <cite>input-format</cite> and <code class="docutils literal notranslate"><span class="pre">.pickle</span></code> for a pickle <cite>input-format</cite>).</p>
+</div>
+<div class="section" id="data-writing">
+<span id="data-writing-arguments"></span><h3>Data writing<a class="headerlink" href="#data-writing" title="Permalink to this headline">¶</a></h3>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Alias</p></th>
+<th class="head"><p>Option Name</p></th>
+<th class="head"><p>Value(s)</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-h</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">--help</span></code></p></td>
+<td></td>
+<td><p>Display help message</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-O</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">--override</span></code></p></td>
+<td></td>
+<td><div class="line-block">
+<div class="line">Override existing files</div>
+<div class="line">instead of skiping</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-of</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">--output-format</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[&quot;json&quot;,</span> <span class="pre">&quot;pickle&quot;]</span></code></p></td>
+<td><div class="line-block">
+<div class="line">(default: “json”)</div>
+<div class="line">File format to write</div>
+</div>
+</td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">--json-indent</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">int</span> <span class="pre">&gt;=</span> <span class="pre">0</span></code></p></td>
+<td><div class="line-block">
+<div class="line">(default: 0)</div>
+<div class="line">Json indentation when <cite>-of</cite> is <cite>json</cite></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="line-block">
+<div class="line">For <code class="docutils literal notranslate"><span class="pre">clean</span></code>, <code class="docutils literal notranslate"><span class="pre">ner</span></code>, and `` constituency`` the data-format of the written files is <cite>default</cite>.</div>
+<div class="line">For <code class="docutils literal notranslate"><span class="pre">qas</span></code> it’s <cite>fquad</cite>.</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">DST</span></code> positional parameter determine the path(s) of the written file(s):</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 30%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>if SRC is …</p></th>
+<th class="head"><p>DST is …</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>a single input file path</p></td>
+<td><p>the single output file path</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>multiple input file paths</p></td>
+<td><div class="line-block">
+<div class="line">the path to the directory</div>
+<div class="line">where ouputs files are written</div>
+</div>
+</td>
+<td><div class="line-block">
+<div class="line">Output files preserve their name</div>
+<div class="line">and are directly saved under DST</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><p>a single path to a dir</p></td>
+<td><div class="line-block">
+<div class="line">the path to the directory</div>
+<div class="line">where ouputs files are written</div>
+</div>
+</td>
+<td><div class="line-block">
+<div class="line">The internal structure of SRC dir is</div>
+<div class="line">preserved inside DST</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>For each input file, the output file path is generated before processing, if <code class="docutils literal notranslate"><span class="pre">-o</span> <span class="pre">/</span> <span class="pre">--override</span></code> is <strong>not</strong> set
+and the output file path already exist then the file is <strong>skipped</strong>.</p>
+</div>
+</div>
+<div class="section" id="validate-subcommand">
+<h2><code class="docutils literal notranslate"><span class="pre">validate</span></code> subcommand<a class="headerlink" href="#validate-subcommand" title="Permalink to this headline">¶</a></h2>
+<p>This command checks wheter FQuAD format file(s) containing question / answers are correct.</p>
+<p>It checks:</p>
+<ul class="simple">
+<li><p>whether the file(s) structure is correct</p></li>
+<li><p>whether <code class="docutils literal notranslate"><span class="pre">answers</span></code> field values agree with the <code class="docutils literal notranslate"><span class="pre">context</span></code> field values</p></li>
+</ul>
+<p>The command has the same arguments as described in <a class="reference internal" href="#data-reading-arguments"><span class="std std-ref">Data reading</span></a>
+but will raise an error if <code class="docutils literal notranslate"><span class="pre">-df</span> <span class="pre">/</span> <span class="pre">--data-format</span></code> is set to <cite>default</cite>.</p>
+</div>
+<div class="section" id="split-subcommand">
+<h2><code class="docutils literal notranslate"><span class="pre">split</span></code> subcommand<a class="headerlink" href="#split-subcommand" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">split</span></code> subcommand allow to split / combine data files.</p>
+<p>Usage::</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uqa</span> <span class="n">split</span> <span class="p">[</span><span class="n">options</span><span class="p">]</span> <span class="n">NUM</span> <span class="n">SRC</span><span class="o">...</span> <span class="n">DST</span>
+</pre></div>
+</div>
+<p>The command has the same arguments as described in <a class="reference internal" href="#data-reading-arguments"><span class="std std-ref">Data reading</span></a>
+and in <a class="reference internal" href="#data-writing-arguments"><span class="std std-ref">Data writing</span></a> but DST positional behaves differently.</p>
+<p>The output files have the same data format as the input files.</p>
+<p>if <code class="docutils literal notranslate"><span class="pre">NUM</span></code> is 0 or negative all SRC… files are combined and saved at DST.
+if <code class="docutils literal notranslate"><span class="pre">NUM</span></code> is 1 or more, the DST must be a path template which contains a placeholder <code class="docutils literal notranslate"><span class="pre">{num}</span></code>,
+the input files data are read and split in chunks of <code class="docutils literal notranslate"><span class="pre">NUM</span></code> articles / documents.
+The chunks are saved at DST by replacing <code class="docutils literal notranslate"><span class="pre">{num}</span></code> with increasing integers starting from <cite>0</cite>.</p>
+</div>
+<div class="section" id="show-subcommand">
+<h2><code class="docutils literal notranslate"><span class="pre">show</span></code> subcommand<a class="headerlink" href="#show-subcommand" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">show</span></code> subcommand allow to visualize data with NER / constituency / qas information.</p>
+<p>The command has the same arguments as described in <a class="reference internal" href="#data-reading-arguments"><span class="std std-ref">Data reading</span></a>.</p>
+<p>And additonaly accepts:</p>
+<table class="colwidths-given docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Alias</p></th>
+<th class="head"><p>Option Name</p></th>
+<th class="head"><p>Value(s)</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-a</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">--all</span></code></p></td>
+<td></td>
+<td><p>Print for all contexts at once</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">--no-ner</span></code></p></td>
+<td></td>
+<td><p>Discard NER information</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">--no-const</span></code></p></td>
+<td></td>
+<td><p>Discard constituency information</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">--depth</span></code></p></td>
+<td><p>int</p></td>
+<td><div class="line-block">
+<div class="line">(default: -1)</div>
+<div class="line">Set maximum depth for constituents to be displayed</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">--show-no-label</span></code></p></td>
+<td></td>
+<td><p>Display constituents with empty label.</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">--rule</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">['rule1',</span> <span class="pre">'rule1_ext']</span></code></p></td>
+<td><p>If set, will apply the rule and display its outputs.</p></td>
+</tr>
+</tbody>
+</table>
+<p>If <code class="docutils literal notranslate"><span class="pre">-a</span> <span class="pre">/</span> <span class="pre">--all</span></code> is not set the console will print one context at a time and prompt the user to continue.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="api/modules.html" class="btn btn-neutral float-right" title="API documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="workflow.html" class="btn btn-neutral float-left" title="Basic workflow" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Boris Tronch, Quentin Churet, Jiahao Lu
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

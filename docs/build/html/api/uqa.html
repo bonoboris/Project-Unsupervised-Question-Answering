@@ -1,0 +1,335 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>uqa &mdash; Unsupervised-Question-Answering 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="uqa.clean module" href="uqa.clean.html" />
+    <link rel="prev" title="API documentation" href="modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Unsupervised-Question-Answering
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_formats.html">Data Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../models.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../workflow.html">Basic workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cli_usage.html">CLI Usage</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">API documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">uqa</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#main-featutes-processing-pipeline">Main featutes / processing pipeline:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#question-answer-generation-key-points">Question / answer generation key points</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#modules">Modules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="uqa.clean.html">uqa.clean module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.cli.html">uqa.cli module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.cli_helpers.html">uqa.cli_helpers module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.constituency.html">uqa.constituency module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.context_utils.html">uqa.context_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.dataset.html">uqa.dataset module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.download.html">uqa.download module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.fquad_utils.html">uqa.fquad_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.list_utils.html">uqa.list_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.logging_utils.html">uqa.logging_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.ner.html">uqa.ner module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.qa_gen.html">uqa.qa_gen module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.reading_wiki_dumps.html">uqa.reading_wiki_dumps module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.show.html">uqa.show module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.split.html">uqa.split module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.stats.html">uqa.stats module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.validate.html">uqa.validate module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Unsupervised-Question-Answering</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="modules.html">API documentation</a> &raquo;</li>
+        
+      <li>uqa</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/uqa.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-uqa">
+<span id="uqa"></span><h1>uqa<a class="headerlink" href="#module-uqa" title="Permalink to this headline">¶</a></h1>
+<p>Unsupervised question answer pairs generation in <cite>French</cite>.</p>
+<div class="section" id="main-featutes-processing-pipeline">
+<h2>Main featutes / processing pipeline:<a class="headerlink" href="#main-featutes-processing-pipeline" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Dataset cleaning</p></li>
+<li><p>Named entity recognition <a class="footnote-reference brackets" href="#spacy-fr" id="id1">2</a></p></li>
+<li><p>Constituency parsing <a class="footnote-reference brackets" href="#benepar" id="id2">3</a> <a class="footnote-reference brackets" href="#benepar-paper1" id="id3">4</a> <a class="footnote-reference brackets" href="#benepar-paper2" id="id4">5</a></p></li>
+<li><p>Question / answer pairs generation</p></li>
+</ol>
+<p>The implemented method is based on Kayo Yin (Illuin Technology)
+<a class="reference external" href="https://medium.com/illuin/unsupervised-question-answering-4758e5f2be9b">article</a> [#uqa-medium].</p>
+</div>
+<div class="section" id="question-answer-generation-key-points">
+<h2>Question / answer generation key points<a class="headerlink" href="#question-answer-generation-key-points" title="Permalink to this headline">¶</a></h2>
+<p>Using constituency parsing and named entity results, sub-sentences verifying the following constraints are matched:</p>
+<ul>
+<li><p>The sub-sentence is made of:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>a subject syntagm</p></li>
+<li><p>a stative verb</p></li>
+<li><p>a predicative nominal</p></li>
+</ol>
+</div></blockquote>
+</li>
+<li><p>The subject syntagm contains one and only one named entity</p></li>
+</ul>
+<p>The subject is used to genrated the answer while the verb and the predicative is used to generate the question.</p>
+<p class="rubric">Examples</p>
+<p>Process a single json file <code class="docutils literal notranslate"><span class="pre">&quot;data.json&quot;</span></code> in <cite>default</cite> format with CLI:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ uqa clean data.json clean.json
+$ uqa ner clean.json ner.json
+$ uqa constituency ner.json constituency.json
+$ uqa qas constituency.json uqa.json
+$ uqa show -df fquad fquad.json
+</pre></div>
+</div>
+<p>Process a single json file <code class="docutils literal notranslate"><span class="pre">&quot;data.json&quot;</span></code> in <cite>default</cite> format with a single script:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">uqa</span> <span class="kn">import</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">clean</span><span class="p">,</span> <span class="n">ner</span><span class="p">,</span> <span class="n">constituency</span><span class="p">,</span> <span class="n">qa_gen</span><span class="p">,</span> <span class="n">fquad_utils</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span>
+    <span class="c1"># Load data</span>
+    <span class="n">dataloader</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">FileDataLoader</span><span class="p">(</span><span class="s2">&quot;data.json&quot;</span><span class="p">)</span>
+    <span class="c1"># Process data</span>
+    <span class="n">processed_it</span> <span class="o">=</span> <span class="n">qa_gen</span><span class="o">.</span><span class="n">generate_qas_dl</span><span class="p">(</span><span class="n">constituency</span><span class="p">(</span><span class="n">ner</span><span class="p">(</span><span class="n">clean</span><span class="p">(</span><span class="n">dataloader</span><span class="p">))))</span>
+    <span class="c1"># Convert data</span>
+    <span class="n">fquad_it</span> <span class="o">=</span> <span class="n">fquad_utils</span><span class="o">.</span><span class="n">default_to_fquad_dl</span><span class="p">(</span><span class="n">processed_it</span><span class="p">)</span>
+    <span class="c1"># Save data</span>
+    <span class="n">path_modifier</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">DataDumper</span><span class="o">.</span><span class="n">path_replacer</span><span class="p">(</span><span class="s2">&quot;fquad.json&quot;</span><span class="p">)</span>
+    <span class="n">dataset</span><span class="o">.</span><span class="n">DataDumper</span><span class="p">(</span><span class="n">path_modifier</span><span class="o">=</span><span class="n">path_modifier</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">fquad_it</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="uqa-medium"><span class="brackets">1</span></dt>
+<dd><p><a class="reference external" href="https://medium.com/illuin/unsupervised-question-answering-4758e5f2be9b">Unsupervised Question Answering,
+Oct 2019</a></p>
+</dd>
+<dt class="label" id="spacy-fr"><span class="brackets"><a class="fn-backref" href="#id1">2</a></span></dt>
+<dd><p><a class="reference external" href="https://spacy.io/models/fr">Spacy french model</a></p>
+</dd>
+<dt class="label" id="benepar"><span class="brackets"><a class="fn-backref" href="#id2">3</a></span></dt>
+<dd><p><a class="reference external" href="https://github.com/nikitakit/self-attentive-parser">Berkley Neural Parser</a></p>
+</dd>
+<dt class="label" id="benepar-paper1"><span class="brackets"><a class="fn-backref" href="#id3">4</a></span></dt>
+<dd><p><a class="reference external" href="https://arxiv.org/pdf/1805.01052.pdf">Constituency Parsing with a Self-Attentive Encoder,
+Nikita Kitaev, Dan Klein, May 2018,</a></p>
+</dd>
+<dt class="label" id="benepar-paper2"><span class="brackets"><a class="fn-backref" href="#id4">5</a></span></dt>
+<dd><p><a class="reference external" href="https://arxiv.org/abs/1812.11760.pdf">Multilingual Constituency Parsing with Self-Attention and Pre-Training,
+Nikita Kitaev, Steven Cao, Dan Klein, Jun 2019,</a></p>
+</dd>
+</dl>
+</div>
+<div class="section" id="modules">
+<h2>Modules<a class="headerlink" href="#modules" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="uqa.clean.html">uqa.clean module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="uqa.cli.html">uqa.cli module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="uqa.cli_helpers.html">uqa.cli_helpers module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="uqa.constituency.html">uqa.constituency module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="uqa.context_utils.html">uqa.context_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="uqa.dataset.html">uqa.dataset module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="uqa.download.html">uqa.download module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="uqa.fquad_utils.html">uqa.fquad_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="uqa.list_utils.html">uqa.list_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="uqa.logging_utils.html">uqa.logging_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="uqa.ner.html">uqa.ner module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="uqa.qa_gen.html">uqa.qa_gen module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="uqa.reading_wiki_dumps.html">uqa.reading_wiki_dumps module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="uqa.show.html">uqa.show module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="uqa.split.html">uqa.split module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="uqa.stats.html">uqa.stats module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="uqa.validate.html">uqa.validate module</a></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="uqa.clean.html" class="btn btn-neutral float-right" title="uqa.clean module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="modules.html" class="btn btn-neutral float-left" title="API documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Boris Tronch, Quentin Churet, Jiahao Lu
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,429 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>uqa.qa_gen &mdash; Unsupervised-Question-Answering 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Unsupervised-Question-Answering
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../data_formats.html">Data Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../models.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../workflow.html">Basic workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cli_usage.html">CLI Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/modules.html">API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Unsupervised-Question-Answering</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>uqa.qa_gen</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for uqa.qa_gen</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Natural question / answer pairs generation.</span>
+
+<span class="sd">Using output of `ner` and `constituency parsing` steps this module implements</span>
+<span class="sd">rules to generate question / answer pairs in natural looking French.</span>
+
+<span class="sd">Notes</span>
+<span class="sd">-----</span>
+<span class="sd">For visualization purposes question / anwser pairs generation process is split in 2 steps:</span>
+
+<span class="sd">    1. Matching interesting patterns in sentences constituency and / or named entity</span>
+<span class="sd">       (see :func:`rule1` and :func:`rule1_ext`)</span>
+<span class="sd">    2. Generating the questions answers from those patterns (see :func:`rule1_to_qa`)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+
+<span class="kn">from</span> <span class="nn">uqa</span> <span class="kn">import</span> <span class="n">context_utils</span><span class="p">,</span> <span class="n">list_utils</span><span class="p">,</span> <span class="n">dataset</span>
+
+
+<span class="c1"># ---- Question making helpers ----</span>
+
+
+<span class="n">NER_TO_QWORD</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;PER&quot;</span><span class="p">:</span> <span class="s2">&quot;Qui&quot;</span><span class="p">,</span> <span class="s2">&quot;LOC&quot;</span><span class="p">:</span> <span class="s2">&quot;Où&quot;</span><span class="p">,</span> <span class="s2">&quot;MISC&quot;</span><span class="p">:</span> <span class="s2">&quot;Qu&#39;est-ce que&quot;</span><span class="p">,</span> <span class="s2">&quot;ORG&quot;</span><span class="p">:</span> <span class="s2">&quot;Qu&#39;est-ce que&quot;</span><span class="p">}</span>
+
+<span class="n">SUPERLATIVES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;le plus&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;la plus&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;les plus&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;le moins&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;la moins&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;les moins&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;le principal&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;la principale&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;les principales&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">_ORDINALS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;premier&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;première&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;second&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;deuxième&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;troisième&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;quatrième&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;cinquième&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sixième&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;septième&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;huitième&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;neuvième&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;dixième&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;onzième&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;douzième&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">ORDINALS</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">_ord</span> <span class="ow">in</span> <span class="n">_ORDINALS</span><span class="p">:</span>
+    <span class="n">ORDINALS</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;le </span><span class="si">{</span><span class="n">_ord</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">ORDINALS</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;les </span><span class="si">{</span><span class="n">_ord</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">_ord</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;e&quot;</span><span class="p">):</span>
+        <span class="n">ORDINALS</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;la </span><span class="si">{</span><span class="n">_ord</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ORDINALS</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;la </span><span class="si">{</span><span class="n">_ord</span><span class="si">}</span><span class="s2">e&quot;</span><span class="p">)</span>
+        <span class="n">ORDINALS</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;les </span><span class="si">{</span><span class="n">_ord</span><span class="si">}</span><span class="s2">es&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="use_qword_quel"><a class="viewcode-back" href="../../api/uqa.qa_gen.html#uqa.qa_gen.use_qword_quel">[docs]</a><span class="k">def</span> <span class="nf">use_qword_quel</span><span class="p">(</span><span class="n">txt</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;(unused). Analyse `txt` and returns ``True`` if the generated question should use &#39;quel&#39; question word.</span>
+
+<span class="sd">    Returns ``True`` if a superlative or an ordinal is found in the sentence.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="n">SUPERLATIVES</span><span class="p">,</span> <span class="n">ORDINALS</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">txt</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<span class="c1"># ---- QA pairs gen rules ----</span>
+
+<span class="c1">#: Return type of :func:`rule1` and :func:`rule1_ext`</span>
+<span class="n">Rule1_RT</span> <span class="o">=</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">context_utils</span><span class="o">.</span><span class="n">LabelNode</span><span class="p">,</span> <span class="n">context_utils</span><span class="o">.</span><span class="n">Label</span><span class="p">]]</span>  <span class="c1"># pylint: disable=invalid-name</span>
+
+
+<div class="viewcode-block" id="rule1"><a class="viewcode-back" href="../../api/uqa.qa_gen.html#uqa.qa_gen.rule1">[docs]</a><span class="k">def</span> <span class="nf">rule1</span><span class="p">(</span><span class="n">context</span><span class="p">:</span> <span class="n">context_utils</span><span class="o">.</span><span class="n">Context</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Rule1_RT</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Extract `&#39;NP-SUJ&#39;`, `&#39;VN&#39;`, `&#39;NP-ATS&#39;` constituents continuous subsequence in sentence</span>
+<span class="sd">    if `&#39;NP-SUJ&#39;` contains a single named entity.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    :obj:`Rule1_RT`</span>
+<span class="sd">        A list of pairs. Each pair first element is a :class:`LabelNode`</span>
+<span class="sd">        with `&#39;NP-SUJ&#39;`, `&#39;VN&#39;`, `&#39;NP-ATS&#39;` labels as children and second element is the `NER` label.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">sent_const</span> <span class="ow">in</span> <span class="n">context</span><span class="o">.</span><span class="n">constituents</span><span class="p">:</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">list_utils</span><span class="o">.</span><span class="n">find_subseq</span><span class="p">([</span><span class="n">c</span><span class="o">.</span><span class="n">label</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">sent_const</span><span class="o">.</span><span class="n">children</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;NP-SUJ&quot;</span><span class="p">,</span> <span class="s2">&quot;VN&quot;</span><span class="p">,</span> <span class="s2">&quot;NP-ATS&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">idx</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">np_subj</span> <span class="o">=</span> <span class="n">sent_const</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+            <span class="n">ners</span> <span class="o">=</span> <span class="n">list_utils</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">ner</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">entity</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">np_subj</span><span class="p">:</span> <span class="n">entity</span> <span class="ow">in</span> <span class="n">label</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ners</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">ner_label</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">ner</span><span class="p">[</span><span class="n">ners</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;green&quot;</span><span class="p">)</span>
+                <span class="n">children</span> <span class="o">=</span> <span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">copy_no_child</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;magenta&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">sent_const</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">idx</span> <span class="p">:</span> <span class="n">idx</span> <span class="o">+</span> <span class="mi">3</span><span class="p">]]</span>
+                <span class="n">cloze</span> <span class="o">=</span> <span class="n">context_utils</span><span class="o">.</span><span class="n">LabelNode</span><span class="p">(</span>
+                    <span class="n">start</span><span class="o">=</span><span class="n">children</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">children</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;CQ&quot;</span><span class="p">,</span> <span class="n">children</span><span class="o">=</span><span class="n">children</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span>
+                <span class="p">)</span>
+                <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">cloze</span><span class="p">,</span> <span class="n">ner_label</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">ret</span></div>
+
+
+<div class="viewcode-block" id="rule1_ext"><a class="viewcode-back" href="../../api/uqa.qa_gen.html#uqa.qa_gen.rule1_ext">[docs]</a><span class="k">def</span> <span class="nf">rule1_ext</span><span class="p">(</span><span class="n">context</span><span class="p">:</span> <span class="n">context_utils</span><span class="o">.</span><span class="n">Context</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Rule1_RT</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Extract `&#39;NP-SUJ&#39;` -- `&#39;VN&#39;` -- `&#39;NP-ATS&#39;` or `&#39;NP-SUJ&#39;` -- `&#39;VN&#39;` -- `&#39;NP-ATS + PP&#39;`</span>
+<span class="sd">    constituents subsequence in sentence if `&#39;NP-SUJ&#39;` contains a single named entity.</span>
+
+<span class="sd">    | Here subsequence corresponds with the mathematical definition (see :func:`.find_subseq_spaced`)</span>
+<span class="sd">    | If `&#39;NP-ATS&#39;` is followed by a `&#39;PP&#39;` constituent `&#39;NP-ATS&#39;` and `&#39;PP&#39;` are merged into a single constituent.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    :obj:`Rule1_RT`</span>
+<span class="sd">        A list of pairs. Each pair first element is a :class:`LabelNode`</span>
+<span class="sd">        with constituents labels as children and second element is the `NER` label.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">sent_const</span> <span class="ow">in</span> <span class="n">context</span><span class="o">.</span><span class="n">constituents</span><span class="p">:</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">list_utils</span><span class="o">.</span><span class="n">find_subseq_spaced</span><span class="p">([</span><span class="n">c</span><span class="o">.</span><span class="n">label</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">sent_const</span><span class="o">.</span><span class="n">children</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;NP-SUJ&quot;</span><span class="p">,</span> <span class="s2">&quot;VN&quot;</span><span class="p">,</span> <span class="s2">&quot;NP-ATS&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">indices</span><span class="p">:</span>
+            <span class="n">np_subj</span> <span class="o">=</span> <span class="n">sent_const</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+            <span class="n">ners</span> <span class="o">=</span> <span class="n">list_utils</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">ner</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">entity</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">np_subj</span><span class="p">:</span> <span class="n">entity</span> <span class="ow">in</span> <span class="n">label</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ners</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">ner_label</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">ner</span><span class="p">[</span><span class="n">ners</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;green&quot;</span><span class="p">)</span>
+                <span class="n">children</span> <span class="o">=</span> <span class="p">[</span><span class="n">sent_const</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">copy_no_child</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;magenta&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">]</span>
+
+                <span class="c1"># extends NP-ATS if followed by PP-MOD (and PP-MOD starts with &#39;à&#39; ???)</span>
+                <span class="n">next_label_idx</span> <span class="o">=</span> <span class="n">indices</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">next_label</span> <span class="o">=</span> <span class="n">sent_const</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">next_label_idx</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sent_const</span><span class="o">.</span><span class="n">children</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">next_label_idx</span> <span class="k">else</span> <span class="kc">None</span>
+                <span class="k">if</span> <span class="n">next_label</span> <span class="ow">and</span> <span class="n">next_label</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;PP&quot;</span><span class="p">):</span>  <span class="c1"># and next_label.extract(context.text)[0] == &#39;à&#39;:</span>
+                    <span class="n">children</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">end</span> <span class="o">=</span> <span class="n">next_label</span><span class="o">.</span><span class="n">end</span>
+                    <span class="n">children</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;NP-ATS + </span><span class="si">{</span><span class="n">next_label</span><span class="o">.</span><span class="n">label</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="n">children</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">extras</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;red&quot;</span>
+
+                <span class="n">cloze</span> <span class="o">=</span> <span class="n">context_utils</span><span class="o">.</span><span class="n">LabelNode</span><span class="p">(</span>
+                    <span class="n">start</span><span class="o">=</span><span class="n">children</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">children</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;CQ&quot;</span><span class="p">,</span> <span class="n">children</span><span class="o">=</span><span class="n">children</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span>
+                <span class="p">)</span>
+                <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">cloze</span><span class="p">,</span> <span class="n">ner_label</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">ret</span></div>
+
+
+<div class="viewcode-block" id="rule1_to_qa"><a class="viewcode-back" href="../../api/uqa.qa_gen.html#uqa.qa_gen.rule1_to_qa">[docs]</a><span class="k">def</span> <span class="nf">rule1_to_qa</span><span class="p">(</span><span class="n">context</span><span class="p">:</span> <span class="n">context_utils</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">rule1_ret</span><span class="p">:</span> <span class="n">Rule1_RT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Generate question / answer pairs from either :func:`rule1` or :func:`rule1_ext` outputs.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ---------</span>
+<span class="sd">    context: :class:`.Context`</span>
+<span class="sd">        Context instance for which `rule1_ret` is derived, generated :class:`.QA` are stored in</span>
+<span class="sd">        `context` :attr:`~.Context.qas` attribute.</span>
+<span class="sd">    rule1_ret: :obj:`Rule1_RT`</span>
+<span class="sd">        The ouptut of either :func:`rule1` or :func:`rule1_ext` applied to `context`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">rule1_ret</span><span class="p">:</span>
+        <span class="n">suj</span><span class="p">,</span> <span class="n">vn</span><span class="p">,</span> <span class="n">ats</span> <span class="o">=</span> <span class="n">match</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">children</span>  <span class="c1"># pylint: disable=invalid-name</span>
+        <span class="n">vn_txt</span><span class="p">,</span> <span class="n">ats_txt</span> <span class="o">=</span> <span class="n">vn</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">text</span><span class="p">),</span> <span class="n">ats</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+        <span class="c1"># ner_label = el[1].label</span>
+
+        <span class="c1"># qword = &quot;Quel&quot; if use_qword_quel(ats_txt) else NER_TO_QWORD[ner_label]</span>
+        <span class="n">qword</span> <span class="o">=</span> <span class="s2">&quot;Quel&quot;</span>
+        <span class="n">question</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">qword</span><span class="p">,</span> <span class="n">vn_txt</span><span class="p">,</span> <span class="n">ats_txt</span><span class="p">,</span> <span class="s2">&quot;?&quot;</span><span class="p">])</span>
+        <span class="n">answer</span> <span class="o">=</span> <span class="n">suj</span>
+        <span class="c1"># if qword == &quot;Quel&quot;:</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">qas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">context_utils</span><span class="o">.</span><span class="n">QA</span><span class="p">(</span><span class="n">question</span><span class="p">,</span> <span class="n">answer</span><span class="o">.</span><span class="n">to_label</span><span class="p">()))</span></div>
+
+
+<span class="c1"># def rule2(context: context_utils.Context) -&gt; Rule1_RT:</span>
+<span class="c1">#     &quot;&quot;&quot;Extract &#39;NP-SUJ&#39;, &#39;VN&#39;, &#39;AP-ATS&#39; constituents sub-sequence in sentence if NP-SUJ contains a single named entity.</span>
+
+<span class="c1">#     Returns</span>
+<span class="c1">#     -------</span>
+<span class="c1">#         List[Tuple[LabelNode, Label]]</span>
+<span class="c1">#         A list of pairs; The pair f</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     ret = list()</span>
+<span class="c1">#     for sent_const in context.constituents:</span>
+<span class="c1">#         idx = list_utils.find_subseq([c.label for c in sent_const.children], [&quot;NP-SUJ&quot;, &quot;VN&quot;, &quot;AP-ATS&quot;])</span>
+<span class="c1">#         if idx &gt; -1:</span>
+<span class="c1">#             np_subj = sent_const.children[idx]</span>
+<span class="c1">#             ners = list_utils.find_all(context.ner, lambda entity, label=np_subj: entity in label)</span>
+<span class="c1">#             if len(ners) == 1:</span>
+<span class="c1">#                 ner_label = context.ner[ners[0]].copy(color=&quot;green&quot;)</span>
+<span class="c1">#                 children = [node.copy_no_child(color=&quot;magenta&quot;) for node in sent_const.children[idx : idx + 3]]</span>
+<span class="c1">#                 cloze = context_utils.LabelNode(</span>
+<span class="c1">#                     start=children[0].start, end=children[-1].end, label=&quot;CQ&quot;, children=children, color=&quot;red&quot;</span>
+<span class="c1">#                 )</span>
+<span class="c1">#                 ret.append((cloze, ner_label))</span>
+<span class="c1">#     return ret</span>
+
+<span class="c1"># ---- QA pairs generation functions ----</span>
+
+
+<div class="viewcode-block" id="generate_qas_context_it"><a class="viewcode-back" href="../../api/uqa.qa_gen.html#uqa.qa_gen.generate_qas_context_it">[docs]</a><span class="k">def</span> <span class="nf">generate_qas_context_it</span><span class="p">(</span>
+    <span class="n">context_it</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">context_utils</span><span class="o">.</span><span class="n">Context</span><span class="p">],</span> <span class="n">filter_no_qa</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">context_utils</span><span class="o">.</span><span class="n">Context</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Generate question / answers pairs on a context iterable.</span>
+
+<span class="sd">    NER and constituency parsing steps must have been realized prior to q/a generation.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data_it: Iterable[:class:`.Context`]</span>
+<span class="sd">        A context iterable.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    :obj:`.DataIterble`</span>
+<span class="sd">        The processed dateset iterable.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">context</span> <span class="ow">in</span> <span class="n">context_it</span><span class="p">:</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">rule1_ext</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+        <span class="n">rule1_to_qa</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">ret</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">context</span><span class="o">.</span><span class="n">qas</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">filter_no_qa</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">context</span></div>
+
+
+<div class="viewcode-block" id="generate_qas_dl"><a class="viewcode-back" href="../../api/uqa.qa_gen.html#uqa.qa_gen.generate_qas_dl">[docs]</a><span class="k">def</span> <span class="nf">generate_qas_dl</span><span class="p">(</span><span class="n">data_it</span><span class="p">:</span> <span class="n">dataset</span><span class="o">.</span><span class="n">DataIterable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dataset</span><span class="o">.</span><span class="n">DataIterable</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Generate question / answers pairs on a dataset.</span>
+
+<span class="sd">    NER and constituency parsing steps must have been realized prior to q/a generation.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data_it: :obj:`.DataIterble`</span>
+<span class="sd">        A dateset iterable in `default` format.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    :obj:`.DataIterble`</span>
+<span class="sd">        The processed dateset iterable.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">yield from</span> <span class="n">context_utils</span><span class="o">.</span><span class="n">jsonify</span><span class="p">(</span><span class="n">generate_qas_context_it</span><span class="p">(</span><span class="n">context_utils</span><span class="o">.</span><span class="n">contextify</span><span class="p">(</span><span class="n">data_it</span><span class="p">)))</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Boris Tronch, Quentin Churet, Jiahao Lu
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
