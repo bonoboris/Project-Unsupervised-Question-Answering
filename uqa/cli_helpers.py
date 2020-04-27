@@ -1,6 +1,4 @@
-"""
-CLI helper functions and decorators.
-"""
+"""CLI helper functions and decorators."""
 import functools
 from os import path
 from typing import Callable, List
@@ -8,20 +6,6 @@ from typing import Callable, List
 import click
 
 from uqa.dataset import DataDumper, DirDataLoader, FileDataLoader
-
-
-# def _string_pair_cb(ctx: click.Context, _: click.Parameter, value: str) -> List[Tuple[str, str]]:
-#     ret = list()
-#     if value is None:
-#         return ret
-#     try:
-#         pairs = value.split(";")
-#         for pair in pairs:
-#             ret.append(pair.split(":"))
-#     except ValueError:
-#         raise click.BadParameter("Invalid format: expected 'from_dir_1:to_dir_1;from_dir_2:to_dir_2'")
-#     else:
-#         return ret
 
 
 def _validate_params(use_dir: bool, src: List[str]) -> bool:
@@ -40,12 +24,12 @@ def _validate_params(use_dir: bool, src: List[str]) -> bool:
                 )
 
 
-def _read_params(func: Callable, default_dataformat_only: bool = False) -> Callable:
+def _read_params(func: Callable, default_data_format_only: bool = False) -> Callable:
     decorated_func = func
-    if not default_dataformat_only:
+    if not default_data_format_only:
         decorated_func = click.option(
             "-df",
-            "--dataformat",
+            "--data-format",
             type=click.Choice(["default", "fquad"], case_sensitive=False),
             default="default",
             help="Data structure",
@@ -78,12 +62,12 @@ def click_read_data(func: Callable) -> Callable:
     as the keyword argument `dataloader`."""
 
     @functools.wraps(func)
-    def wrapper(dataformat, input_format, use_dir, src, **kwargs):
+    def wrapper(data_format, input_format, use_dir, src, **kwargs):
         _validate_params(use_dir, src)
         if use_dir:
-            dataloader = DirDataLoader(src, input_format, dataformat)
+            dataloader = DirDataLoader(src, input_format, data_format)
         else:
-            dataloader = FileDataLoader(src, input_format, dataformat)
+            dataloader = FileDataLoader(src, input_format, data_format)
         return func(dataloader=dataloader, **kwargs)
 
     decorated_func = _read_params(wrapper)
@@ -127,13 +111,13 @@ def click_read_write_data(func: Callable) -> Callable:
     as the keyword argument `datloader` and `datadumper`."""
 
     @functools.wraps(func)
-    def wrapper(dataformat, input_format, use_dir, src, output_format, json_indent, override, dst, **kwargs):
+    def wrapper(data_format, input_format, use_dir, src, output_format, json_indent, override, dst, **kwargs):
         _validate_params(use_dir, src)
         if use_dir:
-            dataloader = DirDataLoader(src, input_format, dataformat)
+            dataloader = DirDataLoader(src, input_format, data_format)
             path_mod = DataDumper.dir_replacer(src[0].strip("/"), dst)
         else:
-            dataloader = FileDataLoader(src, input_format, dataformat)
+            dataloader = FileDataLoader(src, input_format, data_format)
             if len(src) == 1:
                 path_mod = DataDumper.path_replacer(dst)
             else:
@@ -168,12 +152,12 @@ def click_split_params(func: Callable) -> Callable:
     as the keyword argument `datloader` and `datadumper`."""
 
     @functools.wraps(func)
-    def wrapper(dataformat, input_format, use_dir, src, output_format, override, dst, json_indent, **kwargs):
+    def wrapper(data_format, input_format, use_dir, src, output_format, override, dst, json_indent, **kwargs):
         _validate_params(use_dir, src)
         if use_dir:
-            dataloader = DirDataLoader(src, input_format, dataformat)
+            dataloader = DirDataLoader(src, input_format, data_format)
         else:
-            dataloader = FileDataLoader(src, input_format, dataformat)
+            dataloader = FileDataLoader(src, input_format, data_format)
 
         datadumper = DataDumper(output_format, override=override, json_indent=json_indent)
         return func(dataloader=dataloader, datadumper=datadumper, dst=dst, **kwargs)

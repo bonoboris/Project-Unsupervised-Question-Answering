@@ -1,6 +1,19 @@
+"""CLI entry point and command definitions with click.
+
+The CLI is designed to wrap the maximum number of features implemented in the package.
+To use the CLI the `uqa` package must be installed (see `setup.py`).
+
+Notes
+-----
+Docstring of functions implementing CLI commands are used as help text in the CLI.
+
+For all commands reading and/or writing data decorators defined in `cli_helpers.py` are used.
+Those decorators achieve goals:
+- Adding commands parameters
+- Extending function docstring with usage documentation for CLI help text
+- At runtime, transforming parameters in :class:`dataset.DataLoader` and / or :class:`dataset.DataDumper` instances
 """
-CLI commands definition with click.
-"""
+
 from typing import List
 
 import click
@@ -15,6 +28,9 @@ from uqa import (
     split as split_,
     ner as ner_,
     constituency as constituency_,
+    show as show_,
+    validate as validate_,
+    download as download_,
     qa_gen,
 )
 
@@ -114,18 +130,85 @@ def split(dataloader: dataset.DataLoader, datadumper: dataset.DataDumper, dst: s
 @cli_helpers.click_read_write_data
 def ner(dataloader: dataset.DataLoader, datadumper: dataset.DataDumper):
     """Named-entity recognition."""
-    datadumper.save(ner_.ner_dl(dataloader))
+    data_it = dataloader
+    if dataloader.dataformat == "fquad":
+        data_it = fquad_utils.fquad_to_default_dl(dataloader)
+    datadumper.save(ner_.ner_dl(data_it))
 
 
 @main.command()
 @click.option("--detailed", is_flag=True, help="Log article processing progression")
+@cli_helpers.click_read_write_data
 def constituency(dataloader: dataset.DataLoader, datadumper: dataset.DataDumper, detailed: bool):
     """Constituency parsing."""
-    datadumper.save(constituency_.constituency_dl(dataloader, detailed=detailed))
+    data_it = dataloader
+    if dataloader.dataformat == "fquad":
+        data_it = fquad_utils.fquad_to_default_dl(dataloader)
+    datadumper.save(constituency_.constituency_dl(data_it, detailed=detailed))
 
 
 @main.command()
 @cli_helpers.click_read_write_data
 def qas(dataloader: dataset.DataLoader, datadumper: dataset.DataDumper):
     """Natural question / answer genration."""
-    datadumper.save(fquad_utils.default_to_squad_dl(qa_gen.generate_qas_dl(dataloader)))
+    datadumper.save(fquad_utils.default_to_fquad_dl(qa_gen.generate_qas_dl(dataloader)))
+
+
+@main.command()
+@click.option("-a", "--all", "show_all", is_flag=True, help="Show all context")
+@click.option("--depth", type=click.INT, default=-1, help="Maximum depth for constituents")
+@click.option("--no-ner", is_flag=True)
+@click.option("--no-const", is_flag=True)
+@click.option("--show-no-label", is_flag=True)
+@click.option("--rule", type=click.Choice(["", "rule1", "rule1_ext"]), default="")
+@cli_helpers.click_read_data
+def show(
+    dataloader: dataset.DataLoader,
+    depth: int,
+    show_all: bool,
+    no_ner: bool,
+    no_const: bool,
+    show_no_label: bool,
+    rule: str,
+):
+    """Show colorized context and informations."""
+    data_it = dataloader
+    if dataloader.dataformat == "fquad":
+        data_it = fquad_utils.fquad_to_default_dl(data_it, include_qas=True)
+    if rule:
+        show_.show_rule_dl(data_it, rule, show_all)
+    else:
+        show_.show_dl(data_it, depth, show_all=show_all, no_ner=no_ner, no_const=no_const, show_no_label=show_no_label)
+
+
+@main.command()
+@cli_helpers.click_read_data
+def validate(dataloader: dataset.DataLoader):
+    """Validate a dataset in `FQuAD` format."""
+    if dataloader.dataformat != "fquad":
+        raise click.BadParameter(f"Unsupported `dataformat`: '{dataloader.dataformat}'")
+    validate_.validate_dl(dataloader)
+
+
+@main.command()
+@click.argument(
+    "model", type=click.Choice(["all", "spacy", "nltk"], case_sensitive=False), default="all",
+)
+@click.option("-n", "--name", type=click.STRING, multiple=True, help="Name of a specific model to install.")
+def download(model: str, name: List[str]):
+    """Download models and ressources.
+
+    `MODEL` argument refers to the model type. Choose `all` to download all default required models.
+    """
+    if model == "all" and name:
+        click.BadParameter("Cannot specify model name with `model` value `all`")
+    if model == "all":
+        download_.download_spacy_model()
+        download_.download_benepar_model()
+    else:
+        dl_func = download_.download_spacy_model if model == "spacy" else download_.download_benepar_model
+        if name:
+            for model_name in name:
+                dl_func(model_name)
+        else:
+            dl_func()

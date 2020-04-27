@@ -1,0 +1,63 @@
+Installation
+============
+
+Dependencies
+------------
+UQA depends on the following libraries:
+
+* `Click <https://palletsprojects.com/p/click/>`_: A framework for writing command line interfaces.
+* `spaCy <https://spacy.io/>`_: An easy to use Natural language processing (NLP) framework
+  mantaining recent pre-trained models for various language.
+* `colorama <https://pypi.org/project/colorama/>`_: Cross-platform library for colorized console outputing.
+* `Benepar <https://pypi.org/project/benepar/>`_: A multilingual constituency parser library that integrates with spaCy and NLTK
+
+.. warning::
+   
+   * ``Benepar`` requires `Cython <https://cython.org/>`_ and `NumPy <https://numpy.org/>`_ to be installed prior to installing the library
+   * ``Benepar`` depends on ``tensorflow`` but isn't compatible with ``tensorflow>=2.0`` at the time of writing 
+
+Optional Dependencies
+---------------------
+
+* `ujson <https://pypi.org/project/ujson/>`_: A fast JSON encoder/decoder library
+
+Installation with tensorflow==1.X
+---------------------------------
+
+Install ``numpy`` and ``Cypthon``::
+
+    $ pip install numpy Cython
+
+Install ``tensorflow<2.0``::
+
+    $ pip install tensorflow==1.15
+
+Install the **uqa** package,
+in the project root directory::
+
+    $ pip install .
+
+**or** in editable mode::
+
+    $ pip install -e .
+
+Installation with tensorflow==2.X
+---------------------------------
+Follow the previously descibeb steps but install whatever version of ``tensorflow==2.X`` 
+you want to use.
+
+After the **uqa** package installation find the file ``benepar/base_parser.py`` in your
+python site-packages directory and edit the first line from::
+    
+    import tensorflow as tf
+
+to::
+
+    import tensorflow.compat.v1 as tf
+
+and save.
+
+Installation with GPU support
+-----------------------------
+Both ``SpaCy`` and ``Benepar`` support GPU acceleration.
+Refer to their documentation to enable GPU support for this package.

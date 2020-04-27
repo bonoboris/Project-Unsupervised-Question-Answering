@@ -1,4 +1,16 @@
-"""Natural question / answer pairs gneration"""
+"""Natural question / answer pairs generation.
+
+Using output of `ner` and `constituency parsing` steps this module implements
+rules to generate question / answer pairs in natural looking French.
+
+Notes
+-----
+For visualization purposes question / anwser pairs generation process is split in 2 steps:
+
+    1. Matching interesting patterns in sentences constituency and / or named entity
+       (see :func:`rule1` and :func:`rule1_ext`)
+    2. Generating the questions answers from those patterns (see :func:`rule1_to_qa`)
+"""
 
 from typing import List, Iterable, Tuple
 import itertools
@@ -52,7 +64,10 @@ for _ord in _ORDINALS:
 
 
 def use_qword_quel(txt: str) -> bool:
-    """Wether to use 'quel' question word."""
+    """(unused). Analyse `txt` and returns ``True`` if the generated question should use 'quel' question word.
+
+    Returns ``True`` if a superlative or an ordinal is found in the sentence.
+    """
     for word in itertools.chain(SUPERLATIVES, ORDINALS):
         if word in txt:
             return True
@@ -61,17 +76,19 @@ def use_qword_quel(txt: str) -> bool:
 
 # ---- QA pairs gen rules ----
 
-
+#: Return type of :func:`rule1` and :func:`rule1_ext`
 Rule1_RT = List[Tuple[context_utils.LabelNode, context_utils.Label]]  # pylint: disable=invalid-name
 
 
 def rule1(context: context_utils.Context) -> Rule1_RT:
-    """Extract 'NP-SUJ', 'VN', 'NP-ATS' constituents sub-sequence in sentence if NP-SUJ contains a single named entity.
+    """Extract `'NP-SUJ'`, `'VN'`, `'NP-ATS'` constituents continuous subsequence in sentence
+    if `'NP-SUJ'` contains a single named entity.
 
     Returns
     -------
-        List[Tuple[LabelNode, Label]]
-        A list of pairs; The pair f
+    :obj:`Rule1_RT`
+        A list of pairs. Each pair first element is a :class:`LabelNode`
+        with `'NP-SUJ'`, `'VN'`, `'NP-ATS'` labels as children and second element is the `NER` label.
     """
     ret = list()
     for sent_const in context.constituents:
@@ -90,12 +107,17 @@ def rule1(context: context_utils.Context) -> Rule1_RT:
 
 
 def rule1_ext(context: context_utils.Context) -> Rule1_RT:
-    """Extract 'NP-SUJ', 'VN', 'NP-ATS' constituents sub-sequence in sentence if NP-SUJ contains a single named entity.
+    """Extract `'NP-SUJ'` -- `'VN'` -- `'NP-ATS'` or `'NP-SUJ'` -- `'VN'` -- `'NP-ATS + PP'`
+    constituents subsequence in sentence if `'NP-SUJ'` contains a single named entity.
+
+    | Here subsequence corresponds with the mathematical definition (see :func:`.find_subseq_spaced`)
+    | If `'NP-ATS'` is followed by a `'PP'` constituent `'NP-ATS'` and `'PP'` are merged into a single constituent.
 
     Returns
     -------
-        List[Tuple[LabelNode, Label]]
-        A list of pairs; The pair f
+    :obj:`Rule1_RT`
+        A list of pairs. Each pair first element is a :class:`LabelNode`
+        with constituents labels as children and second element is the `NER` label.
     """
     ret = list()
     for sent_const in context.constituents:
@@ -122,9 +144,18 @@ def rule1_ext(context: context_utils.Context) -> Rule1_RT:
     return ret
 
 
-def rule1_to_qa(context: context_utils.Context, filter1_ret: Rule1_RT) -> None:
-    """Convert rule1 result to a question answer pair."""
-    for match in filter1_ret:
+def rule1_to_qa(context: context_utils.Context, rule1_ret: Rule1_RT) -> None:
+    """Generate question / answer pairs from either :func:`rule1` or :func:`rule1_ext` outputs.
+
+    Parameters
+    ---------
+    context: :class:`.Context`
+        Context instance for which `rule1_ret` is derived, generated :class:`.QA` are stored in
+        `context` :attr:`~.Context.qas` attribute.
+    rule1_ret: :obj:`Rule1_RT`
+        The ouptut of either :func:`rule1` or :func:`rule1_ext` applied to `context`
+    """
+    for match in rule1_ret:
         suj, vn, ats = match[0].children  # pylint: disable=invalid-name
         vn_txt, ats_txt = vn.extract(context.text), ats.extract(context.text)
         # ner_label = el[1].label
@@ -137,28 +168,28 @@ def rule1_to_qa(context: context_utils.Context, filter1_ret: Rule1_RT) -> None:
         context.qas.append(context_utils.QA(question, answer.to_label()))
 
 
-def show_rule1(context_it: Iterable[context_utils.Context], show_other_d1_const=True):
-    """Show rule1 matchs."""
-    for context in context_it:
-        ret = rule1_ext(context)
-        rule1_to_qa(context, ret)
-        if context.qas:
-            print(context.header(color="yellow"))
-            labels = list()
-            for cloze, ner_label in ret:
-                labels.extend(cloze.children)
-                labels.append(ner_label)
-            if show_other_d1_const:
-                for cloze, _ in ret:
-                    sent_label = [l for l in context.constituents if cloze in l][0]
-                    labels.append(sent_label.copy_no_child(color="white"))
-                    labels.extend((l.copy_no_child(color="cyan") for l in sent_label.children if l not in labels))
-            print(context.decorate(context.text, labels))
-            for question, answer in context.qas:
-                print(context.blue(question))
-                print(answer.extract(context.text))
-            input()
+# def rule2(context: context_utils.Context) -> Rule1_RT:
+#     """Extract 'NP-SUJ', 'VN', 'AP-ATS' constituents sub-sequence in sentence if NP-SUJ contains a single named entity.
 
+#     Returns
+#     -------
+#         List[Tuple[LabelNode, Label]]
+#         A list of pairs; The pair f
+#     """
+#     ret = list()
+#     for sent_const in context.constituents:
+#         idx = list_utils.find_subseq([c.label for c in sent_const.children], ["NP-SUJ", "VN", "AP-ATS"])
+#         if idx > -1:
+#             np_subj = sent_const.children[idx]
+#             ners = list_utils.find_all(context.ner, lambda entity, label=np_subj: entity in label)
+#             if len(ners) == 1:
+#                 ner_label = context.ner[ners[0]].copy(color="green")
+#                 children = [node.copy_no_child(color="magenta") for node in sent_const.children[idx : idx + 3]]
+#                 cloze = context_utils.LabelNode(
+#                     start=children[0].start, end=children[-1].end, label="CQ", children=children, color="red"
+#                 )
+#                 ret.append((cloze, ner_label))
+#     return ret
 
 # ---- QA pairs generation functions ----
 
@@ -166,7 +197,20 @@ def show_rule1(context_it: Iterable[context_utils.Context], show_other_d1_const=
 def generate_qas_context_it(
     context_it: Iterable[context_utils.Context], filter_no_qa: bool = True
 ) -> Iterable[context_utils.Context]:
-    """From a context_utils.Context iterable, generate natural question / answer pairs."""
+    """Generate question / answers pairs on a context iterable.
+
+    NER and constituency parsing steps must have been realized prior to q/a generation.
+
+    Parameters
+    ----------
+    data_it: Iterable[:class:`.Context`]
+        A context iterable.
+
+    Returns
+    -------
+    :obj:`.DataIterble`
+        The processed dateset iterable.
+    """
     for context in context_it:
         ret = rule1_ext(context)
         rule1_to_qa(context, ret)
@@ -175,21 +219,18 @@ def generate_qas_context_it(
 
 
 def generate_qas_dl(data_it: dataset.DataIterable) -> dataset.DataIterable:
-    """For a default structure dataset, generate natural question answer pairs."""
+    """Generate question / answers pairs on a dataset.
+
+    NER and constituency parsing steps must have been realized prior to q/a generation.
+
+    Parameters
+    ----------
+    data_it: :obj:`.DataIterble`
+        A dateset iterable in `default` format.
+
+    Returns
+    -------
+    :obj:`.DataIterble`
+        The processed dateset iterable.
+    """
     yield from context_utils.jsonify(generate_qas_context_it(context_utils.contextify(data_it)))
-
-
-# ---- Others ----
-
-
-def show_const_ner_depth(context_it, depth=1):
-    """Display colorized named entities and constituents at `depth` depth and less."""
-    for context in context_it:
-        print(context_utils.yellow(context.fpath))
-        print(context_utils.yellow(f"{context.doc_id} - {context.doc_title} [{context.context_id}]"))
-        context.set_color_hier("constituents", colors=["white", "red"])
-        labels = [el.copy(depth=depth) for el in context.constituents]
-        context.set_color_all("ner", "green")
-        labels.extend(context.ner)
-        print(context_utils.decorate(context.text, labels))
-        input("\n")

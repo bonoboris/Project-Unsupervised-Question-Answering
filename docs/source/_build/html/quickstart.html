@@ -1,0 +1,271 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Installation &mdash; Unsupervised-Question-Answering 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Welcome to UQA’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Unsupervised-Question-Answering
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#optional-dependencies">Optional Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installation-with-tensorflow-1-x">Installation with tensorflow==1.X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installation-with-tensorflow-2-x">Installation with tensorflow==2.X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installation-with-gpu-support">Installation with GPU support</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Unsupervised-Question-Answering</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Installation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/quickstart.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<p>UQA depends on the following libraries:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://palletsprojects.com/p/click/">Click</a>: A framework for writing command line interfaces.</p></li>
+<li><p><a class="reference external" href="https://spacy.io/">spaCy</a>: An easy to use Natural language processing (NLP) framework
+mantaining recent pre-trained models for various language.</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/colorama/">colorama</a>: Cross-platform library for colorized console outputing.</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/benepar/">Benepar</a>: A multilingual constituency parser library that integrates with spaCy and NLTK</p></li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Benepar</span></code> requires <a class="reference external" href="https://cython.org/">Cython</a> and <a class="reference external" href="https://numpy.org/">NumPy</a> to be installed prior to installing the library</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Benepar</span></code> depends on <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code> but isn’t compatible with <code class="docutils literal notranslate"><span class="pre">tensorflow&gt;=2.0</span></code> at the time of writing</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="optional-dependencies">
+<h2>Optional Dependencies<a class="headerlink" href="#optional-dependencies" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://pypi.org/project/ujson/">ujson</a>: A fast JSON encoder/decoder library</p></li>
+</ul>
+</div>
+<div class="section" id="installation-with-tensorflow-1-x">
+<h2>Installation with tensorflow==1.X<a class="headerlink" href="#installation-with-tensorflow-1-x" title="Permalink to this headline">¶</a></h2>
+<p>Install <code class="docutils literal notranslate"><span class="pre">numpy</span></code> and <code class="docutils literal notranslate"><span class="pre">Cypthon</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install numpy Cython
+</pre></div>
+</div>
+<p>Install <code class="docutils literal notranslate"><span class="pre">tensorflow&lt;2.0</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install tensorflow==1.15
+</pre></div>
+</div>
+<p>Install the <strong>uqa</strong> package,
+in the project root directory:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install .
+</pre></div>
+</div>
+<p><strong>or</strong> in editable mode:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install -e .
+</pre></div>
+</div>
+</div>
+<div class="section" id="installation-with-tensorflow-2-x">
+<h2>Installation with tensorflow==2.X<a class="headerlink" href="#installation-with-tensorflow-2-x" title="Permalink to this headline">¶</a></h2>
+<p>Follow the previously descibeb steps but install whatever version of <code class="docutils literal notranslate"><span class="pre">tensorflow==2.X</span></code>
+you want to use.</p>
+<p>After the <strong>uqa</strong> package installation find the file <code class="docutils literal notranslate"><span class="pre">benepar/base_parser.py</span></code> in your
+python site-packages directory and edit the first line from:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+</pre></div>
+</div>
+<p>to:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tensorflow.compat.v1</span> <span class="k">as</span> <span class="nn">tf</span>
+</pre></div>
+</div>
+<p>and save.</p>
+</div>
+<div class="section" id="installation-with-gpu-support">
+<h2>Installation with GPU support<a class="headerlink" href="#installation-with-gpu-support" title="Permalink to this headline">¶</a></h2>
+<p>Both <code class="docutils literal notranslate"><span class="pre">SpaCy</span></code> and <code class="docutils literal notranslate"><span class="pre">Benepar</span></code> support GPU acceleration.
+Refer to their documentation to enable GPU support for this package.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to UQA’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Boris Tronch, Quentin Churet, Jiahao Lu
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

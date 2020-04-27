@@ -16,7 +16,7 @@ setup(
     name="projectUQA",
     version="0.1a0",
     packages=find_packages(),
-    install_requires=["docutils", "click"],
+    install_requires=["sphinx", "click", "colorama", "spacy", "benepar"],
     entry_points="""
         [console_scripts]
         uqa=uqa.cli:main

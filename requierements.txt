@@ -1,10 +1,7 @@
-cython
 numpy
+Cython
 click
-tabulate
-tqdm
 colorama
-nltk
 spacy
-# Numpy and Cython must be installed before installing benepar
 benepar
+sphinx
