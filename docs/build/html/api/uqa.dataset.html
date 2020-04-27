@@ -1,0 +1,691 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>uqa.dataset module &mdash; Unsupervised-Question-Answering 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="uqa.download module" href="uqa.download.html" />
+    <link rel="prev" title="uqa.context_utils module" href="uqa.context_utils.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Unsupervised-Question-Answering
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_formats.html">Data Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../models.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../workflow.html">Basic workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cli_usage.html">CLI Usage</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">API documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="uqa.html">uqa</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="uqa.html#main-featutes-processing-pipeline">Main featutes / processing pipeline:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="uqa.html#question-answer-generation-key-points">Question / answer generation key points</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="uqa.html#modules">Modules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="uqa.clean.html">uqa.clean module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.cli.html">uqa.cli module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.cli_helpers.html">uqa.cli_helpers module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.constituency.html">uqa.constituency module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.context_utils.html">uqa.context_utils module</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">uqa.dataset module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.download.html">uqa.download module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.fquad_utils.html">uqa.fquad_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.list_utils.html">uqa.list_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.logging_utils.html">uqa.logging_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.ner.html">uqa.ner module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.qa_gen.html">uqa.qa_gen module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.reading_wiki_dumps.html">uqa.reading_wiki_dumps module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.show.html">uqa.show module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.split.html">uqa.split module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.stats.html">uqa.stats module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.validate.html">uqa.validate module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Unsupervised-Question-Answering</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="modules.html">API documentation</a> &raquo;</li>
+        
+          <li><a href="uqa.html">uqa</a> &raquo;</li>
+        
+      <li>uqa.dataset module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/uqa.dataset.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-uqa.dataset">
+<span id="uqa-dataset-module"></span><h1>uqa.dataset module<a class="headerlink" href="#module-uqa.dataset" title="Permalink to this headline">¶</a></h1>
+<p>Classes to load and save data.</p>
+<p><a class="reference internal" href="#uqa.dataset.DataLoader" title="uqa.dataset.DataLoader"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataLoader</span></code></a> and <a class="reference internal" href="#uqa.dataset.DataDumper" title="uqa.dataset.DataDumper"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataDumper</span></code></a> are designed to work with/as <a class="reference internal" href="#uqa.dataset.DataIterable" title="uqa.dataset.DataIterable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataIterable</span></code></a> types,
+while encapsulating the different dataset structure and format specificities.</p>
+<p class="rubric">Examples</p>
+<p>Read a single file pickle dataset, process it and save a single json file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Load a single pickle file</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dataloader</span> <span class="o">=</span> <span class="n">FileDataLoader</span><span class="p">(</span><span class="s2">&quot;data.pickle&quot;</span><span class="p">,</span> <span class="n">fileformat</span><span class="o">=</span><span class="s2">&quot;pickle&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Processing returns an `DataIterble` object with a single element</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data_it</span> <span class="o">=</span> <span class="n">some_processing_step</span><span class="p">(</span><span class="n">dataloader</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Get a path_modifier which simply returns a new path</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">path_modifier</span> <span class="o">=</span> <span class="n">DataDumper</span><span class="o">.</span><span class="n">path_replacer</span><span class="p">(</span><span class="s2">&quot;foo/data.json&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">DataDumper</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">fileformat</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">,</span>              <span class="c1"># save in JSON fileformat</span>
+<span class="gp">... </span>    <span class="n">path_modifier</span><span class="o">=</span><span class="n">path_modifier</span><span class="p">,</span>    <span class="c1"># use new path</span>
+<span class="gp">... </span>    <span class="n">json_indent</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>                  <span class="c1"># set json indentation level to 2</span>
+<span class="gp">... </span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">data_it</span><span class="p">)</span>                     <span class="c1"># Save the processed data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># File &#39;foo/data.json&#39; is created and contains the processed data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># if &#39;foo&#39; directory doesn&#39;t exist, it&#39;s created.</span>
+</pre></div>
+</div>
+<p>Read a multiple-file json dataset, process it and write result in a new directory.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Load multiple json file</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dataloader</span> <span class="o">=</span> <span class="n">FileDataLoader</span><span class="p">([</span><span class="s2">&quot;data_train.json&quot;</span><span class="p">,</span> <span class="s2">&quot;bar/data_eval.json&quot;</span><span class="p">,</span> <span class="s2">&quot;bar/data_test.json&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Processing returns an `DataIterble` object with a 3 elements.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data_it</span> <span class="o">=</span> <span class="n">some_processing_step</span><span class="p">(</span><span class="n">dataloader</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Get the path modifier</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">path_modifier</span> <span class="o">=</span> <span class="n">DataDumper</span><span class="o">.</span><span class="n">file_in_dir</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">DataDumper</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">fileformat</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">,</span>              <span class="c1"># save in JSON fileformat</span>
+<span class="gp">... </span>    <span class="n">path_modifier</span><span class="o">=</span><span class="n">path_modifier</span><span class="p">,</span>    <span class="c1"># use new path</span>
+<span class="gp">... </span>    <span class="n">json_indent</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>                  <span class="c1"># set json indentation level to 2</span>
+<span class="gp">... </span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">data_it</span><span class="p">)</span>                     <span class="c1"># Save the processed data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Files &#39;foo/data_train.json&#39;, &#39;foo/data_eval.json&#39;, &#39;foo/data_test.json&#39;] are created</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># if &#39;foo&#39; directory doesn&#39;t exist, it&#39;s created.</span>
+</pre></div>
+</div>
+<p>Read a directory json dataset, process it and write result in a new directory.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Load all json file in directory &quot;bar&quot; and its sub-directories</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dataloader</span> <span class="o">=</span> <span class="n">DirDataLoader</span><span class="p">(</span><span class="s2">&quot;bar&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Processing returns an `DataIterble` object.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data_it</span> <span class="o">=</span> <span class="n">some_processing_step</span><span class="p">(</span><span class="n">dataloader</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Get the directory modifier function</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">path_modifier</span> <span class="o">=</span> <span class="n">DataDumper</span><span class="o">.</span><span class="n">dir_replacer</span><span class="p">(</span><span class="s2">&quot;bar&quot;</span><span class="p">,</span> <span class="s2">&quot;baz/foo&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">DataDumper</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">fileformat</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">,</span>              <span class="c1"># save in JSON fileformat</span>
+<span class="gp">... </span>    <span class="n">path_modifier</span><span class="o">=</span><span class="n">path_modifier</span><span class="p">,</span>    <span class="c1"># use new path</span>
+<span class="gp">... </span>    <span class="n">json_indent</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>                  <span class="c1"># set json indentation level to 2</span>
+<span class="gp">... </span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">data_it</span><span class="p">)</span>                     <span class="c1"># Save the processed data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># For each file with path &quot;bar/{subpath}&quot; a file &quot;foo/baz/{subpath}&quot; is created.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># All non-exsting directories and sub-directories are also created</span>
+</pre></div>
+</div>
+<dl class="py data">
+<dt id="uqa.dataset.TJson">
+<code class="sig-prename descclassname">uqa.dataset.</code><code class="sig-name descname">TJson</code><em class="property"> = typing.Union[typing.Dict, typing.List]</em><a class="headerlink" href="#uqa.dataset.TJson" title="Permalink to this definition">¶</a></dt>
+<dd><div class="line-block">
+<div class="line">Json-like container, representing data usually in <cite>default</cite> format.</div>
+<div class="line">See – <a class="reference internal" href="../data_formats.html"><span class="doc">Data Formats</span></a></div>
+</div>
+</dd></dl>
+
+<dl class="py data">
+<dt id="uqa.dataset.DataIterable">
+<code class="sig-prename descclassname">uqa.dataset.</code><code class="sig-name descname">DataIterable</code><em class="property"> = typing.Iterable[typing.Tuple[str, typing.Union[typing.Dict, typing.List]]]</em><a class="headerlink" href="#uqa.dataset.DataIterable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dataset Iterable, each element is a pair <code class="docutils literal notranslate"><span class="pre">(path,</span> <span class="pre">fcontent)</span></code></p>
+<ul class="simple">
+<li><p><strong>path</strong> (<cite>str</cite>) – File’s path</p></li>
+<li><p><strong>fcontent</strong> (<a class="reference internal" href="#uqa.dataset.TJson" title="uqa.dataset.TJson"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TJson</span></code></a>) – File’s content</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt id="uqa.dataset.read_json">
+<code class="sig-prename descclassname">uqa.dataset.</code><code class="sig-name descname">read_json</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fpath</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span> &#x2192; Union<span class="p">[</span>Dict<span class="p">, </span>List<span class="p">]</span><a class="reference internal" href="../_modules/uqa/dataset.html#read_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.dataset.read_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read a json file and return its content.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fpath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Relative or absolute path of the JSON file to read</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#uqa.dataset.TJson" title="uqa.dataset.TJson"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TJson</span></code></a> – The JSON file’s content</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="uqa.dataset.read_pickle">
+<code class="sig-prename descclassname">uqa.dataset.</code><code class="sig-name descname">read_pickle</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fpath</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span> &#x2192; Any<a class="reference internal" href="../_modules/uqa/dataset.html#read_pickle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.dataset.read_pickle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unpickle a file and return its content.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fpath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Relative or absolute path of the pickle file to read</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>Any</em> – The unpickled object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="uqa.dataset.write_json">
+<code class="sig-prename descclassname">uqa.dataset.</code><code class="sig-name descname">write_json</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fpath</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em>, <em class="sig-param"><span class="n">fcontent</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>Dict<span class="p">, </span>List<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">override</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">indent</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)">None</a><a class="reference internal" href="../_modules/uqa/dataset.html#write_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.dataset.write_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write <cite>fcontent</cite> json-like structure at path <cite>fpath</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fpath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Relative or absolute path of the file to write.</p></li>
+<li><p><strong>fcontent</strong> (<a class="reference internal" href="#uqa.dataset.TJson" title="uqa.dataset.TJson"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TJson</span></code></a>) – Json-like content to write.</p></li>
+<li><p><strong>override</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em>, </em><em>default=False</em>) – If a file with path <cite>fpath</cite> already exists and overriden is <code class="docutils literal notranslate"><span class="pre">True</span></code> the file is overriden,
+else if override is <code class="docutils literal notranslate"><span class="pre">False</span></code> a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#FileExistsError" title="(in Python v3.8)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">FileExistsError</span></code></a> exception is raised.</p></li>
+<li><p><strong>indent</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>, </em><em>default=0</em>) – JSON indentation number of whitespace to use, use 0 for compact JSON</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>kwargs</strong> – Ignored.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="uqa.dataset.write_pickle">
+<code class="sig-prename descclassname">uqa.dataset.</code><code class="sig-name descname">write_pickle</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fpath</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em>, <em class="sig-param"><span class="n">fcontent</span><span class="p">:</span> <span class="n">Any</span></em>, <em class="sig-param"><span class="n">override</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)">None</a><a class="reference internal" href="../_modules/uqa/dataset.html#write_pickle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.dataset.write_pickle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Picke and write <cite>fcontent</cite> object at path <cite>fpath</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fpath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Relative or absolute path of the file to write.</p></li>
+<li><p><strong>fcontent</strong> (<a class="reference internal" href="#uqa.dataset.TJson" title="uqa.dataset.TJson"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TJson</span></code></a>) – Picklable object to write.</p></li>
+<li><p><strong>override</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em>, </em><em>default=False</em>) – If a file with path <cite>fpath</cite> already exists and overriden is <code class="docutils literal notranslate"><span class="pre">True</span></code> the file is overriden,
+else if override is <code class="docutils literal notranslate"><span class="pre">False</span></code> a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#FileExistsError" title="(in Python v3.8)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">FileExistsError</span></code></a> exception is raised.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>kwargs</strong> – Ignored.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="uqa.dataset.DataLoader">
+<em class="property">class </em><code class="sig-prename descclassname">uqa.dataset.</code><code class="sig-name descname">DataLoader</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">datapath</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">, </span>Iterable<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">]</span><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">fileformat</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em>, <em class="sig-param"><span class="n">dataformat</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span> <span class="o">=</span> <span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">sort_filename</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">skip_file_cb</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Callable<span class="p">[</span><span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">]</span><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a><span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uqa/dataset.html#DataLoader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.dataset.DataLoader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></a></p>
+<p>Data loaders base class.</p>
+<div class="line-block">
+<div class="line">Derived classes only need to implement <a class="reference internal" href="#uqa.dataset.DataLoader.filepaths" title="uqa.dataset.DataLoader.filepaths"><code class="xref py py-meth docutils literal notranslate"><span class="pre">filepaths()</span></code></a> abstract methods.</div>
+<div class="line">Manage dataset reading for single or multiple files dataset and allow to specify a directory as a dataset.</div>
+<div class="line">Iterating over an <cite>DataLoader</cite> instance will yield each file path and content.</div>
+</div>
+<dl class="py attribute">
+<dt id="uqa.dataset.DataLoader.sort_filename">
+<code class="sig-name descname">sort_filename</code><a class="headerlink" href="#uqa.dataset.DataLoader.sort_filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code> file path and content pairs are sorted in lexicographic order relative to the path.
+else files order is randomized</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a>, default=True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="uqa.dataset.DataLoader.skip_file_cb">
+<code class="sig-name descname">skip_file_cb</code><a class="headerlink" href="#uqa.dataset.DataLoader.skip_file_cb" title="Permalink to this definition">¶</a></dt>
+<dd><p>If provided, each file’s path in the dataset is passed to this callback, if the callback returns <code class="docutils literal notranslate"><span class="pre">True</span></code>
+the file is skipped</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Callable[[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a>], <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a>], default=None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#uqa.dataset.DataIterable" title="uqa.dataset.DataIterable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataIterable</span></code></a></p>
+</div>
+<dl class="py method">
+<dt id="uqa.dataset.DataLoader.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">datapath</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">, </span>Iterable<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">]</span><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">fileformat</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em>, <em class="sig-param"><span class="n">dataformat</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span> <span class="o">=</span> <span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">sort_filename</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">skip_file_cb</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Callable<span class="p">[</span><span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">]</span><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a><span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)">None</a><a class="reference internal" href="../_modules/uqa/dataset.html#DataLoader.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.dataset.DataLoader.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>datapath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em> or </em><em>iterable of str</em>) – <div class="line-block">
+<div class="line">Path(s) to a file or directory.</div>
+<div class="line">A path to a directory will be recursively explored and files with the correct extension
+will be considered part of the dataset.</div>
+</div>
+</p></li>
+<li><p><strong>fileformat</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><em>[</em><em>&quot;json&quot;</em><em>, </em><em>&quot;pickle&quot;</em><em>]</em><em>, </em><em>default=&quot;json&quot;</em>) – <div class="line-block">
+<div class="line">A supported fileformat.</div>
+<div class="line">With <code class="docutils literal notranslate"><span class="pre">&quot;json&quot;</span></code> fileformat only <code class="docutils literal notranslate"><span class="pre">*.json</span></code> will be matched when exploring a folder.</div>
+<div class="line">With <code class="docutils literal notranslate"><span class="pre">&quot;pickle&quot;</span></code> fileformat only <code class="docutils literal notranslate"><span class="pre">*.pickle</span></code> will be matched when exploring a folder.</div>
+</div>
+</p></li>
+<li><p><strong>dataformat</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><em>[</em><em>&quot;default&quot;</em><em>, </em><em>&quot;fquad&quot;</em><em>]</em><em>, </em><em>default=&quot;default&quot;</em>) – <div class="line-block">
+<div class="line">One of the supported data format.</div>
+<div class="line">The given value is only stored and does not affect the instance behaviour.</div>
+</div>
+</p></li>
+<li><p><strong>sort_filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em>, </em><em>default=True</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> file path and content pairs are sorted in lexicographic order relative to the path.
+else files order is randomized</p></li>
+<li><p><strong>skip_file_cb</strong> (<em>Callable</em><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em>]</em><em>, </em><em>default=None</em>) – If provided, each file’s path in the dataset is passed to this callback, if the callback returns <code class="docutils literal notranslate"><span class="pre">True</span></code>
+the file is skipped</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="uqa.dataset.DataLoader.datapath">
+<em class="property">property </em><code class="sig-name descname">datapath</code><a class="headerlink" href="#uqa.dataset.DataLoader.datapath" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of path passed at initialization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="uqa.dataset.DataLoader.fileformat">
+<em class="property">property </em><code class="sig-name descname">fileformat</code><a class="headerlink" href="#uqa.dataset.DataLoader.fileformat" title="Permalink to this definition">¶</a></dt>
+<dd><p>File format, one of (<cite>json</cite>, <cite>pickle</cite>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="uqa.dataset.DataLoader.dataformat">
+<em class="property">property </em><code class="sig-name descname">dataformat</code><a class="headerlink" href="#uqa.dataset.DataLoader.dataformat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Data format, one of (<cite>default</cite>, <cite>fquad</cite>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="uqa.dataset.DataLoader.num_files">
+<em class="property">property </em><code class="sig-name descname">num_files</code><a class="headerlink" href="#uqa.dataset.DataLoader.num_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of files in the dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="uqa.dataset.DataLoader.filepaths">
+<em class="property">abstract </em><code class="sig-name descname">filepaths</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">]</span><a class="reference internal" href="../_modules/uqa/dataset.html#DataLoader.filepaths"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.dataset.DataLoader.filepaths" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the list of file paths in the dataset, order depends on <a class="reference internal" href="#uqa.dataset.DataLoader.sort_filename" title="uqa.dataset.DataLoader.sort_filename"><code class="xref py py-attr docutils literal notranslate"><span class="pre">sort_filename</span></code></a> value.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="uqa.dataset.FileDataLoader">
+<em class="property">class </em><code class="sig-prename descclassname">uqa.dataset.</code><code class="sig-name descname">FileDataLoader</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">datapath</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">, </span>Iterable<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">]</span><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">fileformat</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em>, <em class="sig-param"><span class="n">dataformat</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span> <span class="o">=</span> <span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">sort_filename</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">skip_file_cb</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Callable<span class="p">[</span><span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">]</span><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a><span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uqa/dataset.html#FileDataLoader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.dataset.FileDataLoader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#uqa.dataset.DataLoader" title="uqa.dataset.DataLoader"><code class="xref py py-class docutils literal notranslate"><span class="pre">uqa.dataset.DataLoader</span></code></a></p>
+<p>Data loader for single/multiple files.</p>
+<dl class="py method">
+<dt id="uqa.dataset.FileDataLoader.filepaths">
+<code class="sig-name descname">filepaths</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">]</span><a class="reference internal" href="../_modules/uqa/dataset.html#FileDataLoader.filepaths"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.dataset.FileDataLoader.filepaths" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the list of file paths in the dataset, order depends on <code class="xref py py-attr docutils literal notranslate"><span class="pre">sort_filename</span></code> value.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="uqa.dataset.DirDataLoader">
+<em class="property">class </em><code class="sig-prename descclassname">uqa.dataset.</code><code class="sig-name descname">DirDataLoader</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">datapath</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">, </span>Iterable<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">]</span><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">fileformat</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em>, <em class="sig-param"><span class="n">dataformat</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span> <span class="o">=</span> <span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">sort_filename</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uqa/dataset.html#DirDataLoader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.dataset.DirDataLoader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#uqa.dataset.DataLoader" title="uqa.dataset.DataLoader"><code class="xref py py-class docutils literal notranslate"><span class="pre">uqa.dataset.DataLoader</span></code></a></p>
+<p>Data loader for single/multiple directory.</p>
+<dl class="py method">
+<dt id="uqa.dataset.DirDataLoader.filepaths">
+<code class="sig-name descname">filepaths</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">]</span><a class="reference internal" href="../_modules/uqa/dataset.html#DirDataLoader.filepaths"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.dataset.DirDataLoader.filepaths" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the list of file paths in the dataset, order depends on <code class="xref py py-attr docutils literal notranslate"><span class="pre">sort_filename</span></code> value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="uqa.dataset.DirDataLoader.discover_files">
+<em class="property">static </em><code class="sig-name descname">discover_files</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dirpath</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em>, <em class="sig-param"><span class="n">extension</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">]</span><a class="reference internal" href="../_modules/uqa/dataset.html#DirDataLoader.discover_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.dataset.DirDataLoader.discover_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recursively find the files with <cite>extension</cite> in the directory <cite>dir_path</cite> and its subdirectories.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dirpath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The path of the folder to explore</p></li>
+<li><p><strong>extension</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The target extension</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>list of str</em> – The list of files in <cite>dirpath</cite> directory and its sub-directories with extension <cite>extension</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="uqa.dataset.DataDumper">
+<em class="property">class </em><code class="sig-prename descclassname">uqa.dataset.</code><code class="sig-name descname">DataDumper</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fileformat</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em>, <em class="sig-param"><span class="n">path_modifier</span><span class="p">:</span> <span class="n">Callable<span class="p">[</span><span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">]</span><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">override</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">json_indent</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></span> <span class="o">=</span> <span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uqa/dataset.html#DataDumper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.dataset.DataDumper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Data dumping class.</p>
+<div class="line-block">
+<div class="line">Implement fetures for saving a <a class="reference internal" href="#uqa.dataset.DataIterable" title="uqa.dataset.DataIterable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataIterable</span></code></a> in JSON or Pickle format as well
+as path modifier factories.</div>
+</div>
+<dl class="py attribute">
+<dt id="uqa.dataset.DataDumper.path_modifier">
+<code class="sig-name descname">path_modifier</code><a class="headerlink" href="#uqa.dataset.DataDumper.path_modifier" title="Permalink to this definition">¶</a></dt>
+<dd><p>A callback to transform path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Callable[[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a>], <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a>], default=no-op</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="uqa.dataset.DataDumper.override">
+<code class="sig-name descname">override</code><a class="headerlink" href="#uqa.dataset.DataDumper.override" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flag setting existing file overriding behaviour</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a>, default=False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="uqa.dataset.DataDumper.json_indent">
+<code class="sig-name descname">json_indent</code><a class="headerlink" href="#uqa.dataset.DataDumper.json_indent" title="Permalink to this definition">¶</a></dt>
+<dd><p>JSON indentation number of whitespace, ignored if using Pickle fileformat</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a>, default=0</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="uqa.dataset.DataDumper.fileformat">
+<em class="property">property </em><code class="sig-name descname">fileformat</code><a class="headerlink" href="#uqa.dataset.DataDumper.fileformat" title="Permalink to this definition">¶</a></dt>
+<dd><p>File format, one of (<cite>json</cite>, <cite>pickle</cite>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="uqa.dataset.DataDumper.save">
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data_it</span><span class="p">:</span> <span class="n">Iterable<span class="p">[</span>Tuple<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">, </span>Union<span class="p">[</span>Dict<span class="p">, </span>List<span class="p">]</span><span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)">None</a><a class="reference internal" href="../_modules/uqa/dataset.html#DataDumper.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.dataset.DataDumper.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply <a class="reference internal" href="#uqa.dataset.DataDumper.path_modifier" title="uqa.dataset.DataDumper.path_modifier"><code class="xref py py-attr docutils literal notranslate"><span class="pre">path_modifier</span></code></a> and dump the elements in <cite>data_it</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data_it</strong> (<em>DataIterable</em>) – An iterator of the data to save.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="uqa.dataset.DataDumper.make_skip_cb">
+<code class="sig-name descname">make_skip_cb</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uqa/dataset.html#DataDumper.make_skip_cb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.dataset.DataDumper.make_skip_cb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a function taking an input path as argument and check if the modified path exists.</p>
+<p>The modified path of a given path <code class="docutils literal notranslate"><span class="pre">fpath</span></code> is the result of applying <a class="reference internal" href="#uqa.dataset.DataDumper.path_modifier" title="uqa.dataset.DataDumper.path_modifier"><code class="xref py py-attr docutils literal notranslate"><span class="pre">path_modifier</span></code></a> to <code class="docutils literal notranslate"><span class="pre">fpath</span></code></p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="uqa.dataset.DataDumper.noop_path_mod">
+<em class="property">static </em><code class="sig-name descname">noop_path_mod</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fpath</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uqa/dataset.html#DataDumper.noop_path_mod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.dataset.DataDumper.noop_path_mod" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function returning its argument without modification.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="uqa.dataset.DataDumper.dir_replacer">
+<em class="property">static </em><code class="sig-name descname">dir_replacer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">from_dir</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em>, <em class="sig-param"><span class="n">to_dir</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span> &#x2192; Callable<span class="p">[</span><span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">]</span><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">]</span><a class="reference internal" href="../_modules/uqa/dataset.html#DataDumper.dir_replacer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.dataset.DataDumper.dir_replacer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function factory returning a path modifier function replacing the last occurence
+of <cite>from_dir</cite> to <cite>to_dir</cite> in the path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>from_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – A directory name (doesn’t allow multiple directory)</p></li>
+<li><p><strong>to_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – A string to substitute <cite>from_dir</cite> with (accepts mutliple dir, i.e. “foo/bar”)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>Callable[[str], str]</em> – A function taking a ‘/’-path string as an argument and replacing the last occurence
+of <cite>from_dir</cite> with <cite>to_dir</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="uqa.dataset.DataDumper.path_replacer">
+<em class="property">static </em><code class="sig-name descname">path_replacer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_path</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span> &#x2192; Callable<span class="p">[</span><span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">]</span><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">]</span><a class="reference internal" href="../_modules/uqa/dataset.html#DataDumper.path_replacer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.dataset.DataDumper.path_replacer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function factory returning a path modifier function replacing the whole path with <cite>new_path</cite>.</p>
+<div class="line-block">
+<div class="line">Returns <code class="docutils literal notranslate"><span class="pre">lambda</span> <span class="pre">_:</span> <span class="pre">new_path</span></code></div>
+<div class="line">Used for single file dataset.</div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The <cite>new_path</cite> to return</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>Callable[[str], str]</em> – A function taking a single argument and returning <cite>new_path</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="uqa.dataset.DataDumper.path_in_dir">
+<em class="property">static </em><code class="sig-name descname">path_in_dir</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_dir</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span> &#x2192; Callable<span class="p">[</span><span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">]</span><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">]</span><a class="reference internal" href="../_modules/uqa/dataset.html#DataDumper.path_in_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.dataset.DataDumper.path_in_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function factory returning a path modifier function joining <cite>new_dir</cite> and its path argument.</p>
+<div class="line-block">
+<div class="line">Returns <code class="docutils literal notranslate"><span class="pre">lamda</span> <span class="pre">fpath:</span> <span class="pre">os.path.join(new_dir,</span> <span class="pre">fpath)</span></code></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – A directory name (accepts multiple directory, i.e. “foo/bar”)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>Callable[[str], str]</em> – A function taking a ‘/’-path string argument <cite>fpath</cite> and returning the joined path of
+<cite>fpath</cite> in directory <cite>new_dir</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="uqa.dataset.DataDumper.file_in_dir">
+<em class="property">static </em><code class="sig-name descname">file_in_dir</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_dir</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span> &#x2192; Callable<span class="p">[</span><span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">]</span><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">]</span><a class="reference internal" href="../_modules/uqa/dataset.html#DataDumper.file_in_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.dataset.DataDumper.file_in_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function factory returning a path modifier function joining <cite>new_dir</cite> and its path argument filename.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – A directory name (accepts multiple directory, i.e. “foo/bar”)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>Callable[[str], str]</em> – A function taking a ‘/’-path string argument <cite>fpath</cite> and returning the joined path of
+<cite>fpath</cite> <strong>filename</strong> in directory <cite>new_dir</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="uqa.download.html" class="btn btn-neutral float-right" title="uqa.download module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="uqa.context_utils.html" class="btn btn-neutral float-left" title="uqa.context_utils module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Boris Tronch, Quentin Churet, Jiahao Lu
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

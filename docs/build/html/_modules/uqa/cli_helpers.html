@@ -1,0 +1,374 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>uqa.cli_helpers &mdash; Unsupervised-Question-Answering 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Unsupervised-Question-Answering
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../data_formats.html">Data Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../models.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../workflow.html">Basic workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cli_usage.html">CLI Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/modules.html">API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Unsupervised-Question-Answering</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>uqa.cli_helpers</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for uqa.cli_helpers</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;CLI helper functions and decorators.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="kn">import</span> <span class="nn">click</span>
+
+<span class="kn">from</span> <span class="nn">uqa.dataset</span> <span class="kn">import</span> <span class="n">DataDumper</span><span class="p">,</span> <span class="n">DirDataLoader</span><span class="p">,</span> <span class="n">FileDataLoader</span>
+
+
+<span class="k">def</span> <span class="nf">_validate_params</span><span class="p">(</span><span class="n">use_dir</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">src</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">use_dir</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">src</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">click</span><span class="o">.</span><span class="n">BadParameter</span><span class="p">(</span><span class="s2">&quot;Single SRC allowed when using -d / --dir flag.&quot;</span><span class="p">,</span> <span class="n">param_hint</span><span class="o">=</span><span class="s2">&quot;[SRC]...&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">src</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="k">raise</span> <span class="n">click</span><span class="o">.</span><span class="n">BadParameter</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">src</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39; is file; SRC must be a directory when using -d / --dir flag.&quot;</span><span class="p">,</span> <span class="n">param_hint</span><span class="o">=</span><span class="s2">&quot;[SRC]...&quot;</span>
+            <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">src_path</span> <span class="ow">in</span> <span class="n">src</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">src_path</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">click</span><span class="o">.</span><span class="n">BadParameter</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">src_path</span><span class="si">}</span><span class="s2">&#39; is a directory; use -d /--dir flag to pass a directory path.&quot;</span><span class="p">,</span> <span class="n">param_hint</span><span class="o">=</span><span class="s2">&quot;[SRC]...&quot;</span>
+                <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_read_params</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">default_data_format_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+    <span class="n">decorated_func</span> <span class="o">=</span> <span class="n">func</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">default_data_format_only</span><span class="p">:</span>
+        <span class="n">decorated_func</span> <span class="o">=</span> <span class="n">click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+            <span class="s2">&quot;-df&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;--data-format&quot;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Choice</span><span class="p">([</span><span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="s2">&quot;fquad&quot;</span><span class="p">],</span> <span class="n">case_sensitive</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+            <span class="n">default</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Data structure&quot;</span><span class="p">,</span>
+        <span class="p">)(</span><span class="n">decorated_func</span><span class="p">)</span>
+    <span class="n">decorated_func</span> <span class="o">=</span> <span class="n">click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+        <span class="s2">&quot;-if&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--input-format&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Choice</span><span class="p">([</span><span class="s2">&quot;json&quot;</span><span class="p">,</span> <span class="s2">&quot;pickle&quot;</span><span class="p">],</span> <span class="n">case_sensitive</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">,</span>
+        <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Input file(s) format.&quot;</span><span class="p">,</span>
+    <span class="p">)(</span><span class="n">decorated_func</span><span class="p">)</span>
+    <span class="n">decorated_func</span> <span class="o">=</span> <span class="n">click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+        <span class="s2">&quot;-d&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--dir&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;use_dir&quot;</span><span class="p">,</span>
+        <span class="n">is_flag</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">is_eager</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">expose_value</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Indicate `SRC` value is a directory.&quot;</span><span class="p">,</span>
+    <span class="p">)(</span><span class="n">decorated_func</span><span class="p">)</span>
+    <span class="n">decorated_func</span> <span class="o">=</span> <span class="n">click</span><span class="o">.</span><span class="n">argument</span><span class="p">(</span><span class="s2">&quot;src&quot;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">exists</span><span class="o">=</span><span class="kc">True</span><span class="p">))(</span><span class="n">decorated_func</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">decorated_func</span>
+
+
+<div class="viewcode-block" id="click_read_data"><a class="viewcode-back" href="../../api/uqa.cli_helpers.html#uqa.cli_helpers.click_read_data">[docs]</a><span class="k">def</span> <span class="nf">click_read_data</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Add parameters for commands which read data files or directory,</span>
+<span class="sd">    and transform those parameters in a DataLoader instance passed the decorated function</span>
+<span class="sd">    as the keyword argument `dataloader`.&quot;&quot;&quot;</span>
+
+    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="n">data_format</span><span class="p">,</span> <span class="n">input_format</span><span class="p">,</span> <span class="n">use_dir</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">_validate_params</span><span class="p">(</span><span class="n">use_dir</span><span class="p">,</span> <span class="n">src</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">use_dir</span><span class="p">:</span>
+            <span class="n">dataloader</span> <span class="o">=</span> <span class="n">DirDataLoader</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">input_format</span><span class="p">,</span> <span class="n">data_format</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dataloader</span> <span class="o">=</span> <span class="n">FileDataLoader</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">input_format</span><span class="p">,</span> <span class="n">data_format</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="n">dataloader</span><span class="o">=</span><span class="n">dataloader</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="n">decorated_func</span> <span class="o">=</span> <span class="n">_read_params</span><span class="p">(</span><span class="n">wrapper</span><span class="p">)</span>
+    <span class="n">doc_str</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Read and process SRC data. SRC can be one or more path(s) to files.</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;With -d / --dir flag, SRC must be a single path to a directory. &quot;</span>
+        <span class="s2">&quot;File in SRC and its sub-directories are discoverd and &quot;</span>
+        <span class="s2">&quot;processed if they have the right extension (&#39;*.json&#39; or &#39;*.pickle&#39;)</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">decorated_func</span><span class="o">.</span><span class="vm">__doc__</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">):</span>
+        <span class="n">decorated_func</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">decorated_func</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">+=</span> <span class="n">doc_str</span>
+
+    <span class="k">return</span> <span class="n">decorated_func</span></div>
+
+
+<span class="k">def</span> <span class="nf">_write_params</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+    <span class="n">decorated_func</span> <span class="o">=</span> <span class="n">func</span>
+    <span class="n">decorated_func</span> <span class="o">=</span> <span class="n">click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+        <span class="s2">&quot;--json-indent&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">INT</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Json indentation number of space (0 for compact)&quot;</span>
+    <span class="p">)(</span><span class="n">decorated_func</span><span class="p">)</span>
+    <span class="n">decorated_func</span> <span class="o">=</span> <span class="n">click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+        <span class="s2">&quot;-of&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--output-format&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Choice</span><span class="p">([</span><span class="s2">&quot;json&quot;</span><span class="p">,</span> <span class="s2">&quot;pickle&quot;</span><span class="p">],</span> <span class="n">case_sensitive</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">,</span>
+        <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Output file format.&quot;</span><span class="p">,</span>
+    <span class="p">)(</span><span class="n">decorated_func</span><span class="p">)</span>
+    <span class="n">decorated_func</span> <span class="o">=</span> <span class="n">click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;-O&quot;</span><span class="p">,</span> <span class="s2">&quot;--override&quot;</span><span class="p">,</span> <span class="n">is_flag</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Override existing output files&quot;</span><span class="p">)(</span>
+        <span class="n">decorated_func</span>
+    <span class="p">)</span>
+    <span class="n">decorated_func</span> <span class="o">=</span> <span class="n">click</span><span class="o">.</span><span class="n">argument</span><span class="p">(</span><span class="s2">&quot;dst&quot;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Path</span><span class="p">())(</span><span class="n">decorated_func</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">decorated_func</span>
+
+
+<div class="viewcode-block" id="click_read_write_data"><a class="viewcode-back" href="../../api/uqa.cli_helpers.html#uqa.cli_helpers.click_read_write_data">[docs]</a><span class="k">def</span> <span class="nf">click_read_write_data</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Add parameters for commands which read, process and write data files or directory,</span>
+<span class="sd">    and transform those parameters in a DataLoader instance and a DataDumper instance passed to the decorated function</span>
+<span class="sd">    as the keyword argument `datloader` and `datadumper`.&quot;&quot;&quot;</span>
+
+    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="n">data_format</span><span class="p">,</span> <span class="n">input_format</span><span class="p">,</span> <span class="n">use_dir</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">output_format</span><span class="p">,</span> <span class="n">json_indent</span><span class="p">,</span> <span class="n">override</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">_validate_params</span><span class="p">(</span><span class="n">use_dir</span><span class="p">,</span> <span class="n">src</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">use_dir</span><span class="p">:</span>
+            <span class="n">dataloader</span> <span class="o">=</span> <span class="n">DirDataLoader</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">input_format</span><span class="p">,</span> <span class="n">data_format</span><span class="p">)</span>
+            <span class="n">path_mod</span> <span class="o">=</span> <span class="n">DataDumper</span><span class="o">.</span><span class="n">dir_replacer</span><span class="p">(</span><span class="n">src</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">),</span> <span class="n">dst</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dataloader</span> <span class="o">=</span> <span class="n">FileDataLoader</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">input_format</span><span class="p">,</span> <span class="n">data_format</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">src</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">path_mod</span> <span class="o">=</span> <span class="n">DataDumper</span><span class="o">.</span><span class="n">path_replacer</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">path_mod</span> <span class="o">=</span> <span class="n">DataDumper</span><span class="o">.</span><span class="n">file_in_dir</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span>
+        <span class="n">datadumper</span> <span class="o">=</span> <span class="n">DataDumper</span><span class="p">(</span><span class="n">output_format</span><span class="p">,</span> <span class="n">path_mod</span><span class="p">,</span> <span class="n">override</span><span class="o">=</span><span class="n">override</span><span class="p">,</span> <span class="n">json_indent</span><span class="o">=</span><span class="n">json_indent</span><span class="p">)</span>
+        <span class="n">dataloader</span><span class="o">.</span><span class="n">skip_file_cb</span> <span class="o">=</span> <span class="n">datadumper</span><span class="o">.</span><span class="n">make_skip_cb</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="n">dataloader</span><span class="o">=</span><span class="n">dataloader</span><span class="p">,</span> <span class="n">datadumper</span><span class="o">=</span><span class="n">datadumper</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="n">decorated_func</span> <span class="o">=</span> <span class="n">_read_params</span><span class="p">(</span><span class="n">_write_params</span><span class="p">(</span><span class="n">wrapper</span><span class="p">))</span>
+
+    <span class="n">doc_str</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Read and process SRC data. SRC can be one or more path(s) to files. &quot;</span>
+        <span class="s2">&quot;With -d / --dir flag, SRC must be a single path to a directory. &quot;</span>
+        <span class="s2">&quot;File in SRC and its sub-directories are discoverd and &quot;</span>
+        <span class="s2">&quot;processed if they have the right extension (&#39;*.json&#39; or &#39;*.pickle&#39;).</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Write processed SRC data in path DST. &quot;</span>
+        <span class="s2">&quot;If SRC is a single file path, write the processed data the file DST. &quot;</span>
+        <span class="s2">&quot;If SRC is a single directory path, write the processed data in the directory DST &quot;</span>
+        <span class="s2">&quot;retaining SRC internal hierarchy. &quot;</span>
+        <span class="s2">&quot;If SRC is a list of files path: write the processed data in the directory DST with the same filename.</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">decorated_func</span><span class="o">.</span><span class="vm">__doc__</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">):</span>
+        <span class="n">decorated_func</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">decorated_func</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">+=</span> <span class="n">doc_str</span>
+
+    <span class="k">return</span> <span class="n">decorated_func</span></div>
+
+
+<div class="viewcode-block" id="click_split_params"><a class="viewcode-back" href="../../api/uqa.cli_helpers.html#uqa.cli_helpers.click_split_params">[docs]</a><span class="k">def</span> <span class="nf">click_split_params</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Add parameters for commands which read, process and write data files or directory,</span>
+<span class="sd">    and transform those parameters in a DataLoader instance and a DataDumper instance passed to the decorated function</span>
+<span class="sd">    as the keyword argument `datloader` and `datadumper`.&quot;&quot;&quot;</span>
+
+    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="n">data_format</span><span class="p">,</span> <span class="n">input_format</span><span class="p">,</span> <span class="n">use_dir</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">output_format</span><span class="p">,</span> <span class="n">override</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">json_indent</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">_validate_params</span><span class="p">(</span><span class="n">use_dir</span><span class="p">,</span> <span class="n">src</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">use_dir</span><span class="p">:</span>
+            <span class="n">dataloader</span> <span class="o">=</span> <span class="n">DirDataLoader</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">input_format</span><span class="p">,</span> <span class="n">data_format</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dataloader</span> <span class="o">=</span> <span class="n">FileDataLoader</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">input_format</span><span class="p">,</span> <span class="n">data_format</span><span class="p">)</span>
+
+        <span class="n">datadumper</span> <span class="o">=</span> <span class="n">DataDumper</span><span class="p">(</span><span class="n">output_format</span><span class="p">,</span> <span class="n">override</span><span class="o">=</span><span class="n">override</span><span class="p">,</span> <span class="n">json_indent</span><span class="o">=</span><span class="n">json_indent</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="n">dataloader</span><span class="o">=</span><span class="n">dataloader</span><span class="p">,</span> <span class="n">datadumper</span><span class="o">=</span><span class="n">datadumper</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">dst</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="n">decorated_func</span> <span class="o">=</span> <span class="n">click</span><span class="o">.</span><span class="n">argument</span><span class="p">(</span><span class="s2">&quot;num&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)(</span><span class="n">_read_params</span><span class="p">(</span><span class="n">_write_params</span><span class="p">(</span><span class="n">wrapper</span><span class="p">)))</span>
+
+    <span class="n">doc_str</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Read and process SRC data. SRC can be one or more path(s) to files. &quot;</span>
+        <span class="s2">&quot;With -d / --dir flag, SRC must be a single path to a directory. &quot;</span>
+        <span class="s2">&quot;File in SRC and its sub-directories are discoverd and &quot;</span>
+        <span class="s2">&quot;processed if they have the right extension (&#39;*.json&#39; or &#39;*.pickle&#39;).</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Split / combine data in file with NUM articles per file and save them in path &quot;</span>
+        <span class="s2">&quot;generated with template DST. If NUM is &lt;= 0 a single file is created with all the articles,&quot;</span>
+        <span class="s2">&quot;else DST must contains &#39;</span><span class="si">{num}</span><span class="s2">&#39; placeholder (ex: DST=&#39;foo/bar_</span><span class="si">{num}</span><span class="s2">.json&#39;) in which case&quot;</span>
+        <span class="s2">&quot;files path are generated by replacing the placeholder by numbers starting from 1 and incrementing.</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">decorated_func</span><span class="o">.</span><span class="vm">__doc__</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">):</span>
+        <span class="n">decorated_func</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">decorated_func</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">+=</span> <span class="n">doc_str</span>
+
+    <span class="k">return</span> <span class="n">decorated_func</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Boris Tronch, Quentin Churet, Jiahao Lu
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

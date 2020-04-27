@@ -1,0 +1,400 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>uqa.clean module &mdash; Unsupervised-Question-Answering 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="uqa.cli module" href="uqa.cli.html" />
+    <link rel="prev" title="uqa" href="uqa.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Unsupervised-Question-Answering
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_formats.html">Data Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../models.html">Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../workflow.html">Basic workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cli_usage.html">CLI Usage</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">API documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="uqa.html">uqa</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="uqa.html#main-featutes-processing-pipeline">Main featutes / processing pipeline:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="uqa.html#question-answer-generation-key-points">Question / answer generation key points</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="uqa.html#modules">Modules</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">uqa.clean module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.cli.html">uqa.cli module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.cli_helpers.html">uqa.cli_helpers module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.constituency.html">uqa.constituency module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.context_utils.html">uqa.context_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.dataset.html">uqa.dataset module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.download.html">uqa.download module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.fquad_utils.html">uqa.fquad_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.list_utils.html">uqa.list_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.logging_utils.html">uqa.logging_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.ner.html">uqa.ner module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.qa_gen.html">uqa.qa_gen module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.reading_wiki_dumps.html">uqa.reading_wiki_dumps module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.show.html">uqa.show module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.split.html">uqa.split module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.stats.html">uqa.stats module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uqa.validate.html">uqa.validate module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Unsupervised-Question-Answering</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="modules.html">API documentation</a> &raquo;</li>
+        
+          <li><a href="uqa.html">uqa</a> &raquo;</li>
+        
+      <li>uqa.clean module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/uqa.clean.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-uqa.clean">
+<span id="uqa-clean-module"></span><h1>uqa.clean module<a class="headerlink" href="#module-uqa.clean" title="Permalink to this headline">¶</a></h1>
+<p>Cleaning and preprocessing tools.</p>
+<p>Impletent a ‘clean’ feature working at character level and a ‘filter’ feature working
+at context level.</p>
+<dl class="py data">
+<dt id="uqa.clean.ALPHA">
+<code class="sig-prename descclassname">uqa.clean.</code><code class="sig-name descname">ALPHA</code><em class="property"> = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'À', 'Â', 'Ä', 'Ç', 'É', 'È', 'Ê', 'Ë', 'Î', 'Ï', 'Ô', 'Ö', 'Ù', 'Û', 'Ü', 'Ÿ', 'à', 'â', 'ä', 'ç', 'é', 'è', 'ê', 'ë', 'î', 'ï', 'ô', 'ö', 'ù', 'û', 'ü', 'ÿ', 'æ', 'œ', 'Æ', 'Œ']</em><a class="headerlink" href="#uqa.clean.ALPHA" title="Permalink to this definition">¶</a></dt>
+<dd><p>Valid letters in French (ascii letters and accented letters)</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="uqa.clean.ALLOWED">
+<code class="sig-prename descclassname">uqa.clean.</code><code class="sig-name descname">ALLOWED</code><em class="property"> = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'À', 'Â', 'Ä', 'Ç', 'É', 'È', 'Ê', 'Ë', 'Î', 'Ï', 'Ô', 'Ö', 'Ù', 'Û', 'Ü', 'Ÿ', 'à', 'â', 'ä', 'ç', 'é', 'è', 'ê', 'ë', 'î', 'ï', 'ô', 'ö', 'ù', 'û', 'ü', 'ÿ', 'æ', 'œ', 'Æ', 'Œ', '…', '§', '‰']</em><a class="headerlink" href="#uqa.clean.ALLOWED" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of allowed characters</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="uqa.clean.REPLACE_CAT">
+<code class="sig-prename descclassname">uqa.clean.</code><code class="sig-name descname">REPLACE_CAT</code><em class="property"> = {'Pd': '-', 'Zs': ' '}</em><a class="headerlink" href="#uqa.clean.REPLACE_CAT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Character replacement rule based on categorie</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="uqa.clean.REPLACE_DICT">
+<code class="sig-prename descclassname">uqa.clean.</code><code class="sig-name descname">REPLACE_DICT</code><em class="property"> = {'¡': '', '«': '&quot;', '·': '.', '»': '&quot;', '։': ':', '‘': &quot;'&quot;, '’': &quot;'&quot;, '‛': &quot;'&quot;, '“': '&quot;', '”': '&quot;', '„': '&quot;', '†': ' mort ', '•': '-', '′': &quot;'&quot;, '″': &quot;''&quot;, '‹': '&lt;', '›': '&gt;', '、': ',', '〈': '(', '〉': ')', '【': '(', '】': ')', '〝': '&quot;', '〟': '&quot;', '・': '.', '！': '!', '＆': '&amp;', '（': '(', '）': ')', '，': ',', '：': ':'}</em><a class="headerlink" href="#uqa.clean.REPLACE_DICT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Character replacement table, override <a class="reference internal" href="#uqa.clean.REPLACE_CAT" title="uqa.clean.REPLACE_CAT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">REPLACE_CAT</span></code></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="uqa.clean.count_alpha">
+<code class="sig-prename descclassname">uqa.clean.</code><code class="sig-name descname">count_alpha</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">txt</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a><a class="reference internal" href="../_modules/uqa/clean.html#count_alpha"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.clean.count_alpha" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of letters in <cite>txt</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>txt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – A string</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>int</em> – the number of character of <cite>txt</cite> that are in <a class="reference internal" href="#uqa.clean.ALPHA" title="uqa.clean.ALPHA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ALPHA</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="uqa.clean.extract_bad_char">
+<code class="sig-prename descclassname">uqa.clean.</code><code class="sig-name descname">extract_bad_char</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">txt</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span> &#x2192; Set<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">]</span><a class="reference internal" href="../_modules/uqa/clean.html#extract_bad_char"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.clean.extract_bad_char" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the set of non-allowed characters in <cite>txt</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>txt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The string to process.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>set of str</em> – set of characters of <cite>txt</cite> that are not in <a class="reference internal" href="#uqa.clean.ALLOWED" title="uqa.clean.ALLOWED"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ALLOWED</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="uqa.clean.classify_bad_chars">
+<code class="sig-prename descclassname">uqa.clean.</code><code class="sig-name descname">classify_bad_chars</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bad_chars</span><span class="p">:</span> <span class="n">Set<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; DefaultDict<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">, </span>List<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">]</span><span class="p">]</span><a class="reference internal" href="../_modules/uqa/clean.html#classify_bad_chars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.clean.classify_bad_chars" title="Permalink to this definition">¶</a></dt>
+<dd><p>Classify <cite>bad_chars</cite> set into unicode categories.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>bad_chars</strong> (<em>set of character str</em>) – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>defaultdict</em> – keys are unicode categories str, values are lists of character str</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference external" href="http://www.unicode.org/reports/tr44/#General_Category_Values">List of unicode categories</a></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="uqa.clean.clean_text">
+<code class="sig-prename descclassname">uqa.clean.</code><code class="sig-name descname">clean_text</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">txt</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><a class="reference internal" href="../_modules/uqa/clean.html#clean_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.clean.clean_text" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clean and return <cite>txt</cite> either removing or replacing illegal characters.</p>
+<p>Illegal characters are characters not part of <a class="reference internal" href="#uqa.clean.ALLOWED" title="uqa.clean.ALLOWED"><code class="xref py py-const docutils literal notranslate"><span class="pre">ALLOWED</span></code></a>.
+Illegal characters are replaced if they have an entry in <a class="reference internal" href="#uqa.clean.REPLACE_DICT" title="uqa.clean.REPLACE_DICT"><code class="xref py py-const docutils literal notranslate"><span class="pre">REPLACE_DICT</span></code></a> or if their unicode category
+have an entry in <a class="reference internal" href="#uqa.clean.REPLACE_CAT" title="uqa.clean.REPLACE_CAT"><code class="xref py py-const docutils literal notranslate"><span class="pre">REPLACE_CAT</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>txt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The string to process</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>ret</strong> (<em>str</em>) – The string with illegal characters eiter replaced or removed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="uqa.clean.clean">
+<code class="sig-prename descclassname">uqa.clean.</code><code class="sig-name descname">clean</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fcontent</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>Dict<span class="p">, </span>List<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Union<span class="p">[</span>Dict<span class="p">, </span>List<span class="p">]</span><a class="reference internal" href="../_modules/uqa/clean.html#clean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.clean.clean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clean <cite>fcontent</cite> json-like container in ‘default’ data format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fcontent</strong> (<a class="reference internal" href="uqa.dataset.html#uqa.dataset.TJson" title="uqa.dataset.TJson"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TJson</span></code></a>) – Json-like container in <cite>default</cite> data format</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>cleaned_fcontent</strong> (<a class="reference internal" href="uqa.dataset.html#uqa.dataset.TJson" title="uqa.dataset.TJson"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TJson</span></code></a>) – The processed data in <cite>default</cite> data format</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="uqa.clean.clean_dl">
+<code class="sig-prename descclassname">uqa.clean.</code><code class="sig-name descname">clean_dl</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data_it</span><span class="p">:</span> <span class="n">Iterable<span class="p">[</span>Tuple<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">, </span>Union<span class="p">[</span>Dict<span class="p">, </span>List<span class="p">]</span><span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uqa/clean.html#clean_dl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.clean.clean_dl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterate through the dataset in ‘default’ data format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data_it</strong> (<em>DataIterable</em>) – Dataset iterable, elements must be pairs (fpath, fcontent) where fpath is the data file path and
+fcontent is the file’s content</p>
+</dd>
+<dt class="field-even">Yields</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>fpath</strong> (<em>str</em>) – The processed file path</p></li>
+<li><p><strong>filtered_fcontent</strong> (<em>json-like</em>) – The processed file content in default data format</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="uqa.clean.filter_contexts">
+<code class="sig-prename descclassname">uqa.clean.</code><code class="sig-name descname">filter_contexts</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fcontent</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>Dict<span class="p">, </span>List<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">min_num_alpha</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></span> <span class="o">=</span> <span class="default_value">10</span></em><span class="sig-paren">)</span> &#x2192; Union<span class="p">[</span>Dict<span class="p">, </span>List<span class="p">]</span><a class="reference internal" href="../_modules/uqa/clean.html#filter_contexts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.clean.filter_contexts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter contexts of all articles in <cite>fcontent</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fcontent</strong> (<em>json-like</em>) – Json-like container in default data format</p></li>
+<li><p><strong>min_num_alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – Minimum number of letters if the context to be valid.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>filtered_fcontent</strong> (<em>json-like</em>) – The processed data in default data format</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="uqa.clean.filter_contexts_dl">
+<code class="sig-prename descclassname">uqa.clean.</code><code class="sig-name descname">filter_contexts_dl</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data_it</span><span class="p">:</span> <span class="n">Iterable<span class="p">[</span>Tuple<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">, </span>Union<span class="p">[</span>Dict<span class="p">, </span>List<span class="p">]</span><span class="p">]</span><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">min_num_alpha</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></span> <span class="o">=</span> <span class="default_value">10</span></em>, <em class="sig-param"><span class="n">detailed</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/uqa/clean.html#filter_contexts_dl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uqa.clean.filter_contexts_dl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter all contexts in the dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_it</strong> (<em>DataIterable</em>) – Dataset iterable, elements must be pairs (fpath, fcontent) where fpath is the data file path and
+fcontent is the file’s content</p></li>
+<li><p><strong>min_num_alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>, </em><em>optional</em>) – Minimum number of letters if the context to be valid, defaults to 10.</p></li>
+<li><p><strong>detailed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em>, </em><em>optional</em>) – If True, logs per file number of removed context</p></li>
+</ul>
+</dd>
+<dt class="field-even">Yields</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>fpath</strong> (<em>str</em>) – The processed file path</p></li>
+<li><p><strong>filtered_fcontent</strong> (<em>json-like</em>) – The processed file content in default data format</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="uqa.cli.html" class="btn btn-neutral float-right" title="uqa.cli module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="uqa.html" class="btn btn-neutral float-left" title="uqa" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Boris Tronch, Quentin Churet, Jiahao Lu
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

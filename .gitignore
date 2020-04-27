@@ -8,7 +8,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-build/
+# build/
 develop-eggs/
 dist/
 downloads/
@@ -64,7 +64,7 @@ instance/
 .scrapy
 
 # Sphinx documentation
-docs/_build/
+# docs/_build/
 
 # PyBuilder
 target/
@@ -110,13 +110,7 @@ venv.bak/
 *.sublime*
 .vscode/*
 
-# Downloadable data
-uqa/models/*
-!uqa/models/*.py
-uqa/data/*
-!uqa/data/*.py
-*.bak
-uqa/data/ner_json/*
+# Stuff
 
-# Quality Article
-uqa/extract_quality_article/list_articles.pickle
+docs/make.sh
+
